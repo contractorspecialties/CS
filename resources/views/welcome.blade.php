@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Contractor Specialties | Find Verified Local Trade Experts</title>
+    <title>Contractor Specialties | Find Local Pros You Can Actually Reach</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -16,100 +16,110 @@
 </head>
 <body class="bg-[#FFFFFF] text-[#3C3C3C] antialiased">
 
-    {{-- MODERN STICKY NAVIGATION HEADER --}}
-    <header class="sticky top-0 z-50 bg-[#FFFFFF]/90 backdrop-blur-md border-b border-[#F0F0F0] transition-all">
+    {{-- NAVIGATION NAVBAR --}}
+    <header class="sticky top-0 z-50 bg-[#FFFFFF]/90 backdrop-blur-md border-b border-[#F0F0F0]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                {{-- High-Authority Shield Logo Mark --}}
-                <div class="w-10 h-10 bg-[#1E3C5A] rounded-xl flex items-center justify-center shadow-md">
-                    <svg class="w-5 h-5 text-[#FFD22D]" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944a11.954 11.954 0 007.834 3.056 10.03 10.03 0 01-1.63 5.485c-.443.623-.933 1.2-1.464 1.725A11.921 11.921 0 0110 16.206 11.92 11.92 0 014.26 12.21a10.03 10.03 0 01-1.63-5.485c-.443-.623-.42-1.144-.464-1.726zM10 14.426a9.927 9.927 0 004.81-3.328 8.026 8.026 0 01-1.341 4.295A9.946 9.946 0 0110 17.185a9.946 9.946 0 01-3.469-1.792 8.026 8.026 0 01-1.34-4.295 9.927 9.927 0 004.81 3.328z" clip-rule="evenodd"/>
-                    </svg>
+            <div class="flex items-center gap-4">
+                {{-- Horizontal Logo Container --}}
+                <div class="flex items-center">
+                    <div class="h-10 w-48 bg-[#F0F0F0] rounded-lg border border-dashed border-[#3C3C3B]/30 flex items-center justify-center text-xs font-bold text-[#3C3C4B] uppercase tracking-wider" title="Horizontal Logo Placement Target">
+                        Horizontal Logo
+                    </div>
                 </div>
-                <span class="text-xl font-black text-[#0F2D5A] tracking-tight uppercase">Contractor<span class="text-[#FFD22D]">Specialties</span></span>
             </div>
             
             <nav class="hidden md:flex items-center space-x-8 font-bold text-sm text-[#3C3C4B]">
-                <a href="#specialties" class="hover:text-[#1E3C5A] transition">Browse Trades</a>
-                <a href="#verification-process" class="hover:text-[#1E3C5A] transition">Verification Standards</a>
-                <a href="#pro-portal" class="bg-[#0F2D5A] hover:bg-[#1E3C5A] text-[#FFFFFF] px-5 py-2.5 rounded-xl transition shadow-md border border-[#0F2D5A]">
-                    Contractor Portal
+                <a href="#specialties" class="hover:text-[#1E3C5A] transition">Find a Pro</a>
+                <a href="#why-us" class="hover:text-[#1E3C5A] transition">Why Us</a>
+                <a href="#contractor-growth" class="hover:text-[#1E3C5A] transition">For Tradesmen</a>
+                <a href="#gc-tools" class="hover:text-[#1E3C5A] transition">For GCs</a>
+                <a href="#contractor-signup" class="bg-[#0F2D5A] hover:bg-[#1E3C5A] text-[#FFFFFF] px-5 py-2.5 rounded-xl transition shadow-sm font-black tracking-wide">
+                    Join Free
                 </a>
             </nav>
         </div>
     </header>
 
-    {{-- HERO SECTION: SEGREGATED CONVERSION MULTI-SPLIT --}}
-    <section class="relative bg-[#0F2D5A] overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28">
-        {{-- Structural background visual grids --}}
-        <div class="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#F0F0F0_1px,transparent_1px)] [background-size:16px_16px]"></div>
-        <div class="absolute -top-40 -right-40 w-96 h-96 bg-[#1E3C5A] rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+    {{-- HERO SECTION: INSPIRATIONAL HUMAN CONVERSION BLOCK --}}
+    <section class="relative bg-[#0F2D5A] text-[#FFFFFF] overflow-hidden pt-16 pb-24 lg:pt-28 lg:pb-32">
+        <div class="absolute inset-0 opacity-5 bg-[radial-gradient(#F0F0F0_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none"></div>
+        <div class="absolute -top-48 -right-48 w-96 h-96 bg-[#1E3C5A] rounded-full blur-3xl opacity-40 pointer-events-none"></div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+            <div class="max-w-4xl mx-auto text-center space-y-8">
+                <h1 class="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tight leading-none">
+                    Find Local Pros You Can <span class="text-[#FFD22D]">Actually Reach</span>.
+                </h1>
+                <p class="text-[#F0F0F0] text-xl sm:text-2xl font-medium max-w-3xl mx-auto leading-relaxed">
+                    No hoops. No hidden numbers. No “we’ll call you back.” Just real people doing real work — right in your community.
+                </p>
                 
-                {{-- CONSUMER HOOK SIDE --}}
-                <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1E3C5A] border border-slate-700 text-[#FFD22D] text-xs font-black uppercase tracking-widest">
-                        ⚡ Zero Broker Fees • Direct Contact
-                    </div>
-                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-[#FFFFFF] tracking-tight leading-none">
-                        Find Verified, Local <span class="text-[#FFD22D]">Trade Specialists</span> Near You.
-                    </h1>
-                    <p class="text-[#F0F0F0] text-lg sm:text-xl font-medium max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                        Skip the automated project brokers. Connect directly with verified local subcontractors and specialized service crews who are actively operating in your neighborhood.
-                    </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                    <a href="#specialties" class="w-full sm:w-auto bg-[#FFC32D] hover:bg-[#FFD22D] text-[#0F2D5A] font-black uppercase tracking-wider text-sm px-8 py-4 rounded-xl shadow-lg transition transform active:scale-95 text-center">
+                        Find Local Experts
+                    </a>
+                    <a href="#contractor-signup" class="w-full sm:w-auto bg-[#1E3C5A] hover:bg-slate-800 text-[#FFFFFF] border-2 border-slate-700 font-black uppercase tracking-wider text-sm px-8 py-4 rounded-xl transition text-center">
+                        Create Your Free Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                    {{-- CONSUMER QUICK LIVE SEARCH GRID CONTAINER --}}
-                    <div class="pt-4 max-w-xl mx-auto lg:mx-0">
-                        <form action="#" class="bg-[#FFFFFF] p-2 rounded-2xl shadow-2xl border-2 border-slate-800 flex flex-col sm:flex-row gap-2">
-                            <div class="flex-1 flex items-center px-3 gap-2">
-                                <svg class="w-5 h-5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                                <input type="text" placeholder="What trade do you need? (e.g. Electrician)" class="w-full text-base font-bold text-[#3C3C3C] placeholder-slate-400 bg-transparent border-none focus:ring-0 focus:outline-none py-3">
-                            </div>
-                            <button type="submit" class="bg-[#FFC32D] hover:bg-[#FFD22D] text-[#0F2D5A] font-black uppercase tracking-wider text-sm px-6 py-4 rounded-xl shadow transition active:scale-95 whitespace-nowrap">
-                                Find Experts
-                            </button>
-                        </form>
+    {{-- SECTION: CONTRACTOR REGISTRATION AREA --}}
+    <section id="contractor-signup" class="py-20 bg-[#FFFFFF] border-b border-[#F0F0F0]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <div class="lg:col-span-6 space-y-6 text-left">
+                    <span class="text-xs font-black text-[#1E3C5A] bg-[#F0F0F0] px-3 py-1.5 rounded-full uppercase tracking-widest inline-block">Are You a Local Contractor?</span>
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0F2D5A] tracking-tight leading-tight">
+                        Get a Free Profile That Helps You Get Found
+                    </h2>
+                    <p class="text-[#3C3C4B] font-bold text-lg leading-relaxed">
+                        Whether you’re running a full crew or just getting started with a mower and a dream — you belong here.
+                    </p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <div class="flex items-center gap-3 font-bold text-[#3C3C3C]">
+                            <span class="w-6 h-6 rounded-md bg-[#FFC32D]/20 text-[#0F2D5A] flex items-center justify-center text-xs font-black">✓</span>
+                            A clean, simple web page
+                        </div>
+                        <div class="flex items-center gap-3 font-bold text-[#3C3C3C]">
+                            <span class="w-6 h-6 rounded-md bg-[#FFC32D]/20 text-[#0F2D5A] flex items-center justify-center text-xs font-black">✓</span>
+                            A spot in your local directory
+                        </div>
+                        <div class="flex items-center gap-3 font-bold text-[#3C3C3C]">
+                            <span class="w-6 h-6 rounded-md bg-[#FFC32D]/20 text-[#0F2D5A] flex items-center justify-center text-xs font-black">✓</span>
+                            A place to show your work
+                        </div>
+                        <div class="flex items-center gap-3 font-bold text-[#3C3C3C]">
+                            <span class="w-6 h-6 rounded-md bg-[#FFC32D]/20 text-[#0F2D5A] flex items-center justify-center text-xs font-black">✓</span>
+                            Direct contact channels
+                        </div>
                     </div>
                 </div>
 
-                {{-- CONTRACTOR "TROJAN HORSE" ACQUISITION CORE CARD --}}
-                <div id="pro-portal" class="lg:col-span-5">
-                    <div class="bg-[#FFFFFF] rounded-[2rem] border-4 border-slate-900 shadow-2xl p-6 sm:p-8 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 bg-[#FFD22D] text-[#0F2D5A] text-[9px] font-black uppercase tracking-widest px-4 py-1 rounded-bl-xl shadow-sm">
-                            Pro Placement Node
-                        </div>
-                        
-                        <h3 class="text-2xl font-black text-[#0F2D5A] tracking-tight mb-2">Are You a Local Contractor?</h3>
-                        <p class="text-[#3C3C4B] font-bold text-sm leading-relaxed mb-6">
-                            Claim your specialized regional profile directory slot to verify your trade authority and unlock friction-free direct leads.
-                        </p>
-
-                        {{-- FRICTIONLESS PROTOCOL LOOP (SMS INTAKE) --}}
+                <div class="lg:col-span-6">
+                    <div class="bg-[#FFFFFF] border-4 border-slate-900 rounded-[2.5rem] shadow-2xl p-6 sm:p-8 space-y-6">
                         <form action="#" class="space-y-4">
                             <div>
-                                <label class="block text-xs font-black text-[#3C3C4B] uppercase tracking-widest mb-2">Company / Business Name</label>
-                                <input type="text" required placeholder="e.g. Apex Electrical Contractors" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] placeholder-slate-400 font-bold py-3.5 px-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base">
+                                <label class="block text-xs font-black text-[#3C3C4B] uppercase tracking-widest mb-2">Business Name</label>
+                                <input type="text" required placeholder="e.g. Miller & Sons Handyman Services" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] placeholder-slate-400 font-bold py-3.5 px-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base">
                             </div>
 
                             <div>
-                                <label class="block text-xs font-black text-[#3C3C4B] uppercase tracking-widest mb-2">Your Mobile Communications Line</label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none font-black text-slate-400">+1</div>
-                                    <input type="tel" required placeholder="(555) 000-0000" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] placeholder-slate-400 font-bold py-3.5 pl-10 pr-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base">
-                                </div>
+                                <label class="block text-xs font-black text-[#3C3C4B] uppercase tracking-widest mb-2">Mobile Number</label>
+                                <input type="tel" required placeholder="(555) 000-0000" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] placeholder-slate-400 font-bold py-3.5 px-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base">
                             </div>
 
-                            <button type="submit" class="w-full bg-[#0F2D5A] hover:bg-[#1E3C5A] text-[#FFFFFF] font-black text-base uppercase tracking-wider py-4 rounded-xl shadow-lg transition transform active:scale-95 border border-[#0F2D5A]">
-                                Secure Instant Profile Slot &rarr;
+                            <button type="submit" class="w-full bg-[#0F2D5A] hover:bg-[#1E3C5A] text-[#FFFFFF] font-black text-base uppercase tracking-wider py-4 rounded-xl shadow-md transition transform active:scale-95 border border-[#0F2D5A]">
+                                Create My Free Profile &rarr;
                             </button>
                         </form>
-
-                        <div class="mt-6 pt-4 border-t border-[#F0F0F0] flex items-center justify-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Instant Activation Protocol Live</span>
-                        </div>
+                        <p class="text-center text-xs font-bold text-slate-400 tracking-wide uppercase">
+                            Takes 30 seconds. No fees. No pressure.
+                        </p>
                     </div>
                 </div>
 
@@ -117,123 +127,206 @@
         </div>
     </section>
 
-    {{-- AUTHORITY LOGO BAR STACK --}}
-    <section class="bg-[#F0F0F0] py-6 border-b border-slate-200">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <p class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Verified Registry Operations Structural Mapping</p>
-        </div>
-    </section>
-
-    {{-- PROGRAMMATIC SPECIALTY MATRIX GRID --}}
-    <section id="specialties" class="py-20 lg:py-28 bg-[#FFFFFF]">
+    {{-- SECTION: BROWSE LOCAL TRADES GRID --}}
+    <section id="specialties" class="py-20 lg:py-24 bg-[#FFFFFF]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-            <div class="text-center max-w-3xl mx-auto space-y-3">
-                <h2 class="text-3xl sm:text-4xl font-black text-[#0F2D5A] tracking-tight">Programmatic Trade Directories</h2>
-                <div class="w-16 h-1.5 bg-[#FFC32D] mx-auto rounded-full"></div>
-                <p class="text-[#3C3C4B] font-bold text-base sm:text-lg">Select a specialized trade directory sector below to crawl localized service operators.</p>
+            <div class="text-center max-w-3xl mx-auto space-y-4">
+                <h2 class="text-3xl sm:text-4xl font-black text-[#0F2D5A] tracking-tight">Find the Right Person for the Job</h2>
+                <p class="text-[#3C3C4B] font-bold text-lg max-w-2xl mx-auto">
+                    Every trade. Every skill level. Every neighborhood. If they do the work, you’ll find them here.
+                </p>
+                <div class="w-12 h-1 bg-[#FFC32D] mx-auto rounded-full"></div>
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
                 @php
                     $trades = [
-                        ['name' => 'General Contracting', 'icon' => '🏗️', 'count' => 'Verified Operators'],
-                        ['name' => 'Electrical Systems', 'icon' => '⚡', 'count' => 'Precision Crew Nodes'],
-                        ['name' => 'Precision Plumbing', 'icon' => '💧', 'count' => 'Emergency Handlers'],
-                        ['name' => 'Roofing & Exterior', 'icon' => '🏠', 'count' => 'Structural Experts'],
-                        ['name' => 'HVAC & Mechanical', 'icon' => '❄️', 'count' => 'Climate Control Units'],
-                        ['name' => 'Masonry & Concrete', 'icon' => '🧱', 'count' => 'Foundation Masters'],
-                        ['name' => 'Painting & Finishing', 'icon' => '🎨', 'count' => 'Detail Operators'],
-                        ['name' => 'Excavation & Site', 'icon' => '🚜', 'count' => 'Heavy Mach Operations']
+                        ['name' => 'General Contractors', 'icon' => '🏗️'],
+                        ['name' => 'Electricians', 'icon' => '⚡'],
+                        ['name' => 'Plumbers', 'icon' => '💧'],
+                        ['name' => 'Roofers', 'icon' => '🏠'],
+                        ['name' => 'HVAC Techs', 'icon' => '❄️'],
+                        ['name' => 'Painters', 'icon' => '🎨'],
+                        ['name' => 'Landscapers', 'icon' => '🌱'],
+                        ['name' => 'Handymen', 'icon' => '🛠️']
                     ];
                 @endphp
 
                 @foreach($trades as $trade)
                     <a href="#" class="group bg-[#FFFFFF] border-2 border-[#F0F0F0] rounded-2xl p-6 transition-all hover:border-[#1E3C5A] hover:shadow-xl hover:-translate-y-1 block text-left">
-                        <div class="text-4xl mb-4 transform group-hover:scale-110 transition-transform duration-200">{{ $trade['icon'] }}</div>
-                        <h4 class="font-black text-lg text-[#0F2D5A] group-hover:text-[#1E3C5A] transition-colors leading-tight mb-1">{{ $trade['name'] }}</h4>
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">{{ $trade['count'] }}</p>
+                        <div class="text-3xl mb-3 transform group-hover:scale-110 transition-transform duration-200">{{ $trade['icon'] }}</div>
+                        <h4 class="font-black text-base sm:text-lg text-[#0F2D5A] group-hover:text-[#1E3C5A] transition-colors leading-tight mb-1">{{ $trade['name'] }}</h4>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider group-hover:text-orange-500 transition-colors">Browse Directory &rarr;</span>
                     </a>
                 @endforeach
             </div>
+            
+            <div class="text-center pt-4">
+                <p class="text-sm font-bold text-slate-400 uppercase tracking-widest italic">And everyone in between...</p>
+            </div>
         </div>
     </section>
 
-    {{-- TRUST AND STRUCTURAL STANDARDS STACK --}}
-    <section id="verification-process" class="py-20 lg:py-28 bg-[#F0F0F0] border-t border-b border-slate-200">
+    {{-- SECTION: WHY PEOPLE LIKE USING US --}}
+    <section id="why-us" class="py-20 lg:py-24 bg-[#F0F0F0] border-t border-b border-slate-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
             <div class="text-center max-w-2xl mx-auto space-y-3">
-                <span class="text-xs font-black text-[#1E3C5A] bg-[#1E3C5A]/10 border border-[#1E3C5A]/20 px-4 py-1.5 rounded-full uppercase tracking-widest">Platform Safeguards</span>
-                <h2 class="text-3xl sm:text-4xl font-black text-[#0F2D5A] tracking-tight">How We Eradicate Friction</h2>
-                <p class="text-[#3C3C4B] font-bold text-base">We strip out the hidden fees, project brokers, and middle-tier markups completely.</p>
+                <h2 class="text-3xl sm:text-4xl font-black text-[#0F2D5A] tracking-tight">Simple. Honest. Local.</h2>
+                <p class="text-[#3C3C4B] font-bold text-base">A community-driven alternative built completely on transparency.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {{-- Point 1 --}}
-                <div class="bg-[#FFFFFF] p-8 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-                    <div class="w-12 h-12 rounded-xl bg-[#1E3C5A] text-[#FFD22D] flex items-center justify-center shadow-inner">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                    </div>
-                    <h3 class="text-xl font-black text-[#0F2D5A]">Verified Registries Only</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-[#FFFFFF] p-6 rounded-2xl border border-slate-200 space-y-3 shadow-sm">
+                    <div class="text-2xl">📞</div>
+                    <h3 class="text-lg font-black text-[#0F2D5A]">Direct Contact</h3>
                     <p class="text-sm font-bold text-[#3C3C4B] leading-relaxed">
-                        Every contractor must pass a structural validation sequence mapping their identity to active state operational nodes before gaining visibility indicators.
+                        Call or message the pro right from their profile. No middlemen, no masked numbers, and no communications padding.
                     </p>
                 </div>
 
-                {{-- Point 2 --}}
-                <div class="bg-[#FFFFFF] p-8 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-                    <div class="w-12 h-12 rounded-xl bg-[#1E3C5A] text-[#FFD22D] flex items-center justify-center shadow-inner">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-                    </div>
-                    <h3 class="text-xl font-black text-[#0F2D5A]">Direct Line Connectivity</h3>
+                <div class="bg-[#FFFFFF] p-6 rounded-2xl border border-slate-200 space-y-3 shadow-sm">
+                    <div class="text-2xl">🧍</div>
+                    <h3 class="text-lg font-black text-[#0F2D5A]">Real People, Not Bots</h3>
                     <p class="text-sm font-bold text-[#3C3C4B] leading-relaxed">
-                        We never hide phone numbers or block direct emails. Homeowners communicate straight with the source to guarantee pure procurement speed.
+                        Every single directory listing belongs to an actual human being who physically lives and operates in your regional area.
                     </p>
                 </div>
 
-                {{-- Point 3 --}}
-                <div class="bg-[#FFFFFF] p-8 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-                    <div class="w-12 h-12 rounded-xl bg-[#1E3C5A] text-[#FFD22D] flex items-center justify-center shadow-inner">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    </div>
-                    <h3 class="text-xl font-black text-[#0F2D5A]">Guaranteed Heartbeats</h3>
+                <div class="bg-[#FFFFFF] p-6 rounded-2xl border border-slate-200 space-y-3 shadow-sm">
+                    <div class="text-2xl">🛡️</div>
+                    <h3 class="text-lg font-black text-[#0F2D5A]">Credentials Optional</h3>
                     <p class="text-sm font-bold text-[#3C3C4B] leading-relaxed">
-                        Dead entries are purged dynamically. Our system runs constant communication tests to guarantee every listed trade asset is answering calls.
+                        Some pros show active licenses and insurance. Some don’t need them. Either way — you decide who’s right for your project.
+                    </p>
+                </div>
+
+                <div class="bg-[#FFFFFF] p-6 rounded-2xl border border-slate-200 space-y-3 shadow-sm">
+                    <div class="text-2xl">🔄</div>
+                    <h3 class="text-lg font-black text-[#0F2D5A]">Active Listings Only</h3>
+                    <p class="text-sm font-bold text-[#3C3C4B] leading-relaxed">
+                        If someone stops responding, they stop showing up on the board. Keeps the directory clean and completely frustration-free.
                     </p>
                 </div>
             </div>
         </div>
     </section>
 
-    {{-- TROJAN HORSE BOTTOM LEAD ACQUISITION FOOTER --}}
-    <section class="bg-[#0F2D5A] py-16 lg:py-20 relative overflow-hidden">
-        <div class="absolute -bottom-20 -left-20 w-80 h-80 bg-[#1E3C5A] rounded-full blur-3xl opacity-40 pointer-events-none"></div>
-        
-        <div class="max-w-5xl mx-auto px-4 text-center space-y-8 relative z-10">
-            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-[#FFFFFF] tracking-tight max-w-3xl mx-auto leading-none">
-                Stop Letting High-Margin Local Projects Slide to Competitors.
-            </h2>
-            <p class="text-[#F0F0F0] text-base sm:text-lg font-bold max-w-xl mx-auto opacity-90">
-                Secure your regional directory block parameters right now. It takes 30 seconds to lock down your node before your territory fills up.
+    {{-- SECTION: THE SOFT INTRO TO CPP SUITE VALUES --}}
+    <section id="contractor-growth" class="py-20 lg:py-24 bg-[#FFFFFF]">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-12">
+            <div class="space-y-4">
+                <span class="text-xs font-black text-[#0F2D5A] bg-[#FFC32D]/30 border border-[#FFC32D]/50 px-3 py-1 rounded-full uppercase tracking-widest inline-block">For Contractors</span>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0F2D5A] tracking-tight">
+                    Start with a Free Profile. Add Tools When You’re Ready.
+                </h2>
+                <p class="text-[#3C3C4B] font-bold text-lg max-w-2xl mx-auto leading-relaxed">
+                    We don’t force subscriptions, aggressive upsells, or locked contracts. Use the platform however it helps your workflow scale.
+                </p>
+            </div>
+
+            {{-- Subtle value highlights mapping directly to primary platform operational capabilities --}}
+            <div class="grid grid-cols-2 md:grid-cols-6 gap-4 font-black text-xs text-[#0F2D5A] uppercase tracking-wider">
+                <div class="bg-[#F0F0F0] p-4 rounded-xl border border-slate-200">🔍 Show up on Google</div>
+                <div class="bg-[#F0F0F0] p-4 rounded-xl border border-slate-200">📱 Get direct calls</div>
+                <div class="bg-[#F0F0F0] p-4 rounded-xl border border-slate-200">📝 Send estimates</div>
+                <div class="bg-[#F0F0F0] p-4 rounded-xl border border-slate-200">📋 Track jobs</div>
+                <div class="bg-[#F0F0F0] p-4 rounded-xl border border-slate-200">💰 Collect payments</div>
+                <div class="bg-[#F0F0F0] p-4 rounded-xl border border-slate-200">⭐ Build reputation</div>
+            </div>
+
+            <p class="text-[#3C3C4B] font-bold text-base max-w-xl mx-auto">
+                Whether you’re part‑time, full‑time, or building something entirely new — we’ve got your back covered.
             </p>
-
-            <div class="max-w-md mx-auto">
-                <form action="#" class="flex flex-col sm:flex-row gap-3">
-                    <input type="tel" required placeholder="Enter mobile number..." class="w-full rounded-xl border-2 border-slate-700 bg-[#FFFFFF] py-3.5 px-4 font-bold text-[#3C3C3C] text-center focus:ring-0 focus:outline-none focus:border-[#FFD22D] text-base">
-                    <button type="submit" class="w-full sm:w-auto bg-[#FFC32D] hover:bg-[#FFD22D] text-[#0F2D5A] font-black uppercase tracking-wider text-sm py-4 px-8 rounded-xl shadow transition active:scale-95 whitespace-nowrap">
-                        Claim Slot Now
-                    </button>
-                </form>
+            
+            <div>
+                <a href="#contractor-signup" class="inline-block bg-[#0F2D5A] hover:bg-[#1E3C5A] text-[#FFFFFF] font-black uppercase tracking-wider text-sm px-8 py-4 rounded-xl shadow transition active:scale-95">
+                    Claim Your Free Profile
+                </a>
             </div>
         </div>
     </section>
 
-    {{-- FOOTER MAPPING --}}
-    <footer class="bg-[#FFFFFF] border-t border-[#F0F0F0] py-8 text-center text-xs font-bold text-slate-400 uppercase tracking-widest">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+    {{-- SECTION: THE GENERAL CONTRACTOR SUB-HUB PREVIEW --}}
+    <section id="gc-tools" class="py-16 bg-[#F0F0F0] border-t border-b border-slate-200">
+        <div class="max-w-4xl mx-auto px-4 text-center space-y-6">
+            <span class="text-xs font-black text-[#FFFFFF] bg-[#3C3C3C] px-2.5 py-1 rounded uppercase tracking-widest inline-block">The Orchestrator Grid</span>
+            <h2 class="text-3xl font-black text-[#0F2D5A] tracking-tight">For General Contractors</h2>
+            <p class="text-[#3C3C4B] font-bold text-lg max-w-xl mx-auto">
+                Find Subs Without the Runaround. Search by trade, location, or skill. Request insurance docs in one click. Keep your projects moving. Simple tools. No fluff.
+            </p>
+            <div class="pt-2">
+                <a href="#contractor-signup" class="text-sm font-black text-[#0F2D5A] hover:text-[#1E3C5A] uppercase tracking-widest underline decoration-2 decoration-[#FFC32D] transition-colors">
+                    Access GC Search Hub &rarr;
+                </a>
+            </div>
+        </div>
+    </section>
+
+    {{-- FINAL CONVERSION BANNER --}}
+    <section class="bg-[#0F2D5A] text-[#FFFFFF] py-16 text-center relative overflow-hidden">
+        <div class="max-w-4xl mx-auto px-4 space-y-6 relative z-10">
+            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-none">
+                Local Work Runs on Local People
+            </h2>
+            <p class="text-[#F0F0F0] text-lg sm:text-xl font-medium max-w-2xl mx-auto leading-relaxed">
+                Contractor Specialties brings them together — homeowners, contractors, and GCs — all in one place. No pressure. No gimmicks. Just a better way to get things done.
+            </p>
+        </div>
+    </section>
+
+    {{-- EXTENDED FUNCTIONAL FOOTER --}}
+    <footer class="bg-[#FFFFFF] border-t border-[#F0F0F0] pt-16 pb-12 text-sm text-[#3C3C4B]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-12 gap-8 pb-12 border-b border-[#F0F0F0]">
+            
+            {{-- Footer Branding Node --}}
+            <div class="md:col-span-4 space-y-4 text-left">
+                {{-- Square Logo Container --}}
+                <div class="h-16 w-16 bg-[#F0F0F0] rounded-xl border border-dashed border-[#3C3C3B]/30 flex items-center justify-center text-[10px] font-black text-[#3C3C4B] uppercase tracking-wider" title="Square Logo Placement Target">
+                    Square Logo
+                </div>
+                <p class="font-bold text-xs text-slate-400 uppercase tracking-wider leading-relaxed">
+                    Connecting local operators, trade specialists, and project coordinators cleanly across community grids.
+                </p>
+            </div>
+
+            {{-- Navigation Array Panel A: Consumer Loops --}}
+            <div class="md:col-span-3 space-y-3 text-left">
+                <h4 class="font-black text-xs text-[#0F2D5A] uppercase tracking-widest">Find Specialists</h4>
+                <ul class="font-bold space-y-2 text-slate-500 text-xs uppercase tracking-wider">
+                    <li><a href="#specialties" class="hover:text-[#1E3C5A]">Mechanical Systems</a></li>
+                    <li><a href="#specialties" class="hover:text-[#1E3C5A]">Structural Framing</a></li>
+                    <li><a href="#specialties" class="hover:text-[#1E3C5A]">Precision Masonry</a></li>
+                    <li><a href="#specialties" class="hover:text-[#1E3C5A]">Finishing Trades</a></li>
+                </ul>
+            </div>
+
+            {{-- Navigation Array Panel B: ACTIVE CONTRACTOR OPERATIONS SUITE --}}
+            <div class="md:col-span-3 space-y-3 text-left">
+                <h4 class="font-black text-xs text-[#0F2D5A] uppercase tracking-widest">Contractor Workspace</h4>
+                <ul class="font-bold space-y-2 text-slate-500 text-xs uppercase tracking-wider">
+                    <li><a href="#contractor-signup" class="hover:text-[#1E3C5A]">Claim Directory Link</a></li>
+                    <li><a href="#contractor-growth" class="hover:text-[#1E3C5A]">Estimate Outbound Modules</a></li>
+                    <li><a href="#contractor-growth" class="hover:text-[#1E3C5A]">Reputation Integration</a></li>
+                    <li><a href="#contractor-growth" class="hover:text-[#1E3C5A]">Financial Rail Payouts</a></li>
+                </ul>
+            </div>
+
+            {{-- Navigation Array Panel C: GC Utilities --}}
+            <div class="md:col-span-2 space-y-3 text-left">
+                <h4 class="font-black text-xs text-[#0F2D5A] uppercase tracking-widest">GC Panel</h4>
+                <ul class="font-bold space-y-2 text-slate-500 text-xs uppercase tracking-wider">
+                    <li><a href="#gc-tools" class="hover:text-[#1E3C5A]">Sub-Tier Mapping</a></li>
+                    <li><a href="#gc-tools" class="hover:text-[#1E3C5A]">Insurance Registry</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
             <p>&copy; {{ date('Y') }} Contractor Specialties. All rights reserved.</p>
             <div class="flex space-x-6">
-                <a href="#" class="hover:text-[#0F2D5A]">Privacy Policy</a>
-                <a href="#" class="hover:text-[#0F2D5A]">Terms of Service</a>
+                <a href="#" class="hover:text-[#0F2D5A]">Privacy Matrix</a>
+                <a href="#" class="hover:text-[#0F2D5A]">Terms of Operation</a>
             </div>
         </div>
     </footer>
