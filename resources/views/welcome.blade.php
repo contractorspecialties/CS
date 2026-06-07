@@ -24,7 +24,7 @@
             <div class="flex items-center">
                 {{-- Live Horizontal Logo Asset Asset mapping --}}
                 <a href="/" class="block transition active:scale-95">
-                    <img src="{{ asset('images/CS-logo-horizontal-750.webp') }}" alt="Contractor Specialties" class="h-10 w-auto object-contain">
+                    <img src="{{ asset('images/CS-logo-horizontal-750.webp') }}" alt="Contractor Specialties" class="h-15 w-auto object-contain">
                 </a>
             </div>
             
@@ -280,7 +280,7 @@
             {{-- Live Square Logo Asset Mapping --}}
             <div class="md:col-span-4 space-y-4 text-left">
                 <div class="flex items-center">
-                    <img src="{{ asset('images/CS-Square.webp') }}" alt="Contractor Specialties" class="h-16 w-16 object-cover rounded-xl shadow-md border border-[#F0F0F0]">
+                    <img src="{{ asset('images/CS-Square.webp') }}" alt="Contractor Specialties" class="h-25 w-25 object-cover rounded-xl shadow-md border border-[#F0F0F0]">
                 </div>
                 <p class="font-bold text-xs text-slate-400 uppercase tracking-wider leading-relaxed">
                     Connecting local operators, trade specialists, and project coordinators cleanly across community grids.
