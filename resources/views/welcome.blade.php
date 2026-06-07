@@ -383,7 +383,8 @@
                 {{-- COLUMN 1: BRANDING & LOGO (FOOTPRINT: 4/12) --}}
                 <div class="md:col-span-4 space-y-4 text-left flex flex-col justify-start">
                     <div class="flex items-center">
-                        <img src="{{ asset('images/CS-Square.webp') }}" alt="Contractor Specialties Brand Identity" class="h-16 w-16 object-cover rounded-2xl shadow-md border border-[#F0F0F0]">
+                        <img src="{{ asset('images/CS-logo-horizontal-750.webp') }}" alt="Contractor Specialties" class="h-20 w-auto object-contain">
+                
                     </div>
                     <p class="font-medium text-sm text-[#3C3C4B] max-w-sm leading-relaxed">
                         Connecting local operators, specialized tradesmen, and project coordinators cleanly across modern community grids.
