@@ -3,6 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/webp" href="{{ asset('images/CS-Square.webp') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/CS-Square.webp') }}">
     <title>Contractor Specialties | Find Local Pros You Can Actually Reach</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
@@ -19,13 +21,11 @@
     {{-- NAVIGATION NAVBAR --}}
     <header class="sticky top-0 z-50 bg-[#FFFFFF]/90 backdrop-blur-md border-b border-[#F0F0F0]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                {{-- Horizontal Logo Container --}}
-                <div class="flex items-center">
-                    <div class="h-10 w-48 bg-[#F0F0F0] rounded-lg border border-dashed border-[#3C3C3B]/30 flex items-center justify-center text-xs font-bold text-[#3C3C4B] uppercase tracking-wider" title="Horizontal Logo Placement Target">
-                        Horizontal Logo
-                    </div>
-                </div>
+            <div class="flex items-center">
+                {{-- Live Horizontal Logo Asset Asset mapping --}}
+                <a href="/" class="block transition active:scale-95">
+                    <img src="{{ asset('images/CS-logo-horizontal-750.webp') }}" alt="Contractor Specialties" class="h-10 w-auto object-contain">
+                </a>
             </div>
             
             <nav class="hidden md:flex items-center space-x-8 font-bold text-sm text-[#3C3C4B]">
@@ -224,7 +224,6 @@
                 </p>
             </div>
 
-            {{-- Subtle value highlights mapping directly to primary platform operational capabilities --}}
             <div class="grid grid-cols-2 md:grid-cols-6 gap-4 font-black text-xs text-[#0F2D5A] uppercase tracking-wider">
                 <div class="bg-[#F0F0F0] p-4 rounded-xl border border-slate-200">🔍 Show up on Google</div>
                 <div class="bg-[#F0F0F0] p-4 rounded-xl border border-slate-200">📱 Get direct calls</div>
@@ -274,15 +273,14 @@
         </div>
     </section>
 
-    {{-- EXTENDED FUNCTIONAL FOOTER --}}
+    {{-- EXTENDED FUNCTIONAL FOOTER WITH DYNAMIC NAVIGATION OPTIONS --}}
     <footer class="bg-[#FFFFFF] border-t border-[#F0F0F0] pt-16 pb-12 text-sm text-[#3C3C4B]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-12 gap-8 pb-12 border-b border-[#F0F0F0]">
             
-            {{-- Footer Branding Node --}}
+            {{-- Live Square Logo Asset Mapping --}}
             <div class="md:col-span-4 space-y-4 text-left">
-                {{-- Square Logo Container --}}
-                <div class="h-16 w-16 bg-[#F0F0F0] rounded-xl border border-dashed border-[#3C3C3B]/30 flex items-center justify-center text-[10px] font-black text-[#3C3C4B] uppercase tracking-wider" title="Square Logo Placement Target">
-                    Square Logo
+                <div class="flex items-center">
+                    <img src="{{ asset('images/CS-Square.webp') }}" alt="Contractor Specialties" class="h-16 w-16 object-cover rounded-xl shadow-md border border-[#F0F0F0]">
                 </div>
                 <p class="font-bold text-xs text-slate-400 uppercase tracking-wider leading-relaxed">
                     Connecting local operators, trade specialists, and project coordinators cleanly across community grids.
