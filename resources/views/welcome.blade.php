@@ -24,7 +24,7 @@
             <div class="flex items-center">
                 {{-- Live Horizontal Logo Asset Asset mapping --}}
                 <a href="/" class="block transition active:scale-95">
-                    <img src="{{ asset('images/CS-logo-horizontal-750.webp') }}" alt="Contractor Specialties" class="h-[70px] w-auto object-contain">
+                    <img src="{{ asset('images/CS-logo-horizontal-750.webp') }}" alt="Contractor Specialties" class="h-[90px] w-auto object-contain">
                 </a>
             </div>
             
