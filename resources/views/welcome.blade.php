@@ -373,59 +373,66 @@
         </div>
     </section>
 
-    {{-- EXTENDED FUNCTIONAL FOOTER WITH DYNAMIC NAVIGATION OPTIONS --}}
-    <footer class="bg-[#FFFFFF] border-t border-[#F0F0F0] pt-16 pb-12 text-sm text-[#3C3C4B]">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-12 gap-8 pb-12 border-b border-[#F0F0F0]">
+   {{-- EXTENDED FUNCTIONAL FOOTER --}}
+    <footer class="bg-[#FFFFFF] border-t border-[#F0F0F0] pt-16 pb-12 text-[#3C3C3C]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
-            {{-- Live Square Logo Asset Mapping --}}
-            <div class="md:col-span-4 space-y-4 text-left">
-                <div class="flex items-center">
-                    <img src="{{ asset('images/CS-Square.webp') }}" alt="Contractor Specialties Square" class="h-16 w-16 object-cover rounded-xl shadow-md border border-[#F0F0F0]">
+            {{-- PRIMARY FOOTER GRID --}}
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-y-10 gap-x-8 lg:gap-x-12 pb-12 border-b border-[#F0F0F0]">
+                
+                {{-- COLUMN 1: BRANDING & LOGO (FOOTPRINT: 4/12) --}}
+                <div class="md:col-span-4 space-y-4 text-left flex flex-col justify-start">
+                    <div class="flex items-center">
+                        <img src="{{ asset('images/CS-Square.webp') }}" alt="Contractor Specialties Brand Identity" class="h-16 w-16 object-cover rounded-2xl shadow-md border border-[#F0F0F0]">
+                    </div>
+                    <p class="font-medium text-sm text-[#3C3C4B] max-w-sm leading-relaxed">
+                        Connecting local operators, specialized tradesmen, and project coordinators cleanly across modern community grids.
+                    </p>
                 </div>
-                <p class="font-bold text-xs text-slate-400 uppercase tracking-wider leading-relaxed">
-                    Connecting local operators, trade specialists, and project coordinators cleanly across community grids.
-                </p>
+
+                {{-- COLUMN 2: CONSUMER DIRECTORY NAVIGATION (FOOTPRINT: 3/12) --}}
+                <div class="md:col-span-3 space-y-4 text-left">
+                    <h4 class="text-xs font-black text-[#0F2D5A] uppercase tracking-[0.15em] mb-2">Find Specialists</h4>
+                    <ul class="space-y-3 font-bold text-sm text-slate-500 tracking-wide">
+                        <li><a href="#specialties" class="hover:text-[#1E3C5A] transition-colors duration-150 block">🏗️ Structural General Contracting</a></li>
+                        <li><a href="#specialties" class="hover:text-[#1E3C5A] transition-colors duration-150 block">⚡ Local Electrical Systems</a></li>
+                        <li><a href="#specialties" class="hover:text-[#1E3C5A] transition-colors duration-150 block">💧 Precision Plumbing Crews</a></li>
+                        <li><a href="#specialties" class="hover:text-[#1E3C5A] transition-colors duration-150 block">🏠 Roofing & Exterior Assets</a></li>
+                    </ul>
+                </div>
+
+                {{-- COLUMN 3: CONTRACTOR CAPABILITY PIPELINES (FOOTPRINT: 3/12) --}}
+                <div class="md:col-span-3 space-y-4 text-left">
+                    <h4 class="text-xs font-black text-[#0F2D5A] uppercase tracking-[0.15em] mb-2">Contractor Workspace</h4>
+                    <ul class="space-y-3 font-bold text-sm text-slate-500 tracking-wide">
+                        <li><a href="#contractor-signup" class="hover:text-[#1E3C5A] transition-colors duration-150 block">Claim Free Profile Link</a></li>
+                        <li><a href="#contractor-growth" class="hover:text-[#1E3C5A] transition-colors duration-150 block">Outbound Estimating Tools</a></li>
+                        <li><a href="#contractor-growth" class="hover:text-[#1E3C5A] transition-colors duration-150 block">Reputation Engine Loops</a></li>
+                        <li><a href="#contractor-growth" class="hover:text-[#1E3C5A] transition-colors duration-150 block">Secure Bank Payout Rails</a></li>
+                    </ul>
+                </div>
+
+                {{-- COLUMN 4: MANAGEMENT ENGINE CORES (FOOTPRINT: 2/12) --}}
+                <div class="md:col-span-2 space-y-4 text-left">
+                    <h4 class="text-xs font-black text-[#0F2D5A] uppercase tracking-[0.15em] mb-2">GC Panel</h4>
+                    <ul class="space-y-3 font-bold text-sm text-slate-500 tracking-wide">
+                        <li><a href="#gc-tools" class="hover:text-[#1E3C5A] transition-colors duration-150 block">Sub-Tier Matching</a></li>
+                        <li><a href="#gc-tools" class="hover:text-[#1E3C5A] transition-colors duration-150 block">Insurance Registry</a></li>
+                        <li><a href="#gc-tools" class="hover:text-[#1E3C5A] transition-colors duration-150 block">Project Milestone Logs</a></li>
+                    </ul>
+                </div>
+
             </div>
 
-            {{-- Navigation Array Panel A: Consumer Loops --}}
-            <div class="md:col-span-3 space-y-3 text-left">
-                <h4 class="font-black text-xs text-[#0F2D5A] uppercase tracking-widest">Find Specialists</h4>
-                <ul class="font-bold space-y-2 text-slate-500 text-xs uppercase tracking-wider">
-                    <li><a href="#specialties" class="hover:text-[#1E3C5A]">Mechanical Systems</a></li>
-                    <li><a href="#specialties" class="hover:text-[#1E3C5A]">Structural Framing</a></li>
-                    <li><a href="#specialties" class="hover:text-[#1E3C5A]">Precision Masonry</a></li>
-                    <li><a href="#specialties" class="hover:text-[#1E3C5A]">Finishing Trades</a></li>
-                </ul>
+            {{-- BOTTOM ROW LEGAL & REVENUE RIGHTS TRACK --}}
+            <div class="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                <p class="text-center md:text-left">&copy; {{ date('Y') }} Contractor Specialties. All rights reserved.</p>
+                <div class="flex space-x-8">
+                    <a href="#" class="hover:text-[#0F2D5A] transition-colors duration-150">Privacy Matrix</a>
+                    <a href="#" class="hover:text-[#0F2D5A] transition-colors duration-150">Terms of Operation</a>
+                </div>
             </div>
 
-            {{-- Navigation Array Panel B: ACTIVE CONTRACTOR OPERATIONS SUITE --}}
-            <div class="md:col-span-3 space-y-3 text-left">
-                <h4 class="font-black text-xs text-[#0F2D5A] uppercase tracking-widest">Contractor Workspace</h4>
-                <ul class="font-bold space-y-2 text-slate-500 text-xs uppercase tracking-wider">
-                    <li><a href="#contractor-signup" class="hover:text-[#1E3C5A]">Claim Directory Link</a></li>
-                    <li><a href="#contractor-growth" class="hover:text-[#1E3C5A]">Estimate Outbound Modules</a></li>
-                    <li><a href="#contractor-growth" class="hover:text-[#1E3C5A]">Reputation Integration</a></li>
-                    <li><a href="#contractor-growth" class="hover:text-[#1E3C5A]">Financial Rail Payouts</a></li>
-                </ul>
-            </div>
-
-            {{-- Navigation Array Panel C: GC Utilities --}}
-            <div class="md:col-span-2 space-y-3 text-left">
-                <h4 class="font-black text-xs text-[#0F2D5A] uppercase tracking-widest">GC Panel</h4>
-                <ul class="font-bold space-y-2 text-slate-500 text-xs uppercase tracking-wider">
-                    <li><a href="#gc-tools" class="hover:text-[#1E3C5A]">Sub-Tier Mapping</a></li>
-                    <li><a href="#gc-tools" class="hover:text-[#1E3C5A]">Insurance Registry</a></li>
-                </ul>
-            </div>
-
-        </div>
-
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
-            <p>&copy; {{ date('Y') }} Contractor Specialties. All rights reserved.</p>
-            <div class="flex space-x-6">
-                <a href="#" class="hover:text-[#0F2D5A]">Privacy Matrix</a>
-                <a href="#" class="hover:text-[#0F2D5A]">Terms of Operation</a>
-            </div>
         </div>
     </footer>
 
