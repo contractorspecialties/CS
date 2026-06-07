@@ -18,24 +18,91 @@
 </head>
 <body class="bg-[#FFFFFF] text-[#3C3C3C] antialiased">
 
-    {{-- NAVIGATION NAVBAR --}}
-    <header class="sticky top-0 z-50 bg-[#FFFFFF]/90 backdrop-blur-md border-b border-[#F0F0F0]">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+   {{-- EXPANDED MEGA-MENU READY NAVIGATION HEADER --}}
+    <header class="sticky top-0 z-50 bg-[#FFFFFF]/95 backdrop-blur-md border-b border-[#F0F0F0]" x-data="{ openMenu: null }">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-28 flex items-center justify-between relative">
+            
+            {{-- BRAND LOGO SLOT --}}
             <div class="flex items-center">
-                {{-- Live Horizontal Logo Asset Asset mapping --}}
-                <a href="/" class="block transition active:scale-95">
-                    <img src="{{ asset('images/CS-logo-horizontal-750.webp') }}" alt="Contractor Specialties" class="h-[90px] w-auto object-contain">
+                <a href="/" class="block transition active:scale-95 py-2">
+                    {{-- Scaled beautifully up to h-16 (64px) or use an arbitrary value like h-[70px] --}}
+                    <img src="{{ asset('images/CS-logo-horizontal-750.webp') }}" alt="Contractor Specialties" class="h-16 w-auto object-contain">
                 </a>
             </div>
             
-            <nav class="hidden md:flex items-center space-x-8 font-bold text-sm text-[#3C3C4B]">
-                <a href="#specialties" class="hover:text-[#1E3C5A] transition">Find a Pro</a>
-                <a href="#why-us" class="hover:text-[#1E3C5A] transition">Why Us</a>
-                <a href="#contractor-growth" class="hover:text-[#1E3C5A] transition">For Tradesmen</a>
-                <a href="#gc-tools" class="hover:text-[#1E3C5A] transition">For GCs</a>
-                <a href="#contractor-signup" class="bg-[#0F2D5A] hover:bg-[#1E3C5A] text-[#FFFFFF] px-5 py-2.5 rounded-xl transition shadow-sm font-black tracking-wide">
-                    Join Free
-                </a>
+            {{-- NAVIGATION CORE (WITH LIVE ANCHORS FOR MEGA MENUS) --}}
+            <nav class="hidden md:flex items-center space-x-10 font-bold text-sm text-[#3C3C4B] h-full" @mouseleave="openMenu = null">
+                
+                {{-- ITEM 1: TRADES MEGA MENU TRIGGER --}}
+                <div class="relative h-full flex items-center" @mouseenter="openMenu = 'trades'">
+                    <button class="hover:text-[#1E3C5A] transition flex items-center gap-1 h-full border-b-2 border-transparent hover:border-[#1E3C5A] outline-none">
+                        Browse Trades
+                        <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180 text-[#1E3C5A]': openMenu === 'trades'}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+
+                    {{-- BLUEPRINT MEGA MENU DROP PANEL A --}}
+                    <div x-show="openMenu === 'trades'" 
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 translate-y-4"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 translate-y-4"
+                         style="display: none;"
+                         class="absolute top-full -right-20 w-[600px] bg-[#FFFFFF] rounded-2xl shadow-2xl border border-[#F0F0F0] p-6 grid grid-cols-2 gap-6 mt-0">
+                        
+                        <div class="space-y-3">
+                            <h4 class="text-xs font-black text-[#0F2D5A] uppercase tracking-widest border-b border-[#F0F0F0] pb-2">Structural Trades</h4>
+                            <a href="#specialties" class="block text-sm font-bold hover:text-[#1E3C5A] text-slate-600 transition">🏗️ General Contractors</a>
+                            <a href="#specialties" class="block text-sm font-bold hover:text-[#1E3C5A] text-slate-600 transition">🏠 Roofing & Siding</a>
+                            <a href="#specialties" class="block text-sm font-bold hover:text-[#1E3C5A] text-slate-600 transition">🧱 Masonry & Concrete</a>
+                        </div>
+                        <div class="space-y-3">
+                            <h4 class="text-xs font-black text-[#0F2D5A] uppercase tracking-widest border-b border-[#F0F0F0] pb-2">Specialty Trades</h4>
+                            <a href="#specialties" class="block text-sm font-bold hover:text-[#1E3C5A] text-slate-600 transition">⚡ Electrical Systems</a>
+                            <a href="#specialties" class="block text-sm font-bold hover:text-[#1E3C5A] text-slate-600 transition">💧 Precision Plumbing</a>
+                            <a href="#specialties" class="block text-sm font-bold hover:text-[#1E3C5A] text-slate-600 transition">❄️ HVAC Mechanical</a>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- ITEM 2: VALUE UTILITIES DROPDOWN --}}
+                <div class="relative h-full flex items-center" @mouseenter="openMenu = 'tools'">
+                    <button class="hover:text-[#1E3C5A] transition flex items-center gap-1 h-full border-b-2 border-transparent hover:border-[#1E3C5A] outline-none">
+                        Our Standards
+                        <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180 text-[#1E3C5A]': openMenu === 'tools'}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+
+                    {{-- BLUEPRINT MEGA MENU DROP PANEL B --}}
+                    <div x-show="openMenu === 'tools'" 
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 translate-y-4"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 translate-y-4"
+                         style="display: none;"
+                         class="absolute top-full left-1/2 -translate-x-1/2 w-[320px] bg-[#FFFFFF] rounded-2xl shadow-2xl border border-[#F0F0F0] p-4 space-y-2 mt-0">
+                        <a href="#why-us" class="block p-2.5 rounded-xl hover:bg-[#F0F0F0] transition group">
+                            <p class="text-sm font-black text-[#0F2D5A]">Direct Connect Guarantee</p>
+                            <p class="text-xs text-slate-400 font-bold mt-0.5">No brokers, markups, or phone shielding.</p>
+                        </a>
+                        <a href="#verification-process" class="block p-2.5 rounded-xl hover:bg-[#F0F0F0] transition group">
+                            <p class="text-sm font-black text-[#0F2D5A]">Active Heartbeat Filter</p>
+                            <p class="text-xs text-slate-400 font-bold mt-0.5">We systematically remove dead listings.</p>
+                        </a>
+                    </div>
+                </div>
+
+                <a href="#contractor-growth" class="hover:text-[#1E3C5A] transition h-full flex items-center border-b-2 border-transparent hover:border-[#1E3C5A]">For Tradesmen</a>
+                <a href="#gc-tools" class="hover:text-[#1E3C5A] transition h-full flex items-center border-b-2 border-transparent hover:border-[#1E3C5A]">For GCs</a>
+                
+                {{-- PRIMARY CTA ACTION ANCHOR --}}
+                <div class="h-full flex items-center pl-2">
+                    <a href="#contractor-signup" class="bg-[#0F2D5A] hover:bg-[#1E3C5A] text-[#FFFFFF] px-6 py-3 rounded-xl transition shadow-md font-black tracking-wide transform active:scale-95 border border-[#0F2D5A]">
+                        Join Free Profile
+                    </a>
+                </div>
             </nav>
         </div>
     </header>
