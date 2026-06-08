@@ -19,13 +19,7 @@ Route::middleware(['auth'])->group(function () {
     // FORTIFIED COMMAND OVERLAY: Multi-Tenant Super Admin Panel
     Route::prefix('admin/command-center')
         ->name('admin.command-center.')
-        ->middleware(function ($request, $next) {
-            // Absolute perimeter checkpoint check protecting telemetry access strings
-            if (!auth()->check() || !auth()->user()->is_admin) {
-                abort(403, 'Unauthorized System Access Protocol.');
-            }
-            return $next($request);
-        })->group(function () {
+        ->group(function () {
             
             // 1. MASTER MONITOR: Core Dashboard Telemetry Deck
             Route::get('/', [SuperAdminController::class, 'index'])->name('index');
