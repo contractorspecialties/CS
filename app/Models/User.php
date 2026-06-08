@@ -15,7 +15,6 @@ class User extends Authenticatable
 
     /**
      * The attributes that are mass assignable.
-     * Including structural SaaS metrics & registration identifiers.
      *
      * @var list<string>
      */
@@ -69,25 +68,10 @@ class User extends Authenticatable
      */
     public function clients(): HasMany
     {
-        // Eloquent dynamically hooks 'user_id' resolving custom 'sc_' table contexts automatically
         return $this->hasMany(User::class, 'parent_id'); 
     }
 
-    /**
-     * RELATIONSHIP: Project Estimates & Proposals (CPP Suite Asset).
-     */
-    public function quotes(): HasMany
-    {
-        // Placeholder linking layout referencing your core SaaS estimating tool metrics table
-        return $this->hasMany(Quote::class);
-    }
-
-    /**
-     * RELATIONSHIP: Calendar Bookings & Dispatches.
-     */
-    public function appointments(): HasMany
-    {
-        // Placeholder linking layout referencing your task tracking table
-        return $this->hasMany(Appointment::class);
-    }
+    // CPP Tool Suite relationship hooks commented out until database tables are migrated
+    // public function quotes() { return $this->hasMany(Quote::class); }
+    // public function appointments() { return $this->hasMany(Appointment::class); }
 }
