@@ -2,16 +2,20 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SuperAdminController;
+use App\Http\Controllers\MagicLinkController;
 
 // PUBLIC FOOTPRINT: Consumer & Landing Portal
 Route::get('/', function () {
     return view('welcome');
 });
 
-// AUTHMAPPED GATE: Endpoint destination ensuring auth redirects resolve gracefully
-Route::get('/login', function () {
-    return response('Contractor Specialties Gateway Core: Secure Magic Link Protocol Pending.', 200);
-})->name('login');
+// PASSWORDSLESS AUTHENTICATION PROTOCOL INTERFACES
+Route::middleware(['guest'])->group(function () {
+    Route::get('/login', [MagicLinkController::class, 'showLogin'])->name('login');
+    Route::post('/login', [MagicLinkController::class, 'sendLink'])->name('login.send');
+});
+
+Route::get('/login/verify/{token}', [MagicLinkController::class, 'verifyToken'])->name('login.verify');
 
 // SYSTEM HUB: Multi-Tenant Command & Telemetry Controls
 Route::middleware(['auth'])->group(function () {
