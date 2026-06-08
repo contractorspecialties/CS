@@ -25,7 +25,7 @@
     <header class="sticky top-0 z-50 bg-[#FFFFFF]/95 backdrop-blur-md border-b border-[#F0F0F0]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-28 flex items-center justify-between relative">
             
-            {{-- BRAND LOGO SLOT (INCREASED 25% TO H-20) --}}
+            {{-- BRAND LOGO SLOT --}}
             <div class="flex items-center">
                 <a href="/" class="block transition active:scale-95 py-1">
                     <img src="{{ asset('images/CS-logo-horizontal-750.webp') }}" alt="Contractor Specialties" class="h-20 w-auto object-contain">
@@ -195,7 +195,7 @@
                         </div>
                         <div class="flex items-center gap-3 font-bold text-[#3C3C3C]">
                             <span class="w-6 h-6 rounded-md bg-[#FFC32D]/20 text-[#0F2D5A] flex items-center justify-center text-xs font-black">✓</span>
-                            Direct contact channels
+                            A way for people to contact you directly
                         </div>
                     </div>
                 </div>
@@ -205,7 +205,7 @@
                         <form action="#" class="space-y-4">
                             <div>
                                 <label class="block text-xs font-black text-[#3C3C4B] uppercase tracking-widest mb-2">Business Name</label>
-                                <input type="text" required placeholder="miller & sons handyman services" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] placeholder-slate-400 font-bold py-3.5 px-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base">
+                                <input type="text" required placeholder="e.g. Miller & Sons Handyman Services" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] placeholder-slate-400 font-bold py-3.5 px-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base">
                             </div>
 
                             <div>
@@ -214,7 +214,7 @@
                             </div>
 
                             <button type="submit" class="w-full bg-[#0F2D5A] hover:bg-[#1E3C5A] text-[#FFFFFF] font-black text-base uppercase tracking-wider py-4 rounded-xl shadow-md transition transform active:scale-95 border border-[#0F2D5A]">
-                                Create My Free Profile &rarr;
+                                Create My Free Profile →
                             </button>
                         </form>
                         <p class="text-center text-xs font-bold text-slate-400 tracking-wide uppercase">
@@ -233,7 +233,7 @@
             <div class="text-center max-w-3xl mx-auto space-y-4">
                 <h2 class="text-3xl sm:text-4xl font-black text-[#0F2D5A] tracking-tight">Find the Right Person for the Job</h2>
                 <p class="text-[#3C3C4B] font-bold text-lg max-w-2xl mx-auto">
-                    Every trade. Every skill level. Every neighborhood. If they do the work, you’ll find them here.
+                    Every trade. Every skill level. Every neighborhood.
                 </p>
                 <div class="w-12 h-1 bg-[#FFC32D] mx-auto rounded-full"></div>
             </div>
@@ -262,7 +262,7 @@
             </div>
             
             <div class="text-center pt-4">
-                <p class="text-sm font-bold text-slate-400 uppercase tracking-widest italic">And everyone in between...</p>
+                <p class="text-sm font-bold text-slate-400 uppercase tracking-widest italic">If they do the work, you’ll find them here.</p>
             </div>
         </div>
     </section>
@@ -280,7 +280,7 @@
                     <div class="text-2xl">📞</div>
                     <h3 class="text-lg font-black text-[#0F2D5A]">Direct Contact</h3>
                     <p class="text-sm font-bold text-[#3C3C4B] leading-relaxed">
-                        Call or message the pro right from their profile. No middlemen, no masked numbers, and no communications padding.
+                        Call or message the pro right from their profile. No middlemen.
                     </p>
                 </div>
 
@@ -288,15 +288,15 @@
                     <div class="text-2xl">🧍</div>
                     <h3 class="text-lg font-black text-[#0F2D5A]">Real People, Not Bots</h3>
                     <p class="text-sm font-bold text-[#3C3C4B] leading-relaxed">
-                        Every single directory listing belongs to an actual human being who physically lives and operates in your regional area.
+                        Every single directory listing belongs to an actual human being who works in your area.
                     </p>
                 </div>
 
                 <div class="bg-[#FFFFFF] p-6 rounded-2xl border border-slate-200 space-y-3 shadow-sm">
                     <div class="text-2xl">🛡️</div>
-                    <h3 class="text-lg font-black text-[#0F2D5A]">Credentials Optional</h3>
+                    <h3 class="text-lg font-black text-[#0F2D5A]">Credentials When They Matter</h3>
                     <p class="text-sm font-bold text-[#3C3C4B] leading-relaxed">
-                        Some pros show active licenses and insurance. Some don’t need them. Either way — you decide who’s right for your project.
+                        Some pros show licenses and insurance. Some don’t need them. Either way — you decide who’s right for your project.
                     </p>
                 </div>
 
@@ -304,7 +304,7 @@
                     <div class="text-2xl">🔄</div>
                     <h3 class="text-lg font-black text-[#0F2D5A]">Active Listings Only</h3>
                     <p class="text-sm font-bold text-[#3C3C4B] leading-relaxed">
-                        If someone stops responding, they stop showing up on the board. Keeps the directory clean and completely frustration-free.
+                        If someone stops responding, they stop showing up. Keeps things clean and frustration‑free.
                     </p>
                 </div>
             </div>
@@ -315,12 +315,12 @@
     <section id="contractor-growth" class="py-20 lg:py-24 bg-[#FFFFFF]">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-12">
             <div class="space-y-4">
-                <span class="text-xs font-black text-[#0F2D5A] bg-[#FFC32D]/30 border border-[#FFC32D]/50 px-3 py-1 rounded-full uppercase tracking-widest inline-block">For Contractors</span>
+                <span class="text-xs font-black text-[#0F2D5A] bg-[#FFC32D]/30 border border-[#FFC32D]/50 px-3 py-1 rounded-full uppercase tracking-widest inline-block">For Contractors: Grow at Your Own Pace</span>
                 <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0F2D5A] tracking-tight">
                     Start with a Free Profile. Add Tools When You’re Ready.
                 </h2>
                 <p class="text-[#3C3C4B] font-bold text-lg max-w-2xl mx-auto leading-relaxed">
-                    We don’t force subscriptions, aggressive upsells, or locked contracts. Use the platform however it helps your workflow scale.
+                    We don’t force subscriptions or upsells. Use the platform however it helps you:
                 </p>
             </div>
 
@@ -330,11 +330,11 @@
                 <div class="bg-[#F0F0F0] p-4 rounded-xl border border-slate-200">📝 Send estimates</div>
                 <div class="bg-[#F0F0F0] p-4 rounded-xl border border-slate-200">📋 Track jobs</div>
                 <div class="bg-[#F0F0F0] p-4 rounded-xl border border-slate-200">💰 Collect payments</div>
-                <div class="bg-[#F0F0F0] p-4 rounded-xl border border-slate-200">⭐ Build reputation</div>
+                <div class="bg-[#F0F0F0] p-4 rounded-xl border border-slate-200">⭐ Build your reputation</div>
             </div>
 
             <p class="text-[#3C3C4B] font-bold text-base max-w-xl mx-auto">
-                Whether you’re part‑time, full‑time, or building something entirely new — we’ve got your back covered.
+                Whether you’re part‑time, full‑time, or building something new — we’ve got your back.
             </p>
             
             <div>
@@ -349,9 +349,9 @@
     <section id="gc-tools" class="py-16 bg-[#F0F0F0] border-t border-b border-slate-200">
         <div class="max-w-4xl mx-auto px-4 text-center space-y-6">
             <span class="text-xs font-black text-[#FFFFFF] bg-[#3C3C3C] px-2.5 py-1 rounded uppercase tracking-widest inline-block">The Orchestrator Grid</span>
-            <h2 class="text-3xl font-black text-[#0F2D5A] tracking-tight">For General Contractors</h2>
+            <h2 class="text-3xl font-black text-[#0F2D5A] tracking-tight">Find Subs Without the Runaround</h2>
             <p class="text-[#3C3C4B] font-bold text-lg max-w-xl mx-auto">
-                Find Subs Without the Runaround. Search by trade, location, or skill. Request insurance docs in one click. Keep your projects moving. Simple tools. No fluff.
+                Search by trade, location, or skill. Request insurance docs in one click. Keep your projects moving. Simple tools. No fluff.
             </p>
             <div class="pt-2">
                 <a href="#contractor-signup" class="text-sm font-black text-[#0F2D5A] hover:text-[#1E3C5A] uppercase tracking-widest underline decoration-2 decoration-[#FFC32D] transition-colors">
@@ -373,7 +373,7 @@
         </div>
     </section>
 
-   {{-- EXTENDED FUNCTIONAL FOOTER --}}
+    {{-- EXTENDED FUNCTIONAL FOOTER --}}
     <footer class="bg-[#FFFFFF] border-t border-[#F0F0F0] pt-16 pb-12 text-[#3C3C3C]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
@@ -383,8 +383,7 @@
                 {{-- COLUMN 1: BRANDING & LOGO (FOOTPRINT: 4/12) --}}
                 <div class="md:col-span-4 space-y-4 text-left flex flex-col justify-start">
                     <div class="flex items-center">
-                        <img src="{{ asset('images/CS-logo-horizontal-750.webp') }}" alt="Contractor Specialties" class="h-20 w-auto object-contain">
-                
+                        <img src="{{ asset('images/CS-Square.webp') }}" alt="Contractor Specialties Brand Identity" class="h-16 w-16 object-cover rounded-2xl shadow-md border border-[#F0F0F0]">
                     </div>
                     <p class="font-medium text-sm text-[#3C3C4B] max-w-sm leading-relaxed">
                         Connecting local operators, specialized tradesmen, and project coordinators cleanly across modern community grids.
@@ -417,7 +416,7 @@
                 <div class="md:col-span-2 space-y-4 text-left">
                     <h4 class="text-xs font-black text-[#0F2D5A] uppercase tracking-[0.15em] mb-2">GC Panel</h4>
                     <ul class="space-y-3 font-bold text-sm text-slate-500 tracking-wide">
-                        <li><a href="#gc-tools" class="hover:text-[#1E3C5A] transition-colors duration-150 block">Sub-Tier Matching</a></li>
+                        <li><a href="#gc-tools" class="hover:text-[#1E3C5A] transition-colors duration-150 block">Sub-Tier Mapping</a></li>
                         <li><a href="#gc-tools" class="hover:text-[#1E3C5A] transition-colors duration-150 block">Insurance Registry</a></li>
                         <li><a href="#gc-tools" class="hover:text-[#1E3C5A] transition-colors duration-150 block">Project Milestone Logs</a></li>
                     </ul>
