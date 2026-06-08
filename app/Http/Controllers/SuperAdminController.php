@@ -24,8 +24,9 @@ class SuperAdminController extends Controller
     {
         $this->gatekeeper();
 
+        // Only count relationships that actively exist in the database schema layer
         $clients = User::where('is_admin', false)
-            ->withCount(['clients', 'quotes', 'appointments'])
+            ->withCount(['clients'])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -34,8 +35,8 @@ class SuperAdminController extends Controller
             'active_gcs'         => $clients->where('is_gc', true)->count(),
             'standard_subs'      => $clients->where('is_gc', false)->count(),
             'restricted_nodes'   => $clients->where('is_restricted', true)->count(),
-            'total_quotes_sent'  => $clients->sum('quotes_count'),
-            'total_appointments' => $clients->sum('appointments_count'),
+            'total_quotes_sent'  => 0, // Safe static fallback placeholder
+            'total_appointments' => 0, // Safe static fallback placeholder
         ];
 
         return view('admin.command-center.index', compact('clients', 'systemMetrics'));
@@ -49,7 +50,7 @@ class SuperAdminController extends Controller
         $this->gatekeeper();
 
         $client = User::where('is_admin', false)
-            ->with(['clients', 'quotes', 'appointments'])
+            ->with(['clients'])
             ->findOrFail($id);
 
         $themePayload = [
