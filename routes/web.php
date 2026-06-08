@@ -1,7 +1,43 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SuperAdminController;
 
+// PUBLIC FOOTPRINT: Consumer & Landing Portal
 Route::get('/', function () {
     return view('welcome');
+});
+
+// SYSTEM HUB: Multi-Tenant Command & Telemetry Controls
+Route::middleware(['auth'])->group(function () {
+    
+    // STANDARD DISPATCH: Contractor Dashboard Workspace
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+
+    // FORTIFIED COMMAND OVERLAY: Multi-Tenant Super Admin Panel
+    Route::prefix('admin/command-center')
+        ->name('admin.command-center.')
+        ->middleware(function ($request, $next) {
+            // Absolute perimeter checkpoint check protecting telemetry access strings
+            if (!auth()->check() || !auth()->user()->is_admin) {
+                abort(403, 'Unauthorized System Access Protocol.');
+            }
+            return $next($request);
+        })->group(function () {
+            
+            // 1. MASTER MONITOR: Core Dashboard Telemetry Deck
+            Route::get('/', [SuperAdminController::class, 'index'])->name('index');
+            
+            // 2. AUDIT VIEW: Deep Entity Telemetry & Node Analysis
+            Route::get('/client/{id}', [SuperAdminController::class, 'showClient'])->name('client.show');
+            
+            // 3. CIRCUIT BREAKER: Universal Operational Access Suppressions
+            Route::post('/client/{id}/toggle-status', [SuperAdminController::class, 'toggleStatus'])->name('client.toggle');
+            
+            // 4. DESIGN CONTROL: Live Sheet Styling Override Adjustments
+            Route::post('/client/{id}/update-theme', [SuperAdminController::class, 'updateTheme'])->name('client.theme');
+            
+        });
 });
