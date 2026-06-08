@@ -8,6 +8,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// AUTHMAPPED GATE: Endpoint destination ensuring auth redirects resolve gracefully
+Route::get('/login', function () {
+    return response('Contractor Specialties Gateway Core: Secure Magic Link Protocol Pending.', 200);
+})->name('login');
+
 // SYSTEM HUB: Multi-Tenant Command & Telemetry Controls
 Route::middleware(['auth'])->group(function () {
     
