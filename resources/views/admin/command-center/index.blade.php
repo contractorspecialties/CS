@@ -1,27 +1,61 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-                <h2 class="font-black text-3xl md:text-4xl text-[#0F2D5A] tracking-tight leading-tight">
-                    HQ Command Center
-                </h2>
-                <p class="text-slate-500 font-bold text-sm uppercase tracking-widest mt-1">Global System Telemetry & Tenant Control</p>
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HQ Command Center | Contractor Specialties</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <link rel="icon" type="image/webp" sizes="32x32" href="{{ asset('images/CS-Square.webp') }}">
+    <link rel="icon" type="image/webp" sizes="192x192" href="{{ asset('images/CS-Square.webp') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/CS-Square.webp') }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-[#F0F0F0] text-[#3C3C3C] antialiased">
+
+    {{-- MASTER ADMIN HEADER --}}
+    <header class="bg-[#FFFFFF] border-b border-[#F0F0F0] sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-24 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a href="/" class="block transition active:scale-95">
+                    <img src="{{ asset('images/CS-logo-horizontal-750.webp') }}" alt="Contractor Specialties" class="h-14 w-auto object-contain">
+                </a>
+                <span class="bg-slate-900 text-[#FFD22D] text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-md">
+                    HQ Control Core
+                </span>
             </div>
-            <div class="text-left sm:text-right">
-                <span class="text-[#0F2D5A] font-black text-xs uppercase tracking-widest bg-[#F0F0F0] inline-block px-4 py-2 rounded-full border border-slate-200 shadow-sm">
+            <div class="hidden sm:flex items-center gap-4">
+                <span class="text-[#0F2D5A] font-black text-xs uppercase tracking-widest bg-[#F0F0F0] px-4 py-2 rounded-full border border-slate-200 shadow-sm">
                     System Live • {{ now()->format('H:i:s T') }}
                 </span>
             </div>
         </div>
-    </x-slot>
+    </header>
 
-    <div class="py-6 sm:py-8">
+    {{-- CORE WORKSPACE CONTENT PANEL --}}
+    <main class="py-8 sm:py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+
+            {{-- PAGE TITLE --}}
+            <div>
+                <h2 class="font-black text-3xl md:text-4xl text-[#0F2D5A] tracking-tight leading-none">
+                    HQ Command Center
+                </h2>
+                <p class="text-slate-500 font-bold text-sm uppercase tracking-widest mt-2">Global System Telemetry & Tenant Control</p>
+            </div>
 
             {{-- LIVE ACTION PERFORMANCE NOTIFICATIONS --}}
             @if (session('status'))
-                <div class="bg-emerald-50 border-l-8 border-emerald-500 p-6 rounded-r-2xl shadow-sm">
-                    <p class="font-black text-base text-emerald-900">{{ session('status') }}</p>
+                <div class="bg-slate-900 border-l-8 border-[#FFD22D] p-6 rounded-r-2xl shadow-md">
+                    <p class="font-black text-base text-[#FFFFFF]">{{ session('status') }}</p>
                 </div>
             @endif
 
@@ -132,11 +166,11 @@
                                                 <span class="text-[9px] uppercase tracking-wider text-slate-400">Roster</span>
                                             </div>
                                             <div class="text-center" title="Proposals Generated">
-                                                <span class="font-black text-sm text-[#0F2D5A] block">{{ $client->quotes_count }}</span>
+                                                <span class="font-black text-sm text-[#0F2D5A] block">0</span>
                                                 <span class="text-[9px] uppercase tracking-wider text-slate-400">Docs</span>
                                             </div>
                                             <div class="text-center" title="Logged Tasks">
-                                                <span class="font-black text-sm text-[#0F2D5A] block">{{ $client->appointments_count }}</span>
+                                                <span class="font-black text-sm text-[#0F2D5A] block">0</span>
                                                 <span class="text-[9px] uppercase tracking-wider text-slate-400">Tasks</span>
                                             </div>
                                         </div>
@@ -167,7 +201,7 @@
                                     <td colspan="5" class="py-12 text-center font-bold text-slate-400 text-base">
                                         No tenant profiles registered inside the current directory database cluster.
                                     </td>
-                                endtr>
+                                </tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -176,5 +210,7 @@
             </div>
 
         </div>
-    </div>
-</x-app-layout>
+    </main>
+
+</body>
+</html>
