@@ -34,13 +34,18 @@ class User extends Authenticatable
         'magic_link_token',
         'magic_link_expires_at',
         
-        // Programmatic SEO Parameters & Structural Footprints
+        // SEO & Location Fields
         'specialty_id',
         'slug',
         'city',
         'state',
         'bio',
         'phone',
+
+        // Trust & Credibility Fields
+        'license_number',
+        'established_year',
+        'is_insured',
     ];
 
     /**
@@ -68,12 +73,13 @@ class User extends Authenticatable
             'is_admin' => 'boolean',
             'is_gc' => 'boolean',
             'is_restricted' => 'boolean',
+            'is_insured' => 'boolean', // Ensures this always returns a clear true/false
         ];
     }
 
     /**
-     * RELATIONSHIP: Trade Categorization Matrix Node.
-     * Maps this contractor node to its primary indexed public directory trade sector.
+     * RELATIONSHIP: Trade Categorization
+     * Maps this contractor to their primary public directory trade sector.
      */
     public function specialty(): BelongsTo
     {
@@ -81,7 +87,7 @@ class User extends Authenticatable
     }
 
     /**
-     * RELATIONSHIP: Polymorphic / Internal Clients.
+     * RELATIONSHIP: Internal Clients
      * Tracks consumer roster records assigned to this contractor node.
      */
     public function clients(): HasMany

@@ -76,7 +76,7 @@ class MagicLinkController extends Controller
     }
 
     /**
-     * Resolve incoming setup parameters and re-compile programmatic SEO routing tokens.
+     * Resolve incoming setup parameters and save contractor profiles.
      */
     public function updateProfile(Request $request)
     {
@@ -89,12 +89,17 @@ class MagicLinkController extends Controller
             'city' => 'required|string|max:255',
             'state' => 'required|string|size:2',
             'bio' => 'nullable|string',
+            
+            // New Trust & Credibility Validation Rules
+            'license_number' => 'nullable|string|max:255',
+            'established_year' => 'nullable|integer|min:1900|max:2026',
+            'is_insured' => 'nullable|boolean',
         ]);
 
-        // Generate baseline uniform URL identifier string
+        // Generate a clean public web link name from their business name
         $slug = Str::slug($validated['business_name']);
 
-        // Fail-safe collision bypass: Append the user ID node if an identical business name variant exists elsewhere
+        // Double check if another business already has this exact name link
         $slugCollision = User::where('slug', $slug)
             ->where('id', '!=', $user->id)
             ->exists();
@@ -103,7 +108,7 @@ class MagicLinkController extends Controller
             $slug = $slug . '-' . $user->id;
         }
 
-        // Persist records using full Eloquent mapping to maintain custom database table prefixes safely
+        // Save everything to the user record
         $user->update([
             'business_name' => $validated['business_name'],
             'specialty_id' => $validated['specialty_id'],
@@ -112,9 +117,15 @@ class MagicLinkController extends Controller
             'state' => strtoupper($validated['state']),
             'bio' => $validated['bio'],
             'slug' => $slug,
+            
+            // New Trust & Credibility Fields
+            'license_number' => $validated['license_number'],
+            'established_year' => $validated['established_year'],
+            // Checkboxes don't send anything if empty, so we use true/false based on its presence
+            'is_insured' => $request->has('is_insured'),
         ]);
 
-        return redirect()->back()->with('status', 'Programmatic SEO directory parameters successfully compiled! Your lookup footprint node is officially live on the grid system layout.');
+        return redirect()->back()->with('status', 'Your business profile details have been successfully saved and updated!');
     }
 
     /**
