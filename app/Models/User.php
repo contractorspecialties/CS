@@ -46,6 +46,10 @@ class User extends Authenticatable
         'license_number',
         'established_year',
         'is_insured',
+
+        // Service Area Footprint Fields
+        'service_radius',
+        'service_areas',
     ];
 
     /**
@@ -73,7 +77,8 @@ class User extends Authenticatable
             'is_admin' => 'boolean',
             'is_gc' => 'boolean',
             'is_restricted' => 'boolean',
-            'is_insured' => 'boolean', // Ensures this always returns a clear true/false
+            'is_insured' => 'boolean',
+            'service_radius' => 'integer', // Ensures radius is always handled as a pure number
         ];
     }
 
@@ -88,7 +93,7 @@ class User extends Authenticatable
 
     /**
      * RELATIONSHIP: Internal Clients
-     * Tracks consumer roster records assigned to this contractor node.
+     * Tracks consumer roster records assigned to this contractor.
      */
     public function clients(): HasMany
     {

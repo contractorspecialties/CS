@@ -29,50 +29,46 @@ class MagicLinkController extends Controller
             'email' => 'required|email|max:255|unique:users,email',
             'mobile_number' => 'required|string|max:30',
         ], [
-            'email.unique' => 'This communications vector is already bound to an active workspace node.'
+            'email.unique' => 'This email address is already connected to an active account.'
         ]);
 
-        // Provision the user record safely insulating for custom database prefix structures
         $user = User::create([
             'name' => $validated['business_name'],
             'email' => $validated['email'],
-            'phone' => $validated['mobile_number'], // Maps cleanly to your schema core
-            'password' => bcrypt(Str::random(32)),   // Strict randomized string bypass
+            'phone' => $validated['mobile_number'],
+            'password' => bcrypt(Str::random(32)),   
             'is_admin' => false,
             'is_gc' => false,
             'is_restricted' => false,
         ]);
 
-        // Generate immediate post-registration cryptographic authentication sequence
         $token = Str::random(64);
         $user->update([
             'magic_link_token' => hash('sha256', $token),
-            'magic_link_expires_at' => now()->addMinutes(30), // Extended time for initial onboarding
+            'magic_link_expires_at' => now()->addMinutes(30), 
         ]);
 
         $verificationUrl = route('login.verify', ['token' => $token]);
 
-        // Dispatches structural raw HTML markup through our active SendGrid API pipeline
         Mail::send([], [], function ($message) use ($user, $verificationUrl) {
             $message->to($user->email)
                 ->subject('Activate Your Free Workspace | Contractor Specialties')
                 ->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'))
                 ->html("
                     <div style=\"font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #F0F0F0; padding: 40px; text-align: center;\">
-                        <div style=\"max-width: 500px; margin: 0 auto; bg-color: #FFFFFF; background: #FFFFFF; padding: 32px; border-radius: 24px; border: 1px solid #E2E8F0; text-align: left;\">
-                            <h2 style=\"color: #0F2D5A; font-size: 24px; font-weight: 800; margin-bottom: 8px;\">Welcome to the Grid.</h2>
-                            <p style=\"color: #4A5568; font-size: 15px; font-weight: 600; line-height: 1.6; margin-bottom: 24px;\">Your profile footprint for <strong>{$user->name}</strong> has been successfully initialized. Click below to securely bypass password setup and claim your dashboard.</p>
-                            <a href=\"{$verificationUrl}\" style=\"display: block; text-align: center; background-color: #0F2D5A; color: #FFFFFF; font-weight: 800; text-decoration: none; padding: 16px; border-radius: 12px; font-size: 14px; text-transform: uppercase; tracking-spacing: 1px;\">Access Workspace Platform</a>
-                            <p style=\"color: #A0AEC0; font-size: 11px; font-weight: 500; text-align: center; margin-top: 24px;\">This token parameters signature vector will automatically expire in 30 minutes.</p>
+                        <div style=\"max-width: 500px; margin: 0 auto; background: #FFFFFF; padding: 32px; border-radius: 24px; border: 1px solid #E2E8F0; text-align: left;\">
+                            <h2 style=\"color: #0F2D5A; font-size: 24px; font-weight: 800; margin-bottom: 8px;\">Welcome aboard!</h2>
+                            <p style=\"color: #4A5568; font-size: 15px; font-weight: 600; line-height: 1.6; margin-bottom: 24px;\">Your profile for <strong>{$user->name}</strong> has been created. Click below to securely sign in and claim your dashboard.</p>
+                            <a href=\"{$verificationUrl}\" style=\"display: block; text-align: center; background-color: #0F2D5A; color: #FFFFFF; font-weight: 800; text-decoration: none; padding: 16px; border-radius: 12px; font-size: 14px; text-transform: uppercase; tracking-spacing: 1px;\">Access Your Dashboard</a>
+                            <p style=\"color: #A0AEC0; font-size: 11px; font-weight: 500; text-align: center; margin-top: 24px;\">This login link will automatically expire in 30 minutes.</p>
                         </div>
                     </div>
                 ");
         });
 
-        // Local fallback log tracing to facilitate zero-lag system testing right out of Ploi
-        Log::info("ONBOARDING ENGINE: Forged New Contractor Node ID {$user->id}. Automated Token Route: {$verificationUrl}");
+        Log::info("ONBOARDING ENGINE: Created New Contractor Account ID {$user->id}. Login Route: {$verificationUrl}");
 
-        return redirect()->back()->with('status', 'Registration finalized! Your activation signature link has been fired via SendGrid. Check your inbox to claim your new workspace.');
+        return redirect()->back()->with('status', 'Registration successful! Your secure access link has been sent to your inbox. Check your email to claim your dashboard.');
     }
 
     /**
@@ -90,16 +86,18 @@ class MagicLinkController extends Controller
             'state' => 'required|string|size:2',
             'bio' => 'nullable|string',
             
-            // New Trust & Credibility Validation Rules
+            // Trust & Credibility Fields
             'license_number' => 'nullable|string|max:255',
             'established_year' => 'nullable|integer|min:1900|max:2026',
             'is_insured' => 'nullable|boolean',
+
+            // Service Area Fields
+            'service_radius' => 'nullable|integer',
+            'service_areas' => 'nullable|string',
         ]);
 
-        // Generate a clean public web link name from their business name
         $slug = Str::slug($validated['business_name']);
 
-        // Double check if another business already has this exact name link
         $slugCollision = User::where('slug', $slug)
             ->where('id', '!=', $user->id)
             ->exists();
@@ -108,7 +106,6 @@ class MagicLinkController extends Controller
             $slug = $slug . '-' . $user->id;
         }
 
-        // Save everything to the user record
         $user->update([
             'business_name' => $validated['business_name'],
             'specialty_id' => $validated['specialty_id'],
@@ -118,31 +115,32 @@ class MagicLinkController extends Controller
             'bio' => $validated['bio'],
             'slug' => $slug,
             
-            // New Trust & Credibility Fields
+            // Trust & Credibility Fields
             'license_number' => $validated['license_number'],
             'established_year' => $validated['established_year'],
-            // Checkboxes don't send anything if empty, so we use true/false based on its presence
             'is_insured' => $request->has('is_insured'),
+
+            // Service Area Fields
+            'service_radius' => $validated['service_radius'],
+            'service_areas' => $validated['service_areas'],
         ]);
 
         return redirect()->back()->with('status', 'Your business profile details have been successfully saved and updated!');
     }
 
     /**
-     * Generate secure authentication token mappings and dispatch entry links.
+     * Generate secure authentication links and dispatch them.
      */
     public function sendLink(Request $request)
     {
         $validated = $request->validate([
             'email' => 'required|email|exists:users,email',
         ], [
-            'email.exists' => 'No active regional node registration maps to that entry vector.'
+            'email.exists' => 'No active registration maps to that email address.'
         ]);
 
-        // Isolate records through pure Eloquent to guarantee prefix insulation compatibility
         $user = User::where('email', $validated['email'])->firstOrFail();
 
-        // Establish token security criteria parameters
         $token = Str::random(64);
         $user->update([
             'magic_link_token' => hash('sha256', $token),
@@ -151,30 +149,28 @@ class MagicLinkController extends Controller
 
         $verificationUrl = route('login.verify', ['token' => $token]);
 
-        // Direct transactional email loop transmission
         Mail::send([], [], function ($message) use ($user, $verificationUrl) {
             $message->to($user->email)
-                ->subject('Your Dashboard Secure Access Token Link')
+                ->subject('Your Dashboard Secure Access Link')
                 ->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'))
                 ->html("
                     <div style=\"font-family: Arial, sans-serif; padding: 30px; background: #F0F0F0;\">
                         <div style=\"max-width: 450px; background: #FFFFFF; padding: 25px; border-radius: 16px; margin: 0 auto;\">
-                            <h3 style=\"color: #0F2D5A;\">Secure Workspace Entry Request</h3>
-                            <p style=\"font-size: 14px; color: #3C3C3C;\">Click the button below to authorize this session state loop and instantly open your control dashboard portal.</p>
-                            <a href=\"{$verificationUrl}\" style=\"display: inline-block; background: #0F2D5A; color: #FFFFFF; padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 10px;\">Sign Into Platform</a>
+                            <h3 style=\"color: #0F2D5A;\">Secure Dashboard Access</h3>
+                            <p style=\"font-size: 14px; color: #3C3C3C;\">Click the button below to instantly sign into your control dashboard.</p>
+                            <a href=\"{$verificationUrl}\" style=\"display: inline-block; background: #0F2D5A; color: #FFFFFF; padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 10px;\">Sign Into Dashboard</a>
                         </div>
                     </div>
                 ");
         });
         
-        // INTERNALS: Local fallback logging block to ensure you can access link strings right out of Ploi/storage files
-        Log::info("SECURITY PROTOCOL: Magic Entry Link Generated for Node ID {$user->id}. Target Destination: {$verificationUrl}");
+        Log::info("SECURITY PROTOCOL: Magic Entry Link Generated for User ID {$user->id}. Destination: {$verificationUrl}");
 
-        return redirect()->back()->with('status', 'An active cryptographic entry link has been generated. Check your system transmission logs or mailbox to access your workspace.');
+        return redirect()->back()->with('status', 'A secure entry link has been generated. Check your email to access your dashboard.');
     }
 
     /**
-     * Authenticate and bind the incoming session payload if signature hashes check out.
+     * Authenticate the incoming request if token signatures match.
      */
     public function verifyToken($token)
     {
@@ -186,18 +182,16 @@ class MagicLinkController extends Controller
 
         if (!$user) {
             return redirect()->route('login')->withErrors([
-                'email' => 'The authentication signature link has expired or has been voided by a subsequent security sequence.'
+                'email' => 'The login link has expired or is no longer valid.'
             ]);
         }
 
-        // Circuit breaker intercept preventing restricted entries
         if ($user->is_restricted) {
             return redirect()->route('login')->withErrors([
-                'email' => 'This node workspace has been temporarily suspended by administrative oversight commands.'
+                'email' => 'This account has been temporarily suspended.'
             ]);
         }
 
-        // Consume token to prevent duplicate usage vectors
         $user->update([
             'magic_link_token' => null,
             'magic_link_expires_at' => null,
@@ -205,7 +199,6 @@ class MagicLinkController extends Controller
 
         Auth::login($user, true);
 
-        // Routing architecture redirection loop sorting rules
         if ($user->is_admin) {
             return redirect()->route('admin.command-center.index');
         }

@@ -286,9 +286,30 @@
                                 </div>
                             </div>
 
-                            {{-- SECTION 3: BIO DIRECTORY COPY --}}
+                            {{-- SECTION 3: SERVICE AREA FOOTPRINT --}}
                             <div class="space-y-4 pt-2">
-                                <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">3. Search Directory Overview</h3>
+                                <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">3. Service Area & Travel Radius</h3>
+                                
+                                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                                    <div class="sm:col-span-1">
+                                        <label class="block text-xs font-black text-[#3C3C4B] uppercase tracking-widest mb-2">Max Travel Radius</label>
+                                        <select name="service_radius" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] font-bold py-3.5 px-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base appearance-none">
+                                            <option value="10" {{ old('service_radius', auth()->user()->service_radius) == 10 ? 'selected' : '' }}>10 Miles</option>
+                                            <option value="25" {{ old('service_radius', auth()->user()->service_radius ?? 25) == 25 ? 'selected' : '' }}>25 Miles</option>
+                                            <option value="50" {{ old('service_radius', auth()->user()->service_radius) == 50 ? 'selected' : '' }}>50 Miles</option>
+                                            <option value="100" {{ old('service_radius', auth()->user()->service_radius) == 100 ? 'selected' : '' }}>100 Miles</option>
+                                        </select>
+                                    </div>
+                                    <div class="sm:col-span-3">
+                                        <label class="block text-xs font-black text-[#3C3C4B] uppercase tracking-widest mb-2">Neighboring Cities / Towns Covered</label>
+                                        <input type="text" name="service_areas" value="{{ old('service_areas', auth()->user()->service_areas) }}" placeholder="e.g. Scottsdale, Mesa, Gilbert, Chandler, Tempe" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] placeholder-slate-400 font-bold py-3.5 px-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base">
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- SECTION 4: BIO DIRECTORY COPY --}}
+                            <div class="space-y-4 pt-2">
+                                <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">4. Search Directory Overview</h3>
                                 <div>
                                     <label class="block text-xs font-black text-[#3C3C4B] uppercase tracking-widest mb-2">About Your Business (Bio Descriptions)</label>
                                     <textarea name="bio" rows="4" placeholder="Briefly introduce your company, detail your specialized crew services, warranties, or project size history so customers find you on search engines..." class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] placeholder-slate-400 font-bold py-3.5 px-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base leading-relaxed">{{ old('bio', auth()->user()->bio) }}</textarea>
@@ -301,7 +322,7 @@
                         </form>
                     </div>
 
-                    {{-- COMPONENT RIGHT: TELEMETRY & PREMIUM METER CONSOLE (FOOTPRINT: 5/12) --}}
+                    {{-- COMPONENT RIGHT: PERFORMANCE METER CONSOLE (FOOTPRINT: 5/12) --}}
                     <div class="lg:col-span-5 space-y-6">
                         
                         {{-- DIRECTORY TRAFFIC SUMMARY --}}
