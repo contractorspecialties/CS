@@ -202,15 +202,37 @@
 
                 <div class="lg:col-span-6">
                     <div class="bg-[#FFFFFF] border-4 border-slate-900 rounded-[2.5rem] shadow-2xl p-6 sm:p-8 space-y-6">
-                        <form action="#" class="space-y-4">
+                        
+                        {{-- SYSTEM FEEDBACK BROADCAST DISPATCH BARS --}}
+                        @if (session('status'))
+                            <div class="bg-slate-950 border-l-8 border-[#FFD22D] p-5 rounded-2xl text-left shadow-md">
+                                <p class="text-[10px] font-black text-[#FFD22D] uppercase tracking-widest">Network Alert</p>
+                                <p class="text-sm font-bold text-[#FFFFFF] mt-1 leading-snug">{{ session('status') }}</p>
+                            </div>
+                        @endif
+
+                        @if ($errors->any())
+                            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-xl text-left shadow-sm">
+                                <p class="text-xs font-black text-red-700 uppercase tracking-wider">Validation Block</p>
+                                <p class="text-sm font-bold text-red-600 mt-0.5">{{ $errors->first() }}</p>
+                            </div>
+                        @endif
+
+                        <form action="{{ route('register') }}" method="POST" class="space-y-4">
+                            @csrf
                             <div>
                                 <label class="block text-xs font-black text-[#3C3C4B] uppercase tracking-widest mb-2">Business Name</label>
-                                <input type="text" required placeholder="e.g. Miller & Sons Handyman Services" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] placeholder-slate-400 font-bold py-3.5 px-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base">
+                                <input type="text" name="business_name" value="{{ old('business_name') }}" mercantile-node required placeholder="e.g. Miller & Sons Handyman Services" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] placeholder-slate-400 font-bold py-3.5 px-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-black text-[#3C3C4B] uppercase tracking-widest mb-2">Email Address</label>
+                                <input type="email" name="email" value="{{ old('email') }}" required placeholder="e.g. jack@jackslawns.com" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] placeholder-slate-400 font-bold py-3.5 px-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-black text-[#3C3C4B] uppercase tracking-widest mb-2">Mobile Number</label>
-                                <input type="tel" required placeholder="(555) 000-0000" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] placeholder-slate-400 font-bold py-3.5 px-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base">
+                                <input type="tel" name="mobile_number" value="{{ old('mobile_number') }}" required placeholder="(555) 000-0000" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] placeholder-slate-400 font-bold py-3.5 px-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base">
                             </div>
 
                             <button type="submit" class="w-full bg-[#0F2D5A] hover:bg-[#1E3C5A] text-[#FFFFFF] font-black text-base uppercase tracking-wider py-4 rounded-xl shadow-md transition transform active:scale-95 border border-[#0F2D5A]">
