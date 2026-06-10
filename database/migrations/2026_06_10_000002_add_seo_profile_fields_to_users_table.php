@@ -8,26 +8,60 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $blueprint) {
-            // Relational trade mapping node
-            $blueprint->foreignId('specialty_id')->nullable()->constrained('specialties')->nullOnDelete();
-            
-            // Programmatic SEO Parameter Hooks
-            $blueprint->string('slug')->nullable()->unique(); // Unique company routing string
-            $blueprint->string('city')->nullable();          // Regional landing hook
-            $blueprint->string('state', 2)->nullable();       // Regional state code indexing
-            
-            // Public Dynamic Profile Metadata
-            $blueprint->text('bio')->nullable();
-            $blueprint->boolean('is_gc')->default(false)->change(); // Explicit flag validation consistency
-        });
+        // 1. Relational trade mapping node
+        if (!Schema::hasColumn('users', 'specialty_id')) {
+            Schema::table('users', function (Blueprint $blueprint) {
+                $blueprint->foreignId('specialty_id')->nullable()->constrained('specialties')->nullOnDelete();
+            });
+        }
+
+        // 2. Programmatic SEO Parameter Hooks
+        if (!Schema::hasColumn('users', 'slug')) {
+            Schema::table('users', function (Blueprint $blueprint) {
+                $blueprint->string('slug')->nullable()->unique();
+            });
+        }
+
+        if (!Schema::hasColumn('users', 'city')) {
+            Schema::table('users', function (Blueprint $blueprint) {
+                $blueprint->string('city')->nullable();
+            });
+        }
+
+        if (!Schema::hasColumn('users', 'state')) {
+            Schema::table('users', function (Blueprint $blueprint) {
+                $blueprint->string('state', 2)->nullable();
+            });
+        }
+
+        // 3. Public Dynamic Profile Metadata
+        if (!Schema::hasColumn('users', 'bio')) {
+            Schema::table('users', function (Blueprint $blueprint) {
+                $blueprint->text('bio')->nullable();
+            });
+        }
+
+        // 4. Explicit flag validation consistency
+        if (Schema::hasColumn('users', 'is_gc')) {
+            Schema::table('users', function (Blueprint $blueprint) {
+                $blueprint->boolean('is_gc')->default(false)->change();
+            });
+        }
     }
 
     public function down(): void
     {
         Schema::table('users', function (Blueprint $blueprint) {
-            $blueprint->dropForeign(['specialty_id']);
-            $blueprint->dropColumn(['specialty_id', 'slug', 'city', 'state', 'bio']);
+            if (Schema::hasColumn('users', 'specialty_id')) {
+                $blueprint->dropForeign(['specialty_id']);
+            }
+            $blueprint->dropColumn(array_filter([
+                Schema::hasColumn('users', 'specialty_id') ? 'specialty_id' : null,
+                Schema::hasColumn('users', 'slug') ? 'slug' : null,
+                Schema::hasColumn('users', 'city') ? 'city' : null,
+                Schema::hasColumn('users', 'state') ? 'state' : null,
+                Schema::hasColumn('users', 'bio') ? 'bio' : null,
+            ]));
         });
     }
 };
