@@ -76,6 +76,48 @@ class MagicLinkController extends Controller
     }
 
     /**
+     * Resolve incoming setup parameters and re-compile programmatic SEO routing tokens.
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'business_name' => 'required|string|max:255',
+            'specialty_id' => 'required|exists:specialties,id',
+            'phone' => 'required|string|max:30',
+            'city' => 'required|string|max:255',
+            'state' => 'required|string|size:2',
+            'bio' => 'nullable|string',
+        ]);
+
+        // Generate baseline uniform URL identifier string
+        $slug = Str::slug($validated['business_name']);
+
+        // Fail-safe collision bypass: Append the user ID node if an identical business name variant exists elsewhere
+        $slugCollision = User::where('slug', $slug)
+            ->where('id', '!=', $user->id)
+            ->exists();
+
+        if ($slugCollision) {
+            $slug = $slug . '-' . $user->id;
+        }
+
+        // Persist records using full Eloquent mapping to maintain custom database table prefixes safely
+        $user->update([
+            'business_name' => $validated['business_name'],
+            'specialty_id' => $validated['specialty_id'],
+            'phone' => $validated['phone'],
+            'city' => $validated['city'],
+            'state' => strtoupper($validated['state']),
+            'bio' => $validated['bio'],
+            'slug' => $slug,
+        ]);
+
+        return redirect()->back()->with('status', 'Programmatic SEO directory parameters successfully compiled! Your lookup footprint node is officially live on the grid system layout.');
+    }
+
+    /**
      * Generate secure authentication token mappings and dispatch entry links.
      */
     public function sendLink(Request $request)
