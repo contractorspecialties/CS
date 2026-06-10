@@ -13,6 +13,9 @@ Route::get('/', function () {
 Route::middleware(['guest'])->group(function () {
     Route::get('/login', [MagicLinkController::class, 'showLogin'])->name('login');
     Route::post('/login', [MagicLinkController::class, 'sendLink'])->name('login.send');
+    
+    // REGISTRATION INTAKE: Provisioning Fresh Contractor Nodes
+    Route::post('/register', [MagicLinkController::class, 'register'])->name('register');
 });
 
 Route::get('/login/verify/{token}', [MagicLinkController::class, 'verifyToken'])->name('login.verify');
