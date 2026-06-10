@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class User extends Authenticatable
 {
@@ -32,6 +33,14 @@ class User extends Authenticatable
         'theme_color',
         'magic_link_token',
         'magic_link_expires_at',
+        
+        // Programmatic SEO Parameters & Structural Footprints
+        'specialty_id',
+        'slug',
+        'city',
+        'state',
+        'bio',
+        'phone',
     ];
 
     /**
@@ -60,6 +69,15 @@ class User extends Authenticatable
             'is_gc' => 'boolean',
             'is_restricted' => 'boolean',
         ];
+    }
+
+    /**
+     * RELATIONSHIP: Trade Categorization Matrix Node.
+     * Maps this contractor node to its primary indexed public directory trade sector.
+     */
+    public function specialty(): BelongsTo
+    {
+        return $this->belongsTo(Specialty::class, 'specialty_id');
     }
 
     /**
