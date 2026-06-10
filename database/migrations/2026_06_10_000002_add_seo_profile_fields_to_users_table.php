@@ -19,7 +19,6 @@ return new class extends Migration
             
             // Public Dynamic Profile Metadata
             $blueprint->text('bio')->nullable();
-            $blueprint->string('logo_path')->nullable();
             $blueprint->boolean('is_gc')->default(false)->change(); // Explicit flag validation consistency
         });
     }
@@ -28,7 +27,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $blueprint) {
             $blueprint->dropForeign(['specialty_id']);
-            $blueprint->dropColumn(['specialty_id', 'slug', 'city', 'state', 'bio', 'logo_path']);
+            $blueprint->dropColumn(['specialty_id', 'slug', 'city', 'state', 'bio']);
         });
     }
 };
