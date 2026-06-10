@@ -15,7 +15,14 @@ return new class extends Migration
             });
         }
 
-        // 2. Programmatic SEO Parameter Hooks
+        // 2. Core Communications Vector
+        if (!Schema::hasColumn('users', 'phone')) {
+            Schema::table('users', function (Blueprint $blueprint) {
+                $blueprint->string('phone', 30)->nullable();
+            });
+        }
+
+        // 3. Programmatic SEO Parameter Hooks
         if (!Schema::hasColumn('users', 'slug')) {
             Schema::table('users', function (Blueprint $blueprint) {
                 $blueprint->string('slug')->nullable()->unique();
@@ -34,14 +41,14 @@ return new class extends Migration
             });
         }
 
-        // 3. Public Dynamic Profile Metadata
+        // 4. Public Dynamic Profile Metadata
         if (!Schema::hasColumn('users', 'bio')) {
             Schema::table('users', function (Blueprint $blueprint) {
                 $blueprint->text('bio')->nullable();
             });
         }
 
-        // 4. Explicit flag validation consistency
+        // 5. Explicit flag validation consistency
         if (Schema::hasColumn('users', 'is_gc')) {
             Schema::table('users', function (Blueprint $blueprint) {
                 $blueprint->boolean('is_gc')->default(false)->change();
@@ -57,6 +64,7 @@ return new class extends Migration
             }
             $blueprint->dropColumn(array_filter([
                 Schema::hasColumn('users', 'specialty_id') ? 'specialty_id' : null,
+                Schema::hasColumn('users', 'phone') ? 'phone' : null,
                 Schema::hasColumn('users', 'slug') ? 'slug' : null,
                 Schema::hasColumn('users', 'city') ? 'city' : null,
                 Schema::hasColumn('users', 'state') ? 'state' : null,
