@@ -1,0 +1,84 @@
+[
+  {
+    "category": "Structural Crews",
+    "items": [
+      {
+        "name": "General Contractors",
+        "slug": "general-contractors",
+        "icon": "🏗️",
+        "aliases": ["GC", "General Contractor", "Builder", "Remodeler"],
+        "operational_type": "project",
+        "is_regulated": true,
+        "sort_order": 1
+      },
+      {
+        "name": "Roofers",
+        "slug": "roofers",
+        "icon": "🏠",
+        "aliases": ["Roofing", "Roofer", "Shingle Installer", "Roof Repair"],
+        "operational_type": "project",
+        "is_regulated": false,
+        "sort_order": 2
+      }
+    ]
+  },
+  {
+    "category": "Specialty Trades",
+    "items": [
+      {
+        "name": "Electricians",
+        "slug": "electricians",
+        "icon": "⚡",
+        "aliases": ["Electrician", "Electrical Contractor", "Wiring", "Lighting Tech"],
+        "operational_type": "service",
+        "is_regulated": true,
+        "sort_order": 3
+      },
+      {
+        "name": "Plumbers",
+        "slug": "plumbers",
+        "icon": "💧",
+        "aliases": ["Plumber", "Plumbing", "Leak Repair", "Drain Cleaner"],
+        "operational_type": "service",
+        "is_regulated": true,
+        "sort_order": 4
+      },
+      {
+        "name": "HVAC Techs",
+        "slug": "hvac-techs",
+        "icon": "❄️",
+        "aliases": ["HVAC", "AC Repair", "Heating Specialist", "Air Conditioning"],
+        "operational_type": "service",
+        "is_regulated": true,
+        "sort_order": 5
+      },
+      {
+        "name": "Painters",
+        "slug": "painters",
+        "icon": "🎨",
+        "aliases": ["Painter", "Painting Contractor", "Drywall Finish", "Exterior Painting"],
+        "operational_type": "service",
+        "is_regulated": false,
+        "sort_order": 6
+      },
+      {
+        "name": "Landscapers",
+        "slug": "landscapers",
+        "icon": "🌱",
+        "aliases": ["Landscaper", "Lawn Care", "Mowing", "Lawn Maintenance", "Gardener"],
+        "operational_type": "route",
+        "is_regulated": false,
+        "sort_order": 7
+      },
+      {
+        "name": "Handymen",
+        "slug": "handymen",
+        "icon": "🛠️",
+        "aliases": ["Handyman", "Home Repairs", "Fixture Installer", "Odd Jobs"],
+        "operational_type": "service",
+        "is_regulated": false,
+        "sort_order": 8
+      }
+    ]
+  }
+]
