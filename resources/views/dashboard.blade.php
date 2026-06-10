@@ -63,6 +63,21 @@
     <main class="py-8 sm:py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
 
+            {{-- SYSTEM NOTIFICATION MESSAGING TELEMETRY DECK --}}
+            @if (session('status'))
+                <div class="bg-slate-950 border-l-8 border-[#FFD22D] p-5 rounded-2xl text-left shadow-md">
+                    <p class="text-[10px] font-black text-[#FFD22D] uppercase tracking-widest">System Signal</p>
+                    <p class="text-sm font-bold text-[#FFFFFF] mt-1 leading-snug">{{ session('status') }}</p>
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-xl text-left shadow-sm">
+                    <p class="text-xs font-black text-red-700 uppercase tracking-wider">Validation Block Interrupt</p>
+                    <p class="text-sm font-bold text-red-600 mt-0.5">{{ $errors->first() }}</p>
+                </div>
+            @endif
+
             @if(auth()->user()->is_gc)
                 {{-- ========================================================================= --}}
                 {{-- GENERAL CONTRACTOR MULTI-TENANT CONSOLE TIER: "THE ORCHESTRATOR GRID"      --}}
@@ -173,36 +188,87 @@
                     </div>
                 </div>
 
-                {{-- SUB-TIER PERFORMANCE CARD SHEETS --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 items-start">
-                    
-                    {{-- COMPONENT LEFT: CORE PARAMETERS --}}
-                    <div class="bg-[#FFFFFF] rounded-[2.5rem] border-4 border-slate-900 shadow-2xl p-6 sm:p-8 space-y-6">
-                        <div>
-                            <h2 class="text-xl font-black text-[#0F2D5A] tracking-tight">Active Directory Configuration</h2>
-                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-0.5">Your network lookup parameters on our public routing matrix</p>
+                {{-- PROGRAMMATIC SEO PATH MONITORING FOOTPRINT BADGE --}}
+                @if(auth()->user()->slug && auth()->user()->specialty)
+                    <div class="bg-[#FFFFFF] border-2 border-slate-200 p-5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+                        <div class="text-left">
+                            <span class="text-[9px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">Live Pipeline</span>
+                            <h4 class="text-sm font-black text-[#0F2D5A] mt-1 tracking-tight">Your Programmatic SEO Landing Page Vector is Live:</h4>
+                            <p class="text-xs font-bold text-slate-400 mt-0.5">Googlebot crawlers can now discover and map your business coordinates.</p>
                         </div>
-
-                        <div class="space-y-4">
-                            <div class="bg-[#F0F0F0] p-5 rounded-2xl border border-slate-200">
-                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Authenticated Account Operator</span>
-                                <p class="font-black text-base text-[#0F2D5A]">{{ auth()->user()->name }}</p>
-                                <p class="text-xs font-bold text-slate-500 mt-0.5">{{ auth()->user()->email }}</p>
-                            </div>
-                            
-                            <div class="bg-[#F0F0F0] p-5 rounded-2xl border border-slate-200">
-                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Carrier Network Target (SMS Auth Path)</span>
-                                <p class="font-black text-base text-[#0F2D5A]">{{ auth()->user()->phone ?? 'No Communications Line Provisioned' }}</p>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-50 rounded-2xl border border-slate-200 p-4 text-xs font-bold text-slate-500 leading-relaxed">
-                            💡 Want to customize your theme shades or map an external custom domain routing rule to your listing? Drop a line to <strong>support@contractorspecialties.com</strong> and our command center admin deck will bind the parameter adjustments directly to your entity block!
+                        <a href="/pros/{{ auth()->user()->specialty->slug }}/{{ auth()->user()->slug }}" target="_blank" class="bg-slate-900 hover:bg-slate-800 text-[#FFC32D] text-xs font-black uppercase tracking-wider px-4 py-3 rounded-xl border border-slate-950 transition text-center whitespace-nowrap">
+                            View Public Page ↗
+                        </a>
+                    </div>
+                @else
+                    <div class="bg-amber-50 border-2 border-amber-200 p-5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+                        <div class="text-left">
+                            <span class="text-[9px] font-black text-amber-700 uppercase tracking-widest bg-amber-100/50 px-2 py-0.5 rounded">SEO Incomplete</span>
+                            <h4 class="text-sm font-black text-[#0F2D5A] mt-1 tracking-tight">Your Public Directory Routing Vector is Currently Unmapped.</h4>
+                            <p class="text-xs font-bold text-amber-600 mt-0.5">Complete the form setup configuration profile below to construct your search grid footprint.</p>
                         </div>
                     </div>
+                @endif
 
-                    {{-- COMPONENT RIGHT: TELEMETRY & PREMIUM METER CONSOLE (CPP PIPELINE BLOCKERS) --}}
-                    <div class="space-y-6">
+                {{-- SUB-TIER PERFORMANCE CARD SHEETS --}}
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    
+                    {{-- COMPONENT LEFT: DYNAMIC ONBOARDING DATA-CAPTURE FORM (FOOTPRINT: 7/12) --}}
+                    <div class="lg:col-span-7 bg-[#FFFFFF] rounded-[2.5rem] border-4 border-slate-900 shadow-2xl p-6 sm:p-8 space-y-6">
+                        <div>
+                            <h2 class="text-xl font-black text-[#0F2D5A] tracking-tight">Construct Public SEO Profile</h2>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-0.5">Inject parameters to generate structural directory landing maps</p>
+                        </div>
+
+                        <form action="{{ route('profile.update') }}" method="POST" class="space-y-4 text-left">
+                            @csrf
+                            <div>
+                                <label class="block text-xs font-black text-[#3C3C4B] uppercase tracking-widest mb-2">Public Business Display Name</label>
+                                <input type="text" name="business_name" value="{{ old('business_name', auth()->user()->business_name ?? auth()->user()->name) }}" required placeholder="e.g. Miller & Sons Handyman Services" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] placeholder-slate-400 font-bold py-3.5 px-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base">
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-black text-[#3C3C4B] uppercase tracking-widest mb-2">Primary Trade Classification</label>
+                                    <select name="specialty_id" required class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] font-bold py-3.5 px-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base appearance-none">
+                                        <option value="" disabled {{ is_null(auth()->user()->specialty_id) ? 'selected' : '' }}>Select Your Focus...</option>
+                                        @foreach($specialties as $specialty)
+                                            <option value="{{ $specialty->id }}" {{ old('specialty_id', auth()->user()->specialty_id) == $specialty->id ? 'selected' : '' }}>
+                                                {{ $specialty->icon }} {{ $specialty->name }} ({{ uppercase($specialty->operational_type) }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-black text-[#3C3C4B] uppercase tracking-widest mb-2">Service Mobile Line</label>
+                                    <input type="tel" name="phone" value="{{ old('phone', auth()->user()->phone) }}" required placeholder="(555) 000-0000" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] placeholder-slate-400 font-bold py-3.5 px-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-4">
+                                <div class="col-span-2">
+                                    <label class="block text-xs font-black text-[#3C3C4B] uppercase tracking-widest mb-2">Target Metro City Focus</label>
+                                    <input type="text" name="city" value="{{ old('city', auth()->user()->city) }}" required placeholder="e.g. Phoenix" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] placeholder-slate-400 font-bold py-3.5 px-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-black text-[#3C3C4B] uppercase tracking-widest mb-2">State</label>
+                                    <input type="text" name="state" maxlength="2" value="{{ old('state', auth()->user()->state ?? 'AZ') }}" required placeholder="AZ" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] placeholder-slate-400 font-bold py-3.5 px-4 text-center focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base uppercase">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-black text-[#3C3C4B] uppercase tracking-widest mb-2">Company Operational Narrative (Bio)</label>
+                                <textarea name="bio" rows="4" placeholder="Briefly detail your crew skill specialized services, warranty guarantees, or structural experience for local search matches..." class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] placeholder-slate-400 font-bold py-3.5 px-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base leading-relaxed">{{ old('bio', auth()->user()->bio) }}</textarea>
+                            </div>
+
+                            <button type="submit" class="w-full bg-[#0F2D5A] hover:bg-[#1E3C5A] text-[#FFFFFF] font-black text-sm uppercase tracking-wider py-4 rounded-xl shadow-md transition transform active:scale-95 border border-[#0F2D5A]">
+                                Deploy Programmatic Directory Profile →
+                            </button>
+                        </form>
+                    </div>
+
+                    {{-- COMPONENT RIGHT: TELEMETRY & PREMIUM METER CONSOLE (FOOTPRINT: 5/12) --}}
+                    <div class="lg:col-span-5 space-y-6">
                         
                         {{-- DIRECTORY ENGAGEMENT TELEMETRY --}}
                         <div class="bg-[#FFFFFF] rounded-3xl border-2 border-[#F0F0F0] p-6 shadow-sm space-y-4">
@@ -219,7 +285,7 @@
                             </div>
                         </div>
 
-                        {{-- PREMIUM CORE SAAS EXTENSION BLOCKS --}}
+                        {{-- PREMIUM CORE SAAS EXTENSION BLOCKS (CPP INTEGRATION ADVERTISEMENTS) --}}
                         <div class="bg-[#FFFFFF] rounded-3xl border-2 border-[#F0F0F0] p-6 shadow-sm space-y-4">
                             <div class="flex items-center gap-3">
                                 <span class="w-2.5 h-2.5 rounded-full bg-[#FFC32D] animate-pulse"></span>

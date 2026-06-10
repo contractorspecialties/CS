@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\MagicLinkController;
+use App\Models\Specialty;
 
 // PUBLIC FOOTPRINT: Consumer & Landing Portal
 Route::get('/', function () {
@@ -23,10 +24,17 @@ Route::get('/login/verify/{token}', [MagicLinkController::class, 'verifyToken'])
 // SYSTEM HUB: Multi-Tenant Command & Telemetry Controls
 Route::middleware(['auth'])->group(function () {
     
-    // STANDARD DISPATCH: Contractor Dashboard Workspace
+    // STANDARD DISPATCH: Contractor Dashboard Workspace with Dynamic Taxonomy Data
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        $specialties = Specialty::where('is_active', true)
+            ->orderBy('sort_order', 'asc')
+            ->get();
+
+        return view('dashboard', compact('specialties'));
     })->name('dashboard');
+
+    // PROFILE MANAGEMENT: Binding Active Trades, Regions, and Programmatic SEO Slugs
+    Route::post('/profile/update', [MagicLinkController::class, 'updateProfile'])->name('profile.update');
 
     // FORTIFIED COMMAND OVERLAY: Multi-Tenant Super Admin Panel
     Route::prefix('admin/command-center')
