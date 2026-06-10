@@ -15,11 +15,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // 1. Ingest Master Dynamic Taxonomy Dataset Node
+        $this->call(SpecialtySeeder::class);
 
+        // 2. Base Core Test User Node Injection
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'is_admin' => false,
+            'is_gc' => false,
+            'is_restricted' => false,
         ]);
     }
 }
