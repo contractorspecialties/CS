@@ -41,7 +41,7 @@
                  x-transition:leave-start="translate-x-0" 
                  x-transition:leave-end="-translate-x-full" 
                  @click.away="mobileMenuOpen = false"
-                 class="relative flex class w-full max-w-xs flex-1 flex-col bg-slate-900 pt-5 pb-4">
+                 class="relative flex w-full max-w-xs flex-1 flex-col bg-slate-900 pt-5 pb-4">
                 
                 {{-- Close Button --}}
                 <div class="absolute top-0 right-0 -mr-12 pt-4">
@@ -52,7 +52,7 @@
 
                 {{-- Mobile Drawer Logo Header --}}
                 <div class="flex flex-shrink-0 items-center px-6 border-b border-white/10 pb-5">
-                    <img src="{{ asset('images/CS-logo-horizontal-750.webp') }}" alt="Contractor Specialties" class="h-10 w-auto brightness-0 invert object-contain">
+                    <img src="{{ asset('images/CS-logo-horizontal-750.webp') }}" alt="Contractor Specialties" class="h-10 w-auto object-contain rounded-lg">
                 </div>
                 
                 {{-- Mobile Navigation Link Set --}}
@@ -81,7 +81,7 @@
     <div class="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-72 lg:flex-col lg:border-r lg:border-slate-800 lg:bg-slate-900 lg:pt-6 lg:pb-4">
         {{-- Desktop Corporate Identity --}}
         <div class="flex flex-shrink-0 items-center px-8 border-b border-white/5 pb-6">
-            <img src="{{ asset('images/CS-logo-horizontal-750.webp') }}" alt="Contractor Specialties" class="h-12 w-auto brightness-0 invert object-contain">
+            <img src="{{ asset('images/CS-logo-horizontal-750.webp') }}" alt="Contractor Specialties" class="h-12 w-auto object-contain rounded-xl">
         </div>
         
         {{-- Desktop Navigation Links --}}
