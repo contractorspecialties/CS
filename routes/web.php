@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\MagicLinkController;
 use App\Http\Controllers\EstimateController;
+use App\Http\Controllers\InvoiceController;
 use App\Models\Specialty;
 use App\Models\Estimate;
 
@@ -45,7 +46,7 @@ Route::get('/login/verify/{token}', [MagicLinkController::class, 'verifyToken'])
 // =========================================================================
 Route::middleware(['auth'])->group(function () {
     
-    // 1. Command Center Home Overview Page (Birds-Eye Telemetry Deck)
+    // 1. Command Center Home Overview Page
     Route::get('/dashboard', function () {
         $recentEstimates = Estimate::where('user_id', auth()->id())
             ->where('status', '!=', 'archived')
@@ -53,7 +54,6 @@ Route::middleware(['auth'])->group(function () {
             ->take(3)
             ->get();
 
-        // Dynamically track homeowner signals needing manual confirmation fields
         $actionAlerts = Estimate::where('user_id', auth()->id())
             ->whereIn('status', ['approved', 'declined'])
             ->latest()
@@ -71,7 +71,7 @@ Route::middleware(['auth'])->group(function () {
         return view('profile', compact('specialties'));
     })->name('dashboard.profile');
 
-    // 3. Dedicated Estimates and CPP Tool Suite Page
+    // 3. Dedicated Estimates Management Page
     Route::get('/dashboard/estimates', function () {
         $estimates = Estimate::where('user_id', auth()->id())
             ->where('status', '!=', 'archived')
@@ -81,14 +81,23 @@ Route::middleware(['auth'])->group(function () {
         return view('estimates', compact('estimates'));
     })->name('dashboard.estimates');
 
-    // 4. Save Profile Changes Form Submission Action
+    // 4. Dedicated Invoices Management Page (New Endpoint)
+    Route::get('/dashboard/invoices', [InvoiceController::class, 'index'])->name('dashboard.invoices');
+
+    // 5. Save Profile Changes Form Submission Action
     Route::post('/profile/update', [MagicLinkController::class, 'updateProfile'])->name('profile.update');
 
-    // 5. Core Proposal Lifecycle Interceptors (CRUDA Suite)
+    // 6. Estimate Lifecycle Interceptors (CRUDA Suite)
     Route::post('/estimates', [EstimateController::class, 'store'])->name('estimates.store');
     Route::post('/estimates/{id}/convert', [EstimateController::class, 'convertToInvoice'])->name('estimates.convert');
     Route::post('/estimates/{id}/archive', [EstimateController::class, 'archive'])->name('estimates.archive');
     Route::delete('/estimates/{id}', [EstimateController::class, 'destroy'])->name('estimates.destroy');
+
+    // 7. Invoice Lifecycle Interceptors (New CRUDA Actions Suite)
+    Route::patch('/invoices/{id}', [InvoiceController::class, 'update'])->name('invoices.update');
+    Route::post('/invoices/{id}/paid', [InvoiceController::class, 'markAsPaid'])->name('invoices.paid');
+    Route::post('/invoices/{id}/archive', [InvoiceController::class, 'archive'])->name('invoices.archive');
+    Route::delete('/invoices/{id}', [InvoiceController::class, 'destroy'])->name('invoices.destroy');
 
 
     // =========================================================================
@@ -97,18 +106,9 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('admin/command-center')
         ->name('admin.command-center.')
         ->group(function () {
-            
-            // Admin Home Overview Page
             Route::get('/', [SuperAdminController::class, 'index'])->name('index');
-            
-            // View Individual Contractor Account Details
             Route::get('/client/{id}', [SuperAdminController::class, 'showClient'])->name('client.show');
-            
-            // Suspend or Activate Contractor Account Access
             Route::post('/client/{id}/toggle-status', [SuperAdminController::class, 'toggleStatus'])->name('client.toggle');
-            
-            // Customize/Override Contractor Dashboard Colors
             Route::post('/client/{id}/update-theme', [SuperAdminController::class, 'updateTheme'])->name('client.theme');
-            
         });
 });
