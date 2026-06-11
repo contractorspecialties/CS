@@ -19,7 +19,7 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
 </head>
-<body class="bg-[#F0F0F0] text-[#3C3C3C] antialiased" x-data="{ userMenuOpen: false }">
+<body class="bg-[#F0F0F0] text-[#3C3C3C] antialiased" x-data="{ userMenuOpen: false, estimateModalOpen: false }">
 
     {{-- MASTER NAVIGATION BAR --}}
     <header class="bg-[#FFFFFF] border-b border-[#F0F0F0] sticky top-0 z-50 shadow-sm">
@@ -307,7 +307,7 @@
                                 </div>
                             </div>
 
-                            {{-- SECTION 4: BUSINESS OPERATIONS & RATES (CPP BRIDGE) --}}
+                            {{-- SECTION 4: BUSINESS OPERATIONS & RATES --}}
                             <div class="space-y-4 pt-2">
                                 <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">4. Estimating Rates & Settings</h3>
                                 
@@ -348,7 +348,7 @@
                         </form>
                     </div>
 
-                    {{-- COMPONENT RIGHT: PERFORMANCE METER CONSOLE (FOOTPRINT: 5/12) --}}
+                    {{-- COMPONENT RIGHT: PERFORMANCE METER & CPP ESTIMATES SUITE (FOOTPRINT: 5/12) --}}
                     <div class="lg:col-span-5 space-y-6">
                         
                         {{-- DIRECTORY TRAFFIC SUMMARY --}}
@@ -366,18 +366,73 @@
                             </div>
                         </div>
 
-                        {{-- PREMIUM TOOL SUITE PROMPTS (CPP MONETIZATION GATES) --}}
-                        <div class="bg-[#FFFFFF] rounded-3xl border-2 border-[#F0F0F0] p-6 shadow-sm space-y-4">
-                            <div class="flex items-center gap-3">
-                                <span class="w-2.5 h-2.5 rounded-full bg-[#FFC32D] animate-pulse"></span>
-                                <h4 class="text-sm font-black text-[#0F2D5A] uppercase tracking-wider">Premium Business Tools Preview (Contractor Profit Pro)</h4>
+                        {{-- LIVE BUSINESS TOOLS TIER: CONTRACTOR PROFIT PRO ESTIMATING CORE --}}
+                        <div class="bg-[#FFFFFF] rounded-[2rem] border-4 border-slate-900 shadow-xl p-6 sm:p-8 space-y-6">
+                            
+                            {{-- CORE CARD HEADER --}}
+                            <div class="flex items-center justify-between border-b border-[#F0F0F0] pb-4">
+                                <div class="text-left">
+                                    <span class="bg-[#FFC32D] text-[#0F2D5A] text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md">Pro Feature</span>
+                                    <h3 class="text-lg font-black text-[#0F2D5A] tracking-tight mt-1">Estimates & Quotes</h3>
+                                </div>
+                                <button @click="estimateModalOpen = true" class="bg-[#0F2D5A] hover:bg-[#1E3C5A] text-white text-xs font-black uppercase tracking-wider px-3.5 py-2.5 rounded-xl transition transform active:scale-95 shadow-sm">
+                                    + New Estimate
+                                </button>
                             </div>
-                            <p class="text-xs font-bold text-slate-500 leading-relaxed">
-                                Your current free account includes your public directory listing. Soon, you'll be able to manage your entire business directly from this screen. We are bringing over premium tools for professional estimating, job scheduling, invoice tracking, and fast client credit card or bank payouts.
-                            </p>
-                            <button disabled class="w-full bg-[#F0F0F0] text-slate-400 font-black text-xs uppercase tracking-widest py-3.5 rounded-xl border border-slate-200 cursor-not-allowed text-center">
-                                Business Tool Suite Loading...
-                            </button>
+
+                            {{-- PIPELINE pipeline numbers summary --}}
+                            <div class="grid grid-cols-3 gap-2 text-center bg-slate-50 p-3 rounded-xl border border-slate-200/60">
+                                <div>
+                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Drafts</span>
+                                    <span class="text-sm font-black text-[#0F2D5A] block mt-0.5">$0.00</span>
+                                </div>
+                                <div>
+                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Sent</span>
+                                    <span class="text-sm font-black text-amber-600 block mt-0.5">$0.00</span>
+                                </div>
+                                <div>
+                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Approved</span>
+                                    <span class="text-sm font-black text-emerald-600 block mt-0.5">$0.00</span>
+                                </div>
+                            </div>
+
+                            {{-- ACTIVE ROSTER WORKFLOW STAGE LIST --}}
+                            <div class="space-y-3">
+                                @if(isset($estimates) && $estimates->count() > 0)
+                                    {{-- Loop logic hooks into this space once the backend collection loads --}}
+                                @else
+                                    {{-- VISUAL PLACEMENT PLACEHOLDERS: Visual Roster States --}}
+                                    <div class="text-left bg-white border border-slate-200/80 p-4 rounded-xl flex items-center justify-between hover:border-slate-400 transition">
+                                        <div class="space-y-0.5">
+                                            <span class="bg-amber-50 text-amber-700 border border-amber-200 text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">Sent to Client</span>
+                                            <h4 class="text-sm font-black text-slate-800 tracking-tight">Johnathan Davis</h4>
+                                            <p class="text-xs font-bold text-slate-400">Main Bathroom Remodel Quote</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-sm font-black text-slate-800 block">$2,450.00</span>
+                                            <span class="text-[9px] text-slate-400 font-bold block">June 11, 2026</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-left bg-white border border-slate-200/80 p-4 rounded-xl flex items-center justify-between hover:border-slate-400 transition">
+                                        <div class="space-y-0.5">
+                                            <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">Approved</span>
+                                            <h4 class="text-sm font-black text-slate-800 tracking-tight">Sarah Jenkins</h4>
+                                            <p class="text-xs font-bold text-slate-400">Emergency Panel Service Call</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-sm font-black text-[#0F2D5A] block">$385.00</span>
+                                            <span class="text-[9px] text-slate-400 font-bold block">June 10, 2026</span>
+                                        </div>
+                                    </div>
+
+                                    {{-- EMPTY FALLBACK DECORATION STYLES --}}
+                                    <div class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center hidden">
+                                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider py-2">No quotes generated yet.</p>
+                                    </div>
+                                @endif
+                            </div>
+
                         </div>
 
                     </div>
@@ -387,6 +442,123 @@
 
         </div>
     </main>
+
+    {{-- INTERACTIVE COMPONENT DIALOG OVERLAY: CREATE ESTIMATE MODAL --}}
+    <div x-show="estimateModalOpen" 
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm"
+         x-transition
+         style="display: none;">
+        
+        <div class="bg-white rounded-[2.5rem] border-4 border-slate-900 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 sm:p-8 space-y-6"
+             @click.away="estimateModalOpen = false">
+            
+            {{-- MODAL TITLE WINDOW ACTION DESK --}}
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div class="text-left">
+                    <h3 class="text-xl font-black text-[#0F2D5A] tracking-tight">Generate New Project Estimate</h3>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-0.5">Create and issue professional estimates instantly</p>
+                </div>
+                <button @click="estimateModalOpen = false" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 font-black text-sm flex items-center justify-center hover:bg-slate-200">×</button>
+            </div>
+
+            {{-- INTERACTIVE FORM PANEL ACTION STEPPERS --}}
+            <form action="#" method="POST" class="space-y-6 text-left" 
+                  x-data="{ 
+                      items: [
+                          { description: 'Standard Service Call Out Fee', type: 'labor', quantity: 1, unit_price: {{ auth()->user()->minimum_service_fee ?? 85 }} }
+                      ],
+                      addItem() {
+                          this.items.push({ description: 'Additional Labor / Materials Description', type: 'labor', quantity: 1, unit_price: {{ auth()->user()->hourly_rate ?? 95 }} });
+                      },
+                      removeItem(index) {
+                          if (this.items.length > 1) this.items.splice(index, 1);
+                      },
+                      calculateTotal() {
+                          let total = 0;
+                          this.items.forEach(item => {
+                              total += (item.quantity * item.unit_price);
+                          });
+                          return total;
+                      }
+                  }">
+                @csrf
+
+                {{-- OVERVIEW CLIENT FIELDS --}}
+                <div class="space-y-4">
+                    <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-1">1. Customer Information</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Client Full Name</label>
+                            <input type="text" name="client_name" required placeholder="e.g. Walter White" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-sm font-bold py-3 px-4 focus:border-[#0F2D5A] focus:bg-white focus:outline-none focus:ring-0 transition">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Client Email Address</label>
+                            <input type="email" name="client_email" placeholder="e.g. walter@gmail.com" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-sm font-bold py-3 px-4 focus:border-[#0F2D5A] focus:bg-white focus:outline-none focus:ring-0 transition">
+                        </div>
+                    </div>
+                </div>
+
+                {{-- DETAILS METADATA INFO --}}
+                <div class="space-y-4">
+                    <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-1">2. Project Scope</h4>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Project Title Name</label>
+                        <input type="text" name="project_title" required placeholder="e.g. Master Bedroom Ceiling Fan Installation" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-sm font-bold py-3 px-4 focus:border-[#0F2D5A] focus:bg-white focus:outline-none focus:ring-0 transition">
+                    </div>
+                </div>
+
+                {{-- ITEMIZED LINE INPUT STAGING TRACKING LAYER --}}
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-1">
+                        <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest">3. Line Items</h4>
+                        <button type="button" @click="addItem()" class="text-[10px] font-black text-[#0F2D5A] hover:underline uppercase tracking-wider">+ Add Row Item</button>
+                    </div>
+
+                    {{-- LIVE ARRAY ITEM ENGINE REPEATER --}}
+                    <div class="space-y-3">
+                        <template x-for="(item, index) in items" :key="index">
+                            <div class="grid grid-cols-12 gap-2 items-center bg-slate-50 p-3 rounded-xl border border-slate-200/70">
+                                <div class="col-span-6">
+                                    <input type="text" x-model="item.description" placeholder="Item Description" required class="w-full bg-white border border-slate-200 rounded-lg text-xs font-bold py-2.5 px-3 focus:outline-none focus:border-[#0F2D5A]">
+                                </div>
+                                <div class="col-span-2">
+                                    <input type="number" min="1" x-model.number="item.quantity" placeholder="Qty" required class="w-full bg-white border border-slate-200 rounded-lg text-xs font-bold py-2.5 px-2 text-center focus:outline-none focus:border-[#0F2D5A]">
+                                </div>
+                                <div class="col-span-3 relative">
+                                    <span class="absolute left-2.5 top-2.5 text-xs font-bold text-slate-400">$</span>
+                                    <input type="number" min="0" x-model.number="item.unit_price" placeholder="Rate" required class="w-full bg-white border border-slate-200 rounded-lg text-xs font-bold py-2.5 pl-5 pr-2 focus:outline-none focus:border-[#0F2D5A]">
+                                </div>
+                                <div class="col-span-1 text-center">
+                                    <button type="button" @click="removeItem(index)" class="text-red-500 font-black text-sm hover:text-red-700">×</button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                {{-- FINANCIAL RUNNING SUMMARY LOGIC BAR --}}
+                <div class="bg-slate-900 rounded-2xl p-5 text-white flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Calculated Invoice Total</span>
+                        <p class="text-xs font-bold text-slate-500 mt-0.5">Calculated in real-time from active item configurations</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-2xl font-black text-[#FFC32D]" x-text="'$' + calculateTotal().toFixed(2)">$0.00</span>
+                    </div>
+                </div>
+
+                {{-- ACTIONS PANEL BOX --}}
+                <div class="flex gap-4 pt-2">
+                    <button type="button" @click="estimateModalOpen = false" class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-black text-xs uppercase tracking-wider py-4 rounded-xl transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="w-2/3 bg-[#0F2D5A] hover:bg-[#1E3C5A] text-white font-black text-xs uppercase tracking-wider py-4 rounded-xl shadow-md transition transform active:scale-95">
+                        Save and Issue Estimate →
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
 </body>
 </html>
