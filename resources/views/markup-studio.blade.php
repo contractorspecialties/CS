@@ -3,7 +3,6 @@
 @section('title', 'Media Markup Studio')
 
 @section('content')
-{{-- Added strict viewport limits to prevent horizontal scroll spill --}}
 <div class="space-y-6 w-full min-w-0 max-w-full overflow-hidden" 
      x-data="canvasStudio()"
      @resize.window.debounce.150ms="handleViewportRotation()">
@@ -23,7 +22,7 @@
                     :disabled="!imageLoaded || isSaving" 
                     :class="(!imageLoaded || isSaving) ? 'opacity-40 cursor-not-allowed bg-slate-700' : 'bg-emerald-600 hover:bg-emerald-500'" 
                     class="w-1/2 sm:w-auto text-white text-xs font-black uppercase tracking-wider px-6 py-3.5 rounded-xl text-center shadow-md transition transform active:scale-95 whitespace-nowrap">
-                <span x-text="isSaving ? 'Processing Asset...' : 'Save & Attach Asset →'">Save & Attach Asset →</span>
+                <span x-text="isSaving ? 'Uploading...' : 'Save & Attach Asset →'">Save & Attach Asset →</span>
             </button>
         </div>
     </div>
@@ -34,12 +33,12 @@
         {{-- LEFT COLUMN: CONTROL PANEL TOOLBAR --}}
         <div class="lg:col-span-3 bg-slate-900 border border-slate-800 rounded-[2rem] p-5 text-left text-white space-y-6 shadow-xl w-full min-w-0">
             
-            {{-- 0. Image Source Selector (Layered overlay for absolute hardware gesture trust) --}}
+            {{-- 0. Image Source Selector --}}
             <div class="space-y-2.5">
                 <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest block">Select or Snap Photo</span>
                 <div class="relative w-full overflow-hidden bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-600 text-slate-300 rounded-xl p-3 text-xs font-black uppercase tracking-wider text-center transition">
-                    📸 Snap Site Photo
-                    <input type="file" accept="image/*" capture="environment" @change="loadImageFromFile($event)" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10">
+                    📸 Add Job Site Photo
+                    <input type="file" accept="image/*" @change="loadImageFromFile($event)" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-20">
                 </div>
             </div>
 
@@ -102,7 +101,7 @@
             </div>
         </div>
 
-        {{-- RIGHT COLUMN: VISUAL ENGINE WORKSPACE SHEET (Forced strict maximum relative viewport lock) --}}
+        {{-- RIGHT COLUMN: VISUAL ENGINE WORKSPACE SHEET --}}
         <div class="lg:col-span-9 bg-slate-950 border border-slate-800 rounded-[2.5rem] p-3 sm:p-6 shadow-xl flex items-center justify-center overflow-hidden h-[55vh] max-h-[60vh] relative w-full min-w-0">
             
             <canvas id="studioCanvas"
@@ -118,7 +117,7 @@
             <div class="text-center text-slate-500 space-y-2 max-w-sm px-4" x-show="!imageLoaded">
                 <span class="text-4xl block">📷</span>
                 <h4 class="text-sm font-black text-slate-400 uppercase tracking-wider">No Image Loaded Yet</h4>
-                <p class="text-xs font-bold text-slate-600">Tap "Snap Site Photo" on the sidebar panel to fire up your device camera or pick a field photo to unpack the canvas studio.</p>
+                <p class="text-xs font-bold text-slate-600">Tap "Add Job Site Photo" on the sidebar panel to open your device camera or pick an existing field photo.</p>
             </div>
 
         </div>
@@ -143,7 +142,7 @@ document.addEventListener('alpine:init', () => {
         strokeSize: 4,
         isDrawing: false,
         isPublic: true,
-        isSaving: false, // Prevents thread collisions and race drops during form submission sequences
+        isSaving: false,
         startX: 0,
         startY: 0,
         snapshot: null,
@@ -197,17 +196,15 @@ document.addEventListener('alpine:init', () => {
         handleViewportRotation() {
             if (!this.imageLoaded || !this.activeImageSource) return;
             
-            // Build an isolated background memory cache canvas context to map the active state perfectly
+            // Backup active canvas content layout matrix safely
             const cacheCanvas = document.createElement('canvas');
             cacheCanvas.width = this.canvas.width;
             cacheCanvas.height = this.canvas.height;
             const cacheCtx = cacheCanvas.getContext('2d');
             cacheCtx.drawImage(this.canvas, 0, 0);
             
-            // Force browser layout layers to completely recalculate the display geometry metrics
-            const containerWidth = this.canvas.parentElement.clientWidth;
-            
-            // Re-render and drop artwork back cleanly without coordinate bleed
+            // Re-render baseline coordinates without losing orientation aspect definitions
+            this.canvas.style.width = '100%';
             this.ctx.putImageData(cacheCtx.getImageData(0, 0, cacheCanvas.width, cacheCanvas.height), 0, 0);
         },
 
@@ -276,27 +273,27 @@ document.addEventListener('alpine:init', () => {
 
         saveFlattenedImage() {
             if(!this.imageLoaded || this.isSaving) return;
-            
-            // Flip the saving locks to block ongoing thread modifications
             this.isSaving = true;
             
-            // Micro-timeout delay allows mobile Chrome frames to safely process input states before compiling payloads
-            setTimeout(() => {
-                try {
-                    const dataUrl = this.canvas.toDataURL('image/webp', 0.85);
+            // Direct client-side synchronous payload assembly sequence 
+            try {
+                const dataUrl = this.canvas.toDataURL('image/webp', 0.85);
+                
+                if (dataUrl && dataUrl.startsWith('data:image/webp;base64,')) {
+                    document.getElementById('payload_base64').value = dataUrl;
                     
-                    if (dataUrl && dataUrl.length > 1500) {
-                        document.getElementById('payload_base64').value = dataUrl;
+                    // Direct nextTick callback ensures DOM fields are securely hydrated before submit fires
+                    this.$nextTick(() => {
                         document.getElementById('markupForm').submit();
-                    } else {
-                        alert('Image compilation encountered an asset memory allocation error. Please refresh and try again.');
-                        this.isSaving = false;
-                    }
-                } catch(error) {
-                    console.error('Canvas compilation failure logs:', error);
+                    });
+                } else {
+                    alert('Image compilation encountered an asset memory error. Please try again.');
                     this.isSaving = false;
                 }
-            }, 100);
+            } catch(error) {
+                console.error(error);
+                this.isSaving = false;
+            }
         }
     }));
 });
