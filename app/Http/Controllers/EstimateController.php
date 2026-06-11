@@ -66,7 +66,7 @@ class EstimateController extends Controller
             foreach ($processedItems as $processedItem) {
                 $estimate->items()->create($processedItem);
             }
-        ]);
+        }); // Fixed: Cleanly closes the DB transaction closure callback matrix
 
         // Process file attachments if injected into the multi-part input fields
         if ($request->hasFile('photos')) {
@@ -213,7 +213,6 @@ class EstimateController extends Controller
      */
     public function convertToInvoice($id)
     {
-        // Upgraded: Eager load attachments alongside estimate line items
         $estimate = Estimate::where('user_id', Auth::id())
             ->where('id', $id)
             ->with(['items', 'attachments'])
@@ -246,7 +245,6 @@ class EstimateController extends Controller
                 ]);
             }
 
-            // Upgraded: Replicate polymorphic attachment rows instantly for the new Invoice reference
             foreach ($estimate->attachments as $attachment) {
                 $invoice->attachments()->create([
                     'user_id' => $attachment->user_id,
