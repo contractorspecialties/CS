@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\MagicLinkController;
+use App\Http\Controllers\EstimateController;
 use App\Models\Specialty;
 
 // =========================================================================
@@ -50,6 +51,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Save Contractor Profile Details from Dashboard Form
     Route::post('/profile/update', [MagicLinkController::class, 'updateProfile'])->name('profile.update');
+
+    // Save and Create a New Project Estimate (CPP Suite)
+    Route::post('/estimates', [EstimateController::class, 'store'])->name('estimates.store');
 
     // Super Admin Control Panel
     Route::prefix('admin/command-center')

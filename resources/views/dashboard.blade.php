@@ -404,7 +404,7 @@
                                     {{-- VISUAL PLACEMENT PLACEHOLDERS: Visual Roster States --}}
                                     <div class="text-left bg-white border border-slate-200/80 p-4 rounded-xl flex items-center justify-between hover:border-slate-400 transition">
                                         <div class="space-y-0.5">
-                                            <span class="bg-amber-50 text-amber-700 border border-amber-200 text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">Sent to Client</span>
+                                            <span class="bg-amber-50 text-amber-700 border border-amber-200 text-[8px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-md">Sent to Client</span>
                                             <h4 class="text-sm font-black text-slate-800 tracking-tight">Johnathan Davis</h4>
                                             <p class="text-xs font-bold text-slate-400">Main Bathroom Remodel Quote</p>
                                         </div>
@@ -416,7 +416,7 @@
 
                                     <div class="text-left bg-white border border-slate-200/80 p-4 rounded-xl flex items-center justify-between hover:border-slate-400 transition">
                                         <div class="space-y-0.5">
-                                            <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">Approved</span>
+                                            <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[8px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-md">Approved</span>
                                             <h4 class="text-sm font-black text-slate-800 tracking-tight">Sarah Jenkins</h4>
                                             <p class="text-xs font-bold text-slate-400">Emergency Panel Service Call</p>
                                         </div>
@@ -424,11 +424,6 @@
                                             <span class="text-sm font-black text-[#0F2D5A] block">$385.00</span>
                                             <span class="text-[9px] text-slate-400 font-bold block">June 10, 2026</span>
                                         </div>
-                                    </div>
-
-                                    {{-- EMPTY FALLBACK DECORATION STYLES --}}
-                                    <div class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center hidden">
-                                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider py-2">No quotes generated yet.</p>
                                     </div>
                                 @endif
                             </div>
@@ -462,7 +457,7 @@
             </div>
 
             {{-- INTERACTIVE FORM PANEL ACTION STEPPERS --}}
-            <form action="#" method="POST" class="space-y-6 text-left" 
+            <form action="{{ route('estimates.store') }}" method="POST" class="space-y-6 text-left" 
                   x-data="{ 
                       items: [
                           { description: 'Standard Service Call Out Fee', type: 'labor', quantity: 1, unit_price: {{ auth()->user()->minimum_service_fee ?? 85 }} }
@@ -519,14 +514,14 @@
                         <template x-for="(item, index) in items" :key="index">
                             <div class="grid grid-cols-12 gap-2 items-center bg-slate-50 p-3 rounded-xl border border-slate-200/70">
                                 <div class="col-span-6">
-                                    <input type="text" x-model="item.description" placeholder="Item Description" required class="w-full bg-white border border-slate-200 rounded-lg text-xs font-bold py-2.5 px-3 focus:outline-none focus:border-[#0F2D5A]">
+                                    <input type="text" :name="'items[' + index + '][description]'" x-model="item.description" placeholder="Item Description" required class="w-full bg-white border border-slate-200 rounded-lg text-xs font-bold py-2.5 px-3 focus:outline-none focus:border-[#0F2D5A]">
                                 </div>
                                 <div class="col-span-2">
-                                    <input type="number" min="1" x-model.number="item.quantity" placeholder="Qty" required class="w-full bg-white border border-slate-200 rounded-lg text-xs font-bold py-2.5 px-2 text-center focus:outline-none focus:border-[#0F2D5A]">
+                                    <input type="number" min="1" :name="'items[' + index + '][quantity]'" x-model.number="item.quantity" placeholder="Qty" required class="w-full bg-white border border-slate-200 rounded-lg text-xs font-bold py-2.5 px-2 text-center focus:outline-none focus:border-[#0F2D5A]">
                                 </div>
                                 <div class="col-span-3 relative">
                                     <span class="absolute left-2.5 top-2.5 text-xs font-bold text-slate-400">$</span>
-                                    <input type="number" min="0" x-model.number="item.unit_price" placeholder="Rate" required class="w-full bg-white border border-slate-200 rounded-lg text-xs font-bold py-2.5 pl-5 pr-2 focus:outline-none focus:border-[#0F2D5A]">
+                                    <input type="number" min="0" :name="'items[' + index + '][unit_price]'" x-model.number="item.unit_price" placeholder="Rate" required class="w-full bg-white border border-slate-200 rounded-lg text-xs font-bold py-2.5 pl-5 pr-2 focus:outline-none focus:border-[#0F2D5A]">
                                 </div>
                                 <div class="col-span-1 text-center">
                                     <button type="button" @click="removeItem(index)" class="text-red-500 font-black text-sm hover:text-red-700">×</button>
