@@ -16,14 +16,14 @@
             <a href="{{ route('dashboard.estimates') }}" class="w-1/2 sm:w-auto bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-black uppercase tracking-wider px-5 py-3.5 rounded-xl text-center transition">
                 Cancel
             </a>
-            <button @click="saveFlattenedImage()" ::disabled="!imageLoaded" :class="!imageLoaded ? 'opacity-40 cursor-not-allowed bg-slate-700' : 'bg-emerald-600 hover:bg-emerald-500'" class="w-1/2 sm:w-auto text-white text-xs font-black uppercase tracking-wider px-6 py-3.5 rounded-xl text-center shadow-md transition transform active:scale-95 whitespace-nowrap">
+            <button @click="saveFlattenedImage()" :disabled="!imageLoaded" :class="!imageLoaded ? 'opacity-40 cursor-not-allowed bg-slate-700' : 'bg-emerald-600 hover:bg-emerald-500'" class="w-1/2 sm:w-auto text-white text-xs font-black uppercase tracking-wider px-6 py-3.5 rounded-xl text-center shadow-md transition transform active:scale-95 whitespace-nowrap">
                 Save & Attach Asset →
             </button>
         </div>
     </div>
 
     {{-- MAIN EDITING ENGINE MATRICES --}}
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <div class="grid grid-cols-1 log:grid-cols-12 lg:grid-cols-12 gap-6 items-start">
         
         {{-- LEFT COLUMN: CONTROL PANEL TOOLBAR --}}
         <div class="lg:col-span-3 bg-slate-900 border border-slate-800 rounded-[2rem] p-5 text-left text-white space-y-6 shadow-xl">
@@ -42,7 +42,7 @@
                 <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest block">1. Selected Tool</span>
                 <div class="grid grid-cols-2 gap-2 text-xs font-black uppercase tracking-wider">
                     <button @click="tool = 'brush'" :class="tool === 'brush' ? 'bg-[#FFC32D] text-slate-950' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'" class="p-3 rounded-xl flex items-center justify-center gap-2 transition">
-                        <span>专️</span> Brush
+                        <span>🖌️</span> Brush
                     </button>
                     <button @click="tool = 'line'" :class="tool === 'line' ? 'bg-[#FFC32D] text-slate-950' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'" class="p-3 rounded-xl flex items-center justify-center gap-2 transition">
                         <span>📏</span> Line
@@ -79,7 +79,16 @@
                 </div>
             </div>
 
-            {{-- 4. History Cleansing Controls --}}
+            {{-- 4. Dynamic Customer Proposal Visibility Toggle Control Box --}}
+            <div class="space-y-2.5">
+                <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest block">4. Client Link Access</span>
+                <label class="flex items-center gap-3 bg-slate-800 hover:bg-slate-750 p-3.5 rounded-xl cursor-pointer select-none transition border border-slate-700/60">
+                    <input type="checkbox" x-model="isPublic" class="rounded text-[#0F2D5A] border-slate-600 focus:ring-0 focus:ring-offset-0 bg-slate-900 accent-[#FFC32D] h-4 w-4">
+                    <span class="text-xs font-bold text-slate-200">Show on Homeowner Portal</span>
+                </label>
+            </div>
+
+            {{-- 5. History Cleansing Controls --}}
             <div class="pt-4 border-t border-slate-800">
                 <button @click="clearCanvas()" class="w-full bg-rose-950/40 hover:bg-rose-900/60 border border-rose-900/50 text-rose-300 text-[10px] font-black uppercase tracking-wider py-3 rounded-xl transition text-center">
                     Reset Canvas
@@ -109,10 +118,11 @@
         </div>
     </div>
 
-    {{-- ASSET PAYLOAD SHIPPING FRAME --}}
+    {{-- ASSET PAYLOAD SHIPPING FORM --}}
     <form id="markupForm" action="{{ route('estimates.markup.store', $estimate->id) }}" method="POST" class="hidden">
         @csrf
         <input type="hidden" id="payload_base64" name="markup_image">
+        <input type="hidden" id="payload_is_public" name="is_public" :value="isPublic ? 1 : 0">
     </form>
 
 </div>
@@ -126,6 +136,7 @@ document.addEventListener('alpine:init', () => {
         strokeColor: '#FFC32D',
         strokeSize: 4,
         isDrawing: false,
+        isPublic: true, // Baseline state default maps to public viewing parameters
         startX: 0,
         startY: 0,
         snapshot: null,
@@ -147,9 +158,28 @@ document.addEventListener('alpine:init', () => {
                 const img = new Image();
                 img.onload = () => {
                     this.activeImageSource = img;
-                    this.canvas.width = img.naturalWidth || 800;
-                    this.canvas.height = img.naturalHeight || 600;
-                    this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
+                    
+                    // High-performance boundary constraints downscaling equations
+                    let maxWidth = 1200;
+                    let maxHeight = 1200;
+                    let width = img.naturalWidth || 800;
+                    let height = img.naturalHeight || 600;
+
+                    if (width > maxWidth || height > maxHeight) {
+                        if (width > height) {
+                            height = Math.round((height * maxWidth) / width);
+                            width = maxWidth;
+                        } else {
+                            width = Math.round((width * maxHeight) / height);
+                            height = maxHeight;
+                        }
+                    }
+
+                    // Assign the mathematically downscaled dimension coordinates to the active viewport
+                    this.canvas.width = width;
+                    this.canvas.height = height;
+                    
+                    this.ctx.drawImage(img, 0, 0, width, height);
                     this.imageLoaded = true;
                 };
                 img.src = event.target.result;

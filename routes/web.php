@@ -91,6 +91,7 @@ Route::middleware(['auth'])->group(function () {
     // 6. Media Markup Studio Workspace Endpoints
     Route::get('/dashboard/estimates/{id}/markup', [EstimateController::class, 'showMarkup'])->name('estimates.markup');
     Route::post('/dashboard/estimates/{id}/markup', [EstimateController::class, 'storeMarkup'])->name('estimates.markup.store');
+    Route::post('/dashboard/attachments/{id}/toggle-visibility', [EstimateController::class, 'toggleAttachmentVisibility'])->name('attachments.toggle-visibility');
 
     // 7. Save Profile Changes Form Submission Action
     Route::post('/profile/update', [MagicLinkController::class, 'updateProfile'])->name('profile.update');

@@ -14,10 +14,12 @@ class Attachment extends Model
         'attachable_id',
         'file_path',
         'file_type',
+        'is_public', // Registered for fillable configuration mass-assignment
         'canvas_metadata',
     ];
 
     protected $casts = [
+        'is_public' => 'boolean', // Forced to explicit boolean values
         'canvas_metadata' => 'array',
     ];
 

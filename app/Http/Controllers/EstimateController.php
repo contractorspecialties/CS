@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Estimate;
 use App\Models\Invoice;
+use App\Models\Attachment;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -65,7 +66,7 @@ class EstimateController extends Controller
             foreach ($processedItems as $processedItem) {
                 $estimate->items()->create($processedItem);
             }
-    });
+        }); // Fixed: Closed cleanly with the correct curly brace and closing parenthesis configuration
 
         // Process file attachments if injected into the multi-part input fields
         if ($request->hasFile('photos')) {
@@ -78,7 +79,8 @@ class EstimateController extends Controller
                 $estimate->attachments()->create([
                     'user_id' => Auth::id(),
                     'file_path' => $fileName,
-                    'file_type' => 'markup'
+                    'file_type' => 'markup',
+                    'is_public' => true
                 ]);
             }
 
@@ -150,7 +152,12 @@ class EstimateController extends Controller
      */
     public function showMarkup($id)
     {
-        $estimate = Estimate::where('user_id', Auth::id())->where('id', $id)->firstOrFail();
+        // Load with attachments to support visibility checklist reviews
+        $estimate = Estimate::where('user_id', Auth::id())
+            ->where('id', $id)
+            ->with('attachments')
+            ->firstOrFail();
+
         return view('markup-studio', compact('estimate'));
     }
 
@@ -162,7 +169,8 @@ class EstimateController extends Controller
         $estimate = Estimate::where('user_id', Auth::id())->where('id', $id)->firstOrFail();
 
         $request->validate([
-            'markup_image' => 'required|string'
+            'markup_image' => 'required|string',
+            'is_public' => 'nullable|boolean'
         ]);
 
         $rawStream = $request->input('markup_image');
@@ -178,13 +186,27 @@ class EstimateController extends Controller
             $estimate->attachments()->create([
                 'user_id' => Auth::id(),
                 'file_path' => $fileName,
-                'file_type' => 'markup'
+                'file_type' => 'markup',
+                'is_public' => $request->input('is_public', true)
             ]);
 
             return redirect()->route('dashboard.estimates')->with('status', 'Success! Marked-up job site photo has been permanently attached to the client proposal.');
         }
 
         return redirect()->back()->with('status', 'Error: Failed to process inbound canvas image streams.');
+    }
+
+    /**
+     * Toggle client visibility permissions on specific media rows.
+     */
+    public function toggleAttachmentVisibility(Request $request, $id)
+    {
+        $attachment = Attachment::where('user_id', Auth::id())->where('id', $id)->firstOrFail();
+        $attachment->update([
+            'is_public' => !$attachment->is_public
+        ]);
+
+        return redirect()->back()->with('status', 'Photo visibility configuration altered successfully.');
     }
 
     /**
@@ -257,7 +279,8 @@ class EstimateController extends Controller
      */
     public function showPublic($token)
     {
-        $estimate = Estimate::with(['items', 'user.specialty'])
+        // Eager load attachments to let the view render them seamlessly
+        $estimate = Estimate::with(['items', 'user.specialty', 'attachments'])
             ->where('secure_token', $token)
             ->firstOrFail();
 
