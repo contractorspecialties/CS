@@ -3,10 +3,13 @@
 @section('title', 'Media Markup Studio')
 
 @section('content')
-<div class="space-y-6" x-data="canvasStudio()">
+{{-- Added window resize and orientation change listeners to cleanly snap the screen scale bounds --}}
+<div class="space-y-6 w-full min-w-0" 
+     x-data="canvasStudio()"
+     @resize.window.debounce.150ms="handleViewportRotation()">
     
     {{-- STUDIO SUB-HEADER --}}
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-900 text-white p-6 rounded-2xl border border-slate-800 shadow-xl text-left">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-900 text-white p-6 rounded-2xl border border-slate-800 shadow-xl text-left w-full min-w-0">
         <div>
             <span class="bg-[#FFC32D] text-slate-950 text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md">Precision Mode</span>
             <h1 class="text-xl font-black tracking-tight mt-2">Media Markup Studio</h1>
@@ -23,17 +26,16 @@
     </div>
 
     {{-- MAIN EDITING ENGINE MATRICES --}}
-    <div class="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-6 items-start">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full min-w-0">
         
-        {{-- LEFT COLUMN: CONTROL PANEL TOOLBAR --}}
-        <div class="lg:col-span-3 bg-slate-900 border border-slate-800 rounded-[2rem] p-5 text-left text-white space-y-6 shadow-xl">
+        {{-- LEFT COLUMN: CONTROL PANEL TOOLBAR (Enforced strict width parameters to prevent expansion) --}}
+        <div class="lg:col-span-3 bg-slate-900 border border-slate-800 rounded-[2rem] p-5 text-left text-white space-y-6 shadow-xl w-full min-w-0">
             
             {{-- 0. Image Source Selector --}}
             <div class="space-y-2.5">
                 <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest block">Select or Snap Photo</span>
                 <label class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-600 text-slate-300 rounded-xl p-3 text-xs font-black uppercase tracking-wider block text-center cursor-pointer transition">
                     📸 Snap Site Photo
-                    {{-- Fixed: Added capture="environment" to directly prompt native smartphone camera hardware --}}
                     <input type="file" accept="image/*" capture="environment" @change="loadImageFromFile($event)" class="hidden">
                 </label>
             </div>
@@ -97,20 +99,20 @@
             </div>
         </div>
 
-        {{-- RIGHT COLUMN: VISUAL ENGINE WORKSPACE SHEET --}}
-        <div class="lg:col-span-9 bg-slate-950 border border-slate-800 rounded-[2.5rem] p-4 sm:p-6 shadow-xl flex items-center justify-center overflow-auto min-h-[500px] relative">
+        {{-- RIGHT COLUMN: VISUAL ENGINE WORKSPACE SHEET (Added w-full min-w-0 layout stabilization guards) --}}
+        <div class="lg:col-span-9 bg-slate-950 border border-slate-800 rounded-[2.5rem] p-4 sm:p-6 shadow-xl flex items-center justify-center overflow-hidden min-h-[400px] sm:min-h-[500px] relative w-full min-w-0">
             
             <canvas id="studioCanvas"
                     @pointerdown="startDrawing($event)"
                     @pointermove="draw($event)"
                     @pointerup="stopDrawing()"
                     @pointerleave="stopDrawing()"
-                    class="shadow-2xl rounded-2xl max-w-full h-auto cursor-crosshair touch-none"
+                    class="shadow-2xl rounded-2xl max-w-full max-h-[70vh] h-auto object-contain cursor-crosshair touch-none"
                     x-show="imageLoaded">
             </canvas>
 
             {{-- Empty Placeholder Prompt --}}
-            <div class="text-center text-slate-500 space-y-2 max-w-sm" x-show="!imageLoaded">
+            <div class="text-center text-slate-500 space-y-2 max-w-sm px-4" x-show="!imageLoaded">
                 <span class="text-4xl block">📷</span>
                 <h4 class="text-sm font-black text-slate-400 uppercase tracking-wider">No Image Loaded Yet</h4>
                 <p class="text-xs font-bold text-slate-600">Tap "Snap Site Photo" on the sidebar panel to open your device camera or choose a field photo to configure the workspace.</p>
@@ -159,31 +161,52 @@ document.addEventListener('alpine:init', () => {
                 const img = new Image();
                 img.onload = () => {
                     this.activeImageSource = img;
-                    
-                    let maxWidth = 1200;
-                    let maxHeight = 1200;
-                    let width = img.naturalWidth || 800;
-                    let height = img.naturalHeight || 600;
-
-                    if (width > maxWidth || height > maxHeight) {
-                        if (width > height) {
-                            height = Math.round((height * maxWidth) / width);
-                            width = maxWidth;
-                        } else {
-                            width = Math.round((width * maxHeight) / height);
-                            height = maxHeight;
-                        }
-                    }
-
-                    this.canvas.width = width;
-                    this.canvas.height = height;
-                    
-                    this.ctx.drawImage(img, 0, 0, width, height);
-                    this.imageLoaded = true;
+                    this.processAndRenderImage(img);
                 };
                 img.src = event.target.result;
             };
             reader.readAsDataURL(file);
+        },
+
+        // Factored image scaling logic out into a dedicated re-callable processor method
+        processAndRenderImage(img) {
+            let maxWidth = 1200;
+            let maxHeight = 1200;
+            let width = img.naturalWidth || 800;
+            let height = img.naturalHeight || 600;
+
+            if (width > maxWidth || height > maxHeight) {
+                if (width > height) {
+                    height = Math.round((height * maxWidth) / width);
+                    width = maxWidth;
+                } else {
+                    width = Math.round((width * maxHeight) / height);
+                    height = maxHeight;
+                }
+            }
+
+            this.canvas.width = width;
+            this.canvas.height = height;
+            this.ctx.drawImage(img, 0, 0, width, height);
+            this.imageLoaded = true;
+        },
+
+        // Triggered automatically whenever the window viewport bounds are manipulated or rotated
+        handleViewportRotation() {
+            if (!this.imageLoaded || !this.activeImageSource) return;
+            
+            // Back up custom brush modifications in local browser canvas history logs
+            const temporaryLinesSnapshot = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+            
+            // Reset sizing bounds to completely purge lingering browser flex cache heights
+            this.canvas.style.width = '100%';
+            
+            // Re-map internal canvas pixels securely to prevent coordinate stretch tracking offsets
+            const rect = this.canvas.getBoundingClientRect();
+            if (rect.width === 0) return;
+            
+            // Restore drawing snapshots smoothly over the corrected coordinate mesh
+            this.ctx.putImageData(temporaryLinesSnapshot, 0, 0);
         },
 
         startDrawing(e) {
@@ -244,7 +267,7 @@ document.addEventListener('alpine:init', () => {
         clearCanvas() {
             if(confirm('Reset all layout marks and edits on this image?')) {
                 if (this.activeImageSource) {
-                    this.ctx.drawImage(this.activeImageSource, 0, 0, this.canvas.width, this.canvas.height);
+                    this.processAndRenderImage(this.activeImageSource);
                 }
             }
         },
