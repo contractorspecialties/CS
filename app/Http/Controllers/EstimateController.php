@@ -66,7 +66,7 @@ class EstimateController extends Controller
             foreach ($processedItems as $processedItem) {
                 $estimate->items()->create($processedItem);
             }
-        }); // Fixed: Closed cleanly with the correct curly brace and closing parenthesis configuration
+        ]);
 
         // Process file attachments if injected into the multi-part input fields
         if ($request->hasFile('photos')) {
@@ -152,7 +152,6 @@ class EstimateController extends Controller
      */
     public function showMarkup($id)
     {
-        // Load with attachments to support visibility checklist reviews
         $estimate = Estimate::where('user_id', Auth::id())
             ->where('id', $id)
             ->with('attachments')
@@ -214,9 +213,10 @@ class EstimateController extends Controller
      */
     public function convertToInvoice($id)
     {
+        // Upgraded: Eager load attachments alongside estimate line items
         $estimate = Estimate::where('user_id', Auth::id())
             ->where('id', $id)
-            ->with('items')
+            ->with(['items', 'attachments'])
             ->firstOrFail();
 
         $invoice = null;
@@ -243,6 +243,17 @@ class EstimateController extends Controller
                     'quantity' => $item->quantity,
                     'unit_price_cents' => $item->unit_price_cents,
                     'total_price_cents' => $item->total_price_cents,
+                ]);
+            }
+
+            // Upgraded: Replicate polymorphic attachment rows instantly for the new Invoice reference
+            foreach ($estimate->attachments as $attachment) {
+                $invoice->attachments()->create([
+                    'user_id' => $attachment->user_id,
+                    'file_path' => $attachment->file_path,
+                    'file_type' => $attachment->file_type,
+                    'is_public' => $attachment->is_public,
+                    'canvas_metadata' => $attachment->canvas_metadata,
                 ]);
             }
 
@@ -279,7 +290,6 @@ class EstimateController extends Controller
      */
     public function showPublic($token)
     {
-        // Eager load attachments to let the view render them seamlessly
         $estimate = Estimate::with(['items', 'user.specialty', 'attachments'])
             ->where('secure_token', $token)
             ->firstOrFail();
