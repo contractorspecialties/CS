@@ -213,7 +213,8 @@ class MagicLinkController extends Controller
             'magic_link_expires_at' => null,
         ]);
 
-        Auth::login($user, true);
+        $rememberMe = true;
+        Auth::login($user, $rememberMe);
 
         if ($user->is_admin) {
             return redirect()->route('admin.command-center.index');
@@ -238,5 +239,18 @@ class MagicLinkController extends Controller
         }
 
         return view('public-profile', compact('contractor'));
+    }
+
+    /**
+     * Terminate the authenticated session and flush session caches.
+     */
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login')->with('status', 'You have been successfully logged out of your workspace.');
     }
 }

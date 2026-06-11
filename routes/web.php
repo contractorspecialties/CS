@@ -112,6 +112,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/schedules', [ScheduleController::class, 'store'])->name('schedules.store');
     Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy'])->name('schedules.destroy');
 
+    // 11. Secure Application Session Logoff Core Interceptor
+    Route::post('/logout', [MagicLinkController::class, 'logout'])->name('logout');
+
 
     // =========================================================================
     // SUPER ADMIN CONTROL PANEL OVERLAY
