@@ -143,7 +143,7 @@ class EstimateController extends Controller
                 'client_name' => $estimate->client_name,
                 'client_email' => $estimate->client_email,
                 'project_title' => $estimate->project_title,
-                . 'project_description' => $estimate->project_description,
+                'project_description' => $estimate->project_description, // Fixed: Removed stray leading dot operator
                 'subtotal_cents' => $estimate->subtotal_cents,
                 'tax_cents' => $estimate->tax_cents,
                 'total_cents' => $estimate->total_cents,
