@@ -66,7 +66,7 @@ class EstimateController extends Controller
             foreach ($processedItems as $processedItem) {
                 $estimate->items()->create($processedItem);
             }
-        ]);
+    });
 
         // Process file attachments if injected into the multi-part input fields
         if ($request->hasFile('photos')) {
