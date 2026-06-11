@@ -63,7 +63,7 @@ class EstimateController extends Controller
             foreach ($processedItems as $processedItem) {
                 $estimate->items()->create($processedItem);
             }
-        ]);
+        }); // <-- Fixed bracket target mapping structure from ]; to };
 
         // 2. ISOLATED OUTBOUND COMMUNICATIONS (Runs entirely outside the transaction scope)
         if ($estimate && $estimate->client_email) {
