@@ -26,7 +26,6 @@ class EstimateController extends Controller
             'items.*.unit_price' => 'required|numeric|min:0',
         ]);
 
-        // Keep track of the newly created estimate across database transactions
         $estimate = null;
 
         DB::transaction(function () use ($validated, &$estimate) {
@@ -47,7 +46,6 @@ class EstimateController extends Controller
                 ];
             }
 
-            // Set the initial status directly to 'sent' since we are deploying it immediately
             $estimate = Estimate::create([
                 'user_id' => Auth::id(),
                 'client_name' => $validated['client_name'],
@@ -63,14 +61,12 @@ class EstimateController extends Controller
             foreach ($processedItems as $processedItem) {
                 $estimate->items()->create($processedItem);
             }
-        });
+        ]);
 
-        // If a client email was supplied, dispatch the premium HTML review template immediately
         if ($estimate && $estimate->client_email) {
             $contractorName = $estimate->user->business_name ?? $estimate->user->name;
             $publicReviewUrl = route('estimates.public.show', $estimate->secure_token);
             
-            // Build out the itemized list for the email template rows
             $itemRowsHtml = '';
             foreach ($estimate->items as $item) {
                 $formattedLineTotal = number_format($item->total_price_cents / 100, 2);
@@ -96,13 +92,11 @@ class EstimateController extends Controller
                     ->html("
                         <div style=\"font-family: Arial, sans-serif; background-color: #F8FAFC; padding: 30px; text-align: center;\">
                             <div style=\"max-width: 550px; margin: 0 auto; background: #FFFFFF; padding: 32px; border-radius: 20px; border: 1px solid #E2E8F0; text-align: left; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);\">
-                                <span style=\"font-size: 10px; font-weight: 800; text-transform: uppercase; tracking-spacing: 1px; color: #718096; display: block; margin-bottom: 4px;\">Project Estimate Reference</span>
+                                <span style=\"font-size: 10px; font-weight: 800; text-transform: uppercase; color: #718096; display: block; margin-bottom: 4px;\">Project Estimate Reference</span>
                                 <h3 style=\"color: #0F2D5A; font-size: 20px; font-weight: 800; margin: 0 0 16px 0;\">New Proposal from {$contractorName}</h3>
-                                
                                 <p style=\"color: #4A5568; font-size: 14px; line-height: 1.5; margin-bottom: 20px;\">
                                     Hello {$estimate->client_name}, a digital project estimate has been prepared for your review regarding: <strong>{$estimate->project_title}</strong>.
                                 </p>
-
                                 <table style=\"width: 100%; border-collapse: collapse; margin-bottom: 20px;\">
                                     <thead>
                                         <tr style=\"background-color: #F8FAFC;\">
@@ -117,8 +111,7 @@ class EstimateController extends Controller
                                             <td style=\"padding: 16px 12px; font-size: 18px; font-weight: 900; color: #0F2D5A; text-align: right;\">\${$formattedGrandTotal}</td>
                                         </tr>
                                     </tbody>
-                                endtable
-
+                                </table>
                                 <div style=\"margin-top: 28px; text-align: center;\">
                                     <a href=\"{$publicReviewUrl}\" style=\"display: inline-block; background-color: #0F2D5A; color: #FFFFFF; font-weight: bold; text-decoration: none; padding: 14px 28px; border-radius: 10px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;\">Review & Accept Proposal</a>
                                 </div>
@@ -151,18 +144,20 @@ class EstimateController extends Controller
         $estimate = Estimate::where('secure_token', $token)->firstOrFail();
 
         $validated = $request->validate([
-            'action' => 'required|in:approve,decline'
+            'action' => 'required|in:approve,decline',
+            'customer_notes' => 'nullable|string|max:2000'
         ]);
 
         $newStatus = ($validated['action'] === 'approve') ? 'approved' : 'declined';
         
         $estimate->update([
-            'status' => $newStatus
+            'status' => $newStatus,
+            'customer_notes' => $validated['customer_notes']
         ]);
 
         $message = ($newStatus === 'approved') 
             ? 'Thank you! You have successfully approved this proposal. Your contractor has been notified and will coordinate next steps.' 
-            : 'You have marked this proposal as declined. If adjustments are needed, please contact your service technician directly.';
+            : 'You have marked this proposal as declined. Your notes and adjustment requests have been logged.';
 
         return redirect()->back()->with('status', $message);
     }

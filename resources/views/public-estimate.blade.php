@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
@@ -89,39 +89,52 @@
                 </div>
             </div>
 
-            {{-- CALM, PREMIUM DECISION MANAGEMENT BAR --}}
-            <div class="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-6">
-                
-                <div class="text-left max-w-sm">
-                    @if($estimate->status === 'approved')
-                        <span class="bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] uppercase font-black tracking-wider px-3 py-1 rounded-md block w-max">✓ Proposal Authorized</span>
-                        <p class="text-xs text-slate-400 font-bold mt-2">This schedule contract was signed and locked into production scheduling.</p>
-                    @elseif($estimate->status === 'declined')
-                        <span class="bg-red-50 border border-red-200 text-red-700 text-[10px] uppercase font-black tracking-wider px-3 py-1 rounded-md block w-max">Proposal Declined</span>
-                        <p class="text-xs text-slate-400 font-bold mt-2">You marked this arrangement as declined. Contact your specialist for a revised copy.</p>
-                    @else
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Authorization Agreement</span>
-                        <p class="text-xs text-slate-400 font-bold mt-0.5">Reviewing and accepting lock-in variables authorizes work execution initialization routines.</p>
-                    @endif
+            {{-- HISTORIC NOTE DISPLAY BLOCK (Shows after submission) --}}
+            @if($estimate->customer_notes)
+                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200/60 text-left space-y-1">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Submitted Client Comments</span>
+                    <p class="text-sm font-medium text-slate-600 leading-relaxed italic">"{{ $estimate->customer_notes }}"</p>
                 </div>
+            @endif
 
+            {{-- CALM, PREMIUM DECISION MANAGEMENT BAR --}}
+            <div class="pt-6 border-t border-slate-100 text-left space-y-6">
+                
                 @if($estimate->status === 'draft' || $estimate->status === 'sent')
-                    <div class="flex items-center gap-4 w-full sm:w-auto justify-end">
-                        <form action="{{ route('estimates.public.status', $estimate->secure_token) }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="action" value="decline">
-                            <button type="submit" class="text-xs font-black text-slate-400 hover:text-red-500 uppercase tracking-wider transition px-2 py-3">
-                                Decline
-                            </button>
-                        </form>
+                    <form action="{{ route('estimates.public.status', $estimate->secure_token) }}" method="POST" class="space-y-6">
+                        @csrf
+                        
+                        {{-- Unaggressive Input Box Overlay --}}
+                        <div class="space-y-1.5">
+                            <label for="customer_notes" class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Optional Notes, Corrections, or Scheduling Requests</label>
+                            <textarea id="customer_notes" name="customer_notes" rows="3" placeholder="Need any dynamic adjustments? Have a specific scheduling preference? Add your notes here before responding..." class="w-full bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold py-3 px-4 focus:outline-none focus:border-slate-400 focus:bg-white transition leading-relaxed placeholder-slate-400"></textarea>
+                        </div>
 
-                        <form action="{{ route('estimates.public.status', $estimate->secure_token) }}" method="POST" class="w-full sm:w-auto">
-                            @csrf
-                            <input type="hidden" name="action" value="approve">
-                            <button type="submit" class="w-full sm:w-auto bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs uppercase tracking-widest py-4 px-8 rounded-xl shadow-md transition transform active:scale-95 text-center whitespace-nowrap">
-                                Review & Accept Proposal →
-                            </button>
-                        </form>
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+                            <p class="text-xs text-slate-400 font-bold max-w-xs leading-normal">
+                                Reviewing and accepting locks in your project specifications and logs execution initialization routines.
+                            </p>
+                            <div class="flex items-center gap-4 w-full sm:w-auto justify-end">
+                                <button type="submit" name="action" value="decline" class="text-xs font-black text-slate-400 hover:text-red-500 uppercase tracking-wider transition px-4 py-3">
+                                    Decline
+                                </button>
+                                <button type="submit" name="action" value="approve" class="w-full sm:w-auto bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs uppercase tracking-widest py-4 px-8 rounded-xl shadow-md transition transform active:scale-95 text-center whitespace-nowrap">
+                                    Review & Accept Proposal →
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                @else
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="max-w-md">
+                            @if($estimate->status === 'approved')
+                                <span class="bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] uppercase font-black tracking-wider px-3 py-1 rounded-md block w-max">✓ Proposal Authorized</span>
+                                <p class="text-xs text-slate-400 font-bold mt-2">This schedule contract was signed and locked into production scheduling.</p>
+                            @elseif($estimate->status === 'declined')
+                                <span class="bg-red-50 border border-red-200 text-red-700 text-[10px] uppercase font-black tracking-wider px-3 py-1 rounded-md block w-max">Proposal Declined</span>
+                                <p class="text-xs text-slate-400 font-bold mt-2">You marked this arrangement as declined. Contact your specialist for a revised copy.</p>
+                            @endif
+                        </div>
                     </div>
                 @endif
             </div>

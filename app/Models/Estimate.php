@@ -15,6 +15,7 @@ class Estimate extends Model
         'client_phone',
         'project_title',
         'project_description',
+        'customer_notes', // Added to accept customer revisions/feedback strings
         'subtotal_cents',
         'tax_cents',
         'total_cents',
