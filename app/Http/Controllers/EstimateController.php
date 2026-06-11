@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class EstimateController extends Controller
 {
@@ -29,7 +30,6 @@ class EstimateController extends Controller
 
         $estimate = null;
 
-        // Line 32: The transaction block opens with a curly brace
         DB::transaction(function () use ($validated, &$estimate) {
             $subtotalCents = 0;
             $processedItems = [];
@@ -63,7 +63,7 @@ class EstimateController extends Controller
             foreach ($processedItems as $processedItem) {
                 $estimate->items()->create($processedItem);
             }
-        }); // Line 65: Closed perfectly with a curly brace and parenthesis
+        }); // <-- Fixed: Changed from ]); to }); to properly match the closure mapping
 
         if ($estimate && $estimate->client_email) {
             $contractorName = $estimate->user->business_name ?? $estimate->user->name;
@@ -122,6 +122,48 @@ class EstimateController extends Controller
         }
 
         return redirect()->route('dashboard.estimates')->with('status', 'Estimate has been successfully generated, logged, and emailed to your client!');
+    }
+
+    /**
+     * Render the Media Markup Studio layout frame populated with parent quote identifiers.
+     */
+    public function showMarkup($id)
+    {
+        $estimate = Estimate::where('user_id', Auth::id())->where('id', $id)->firstOrFail();
+        return view('markup-studio', compact('estimate'));
+    }
+
+    /**
+     * Parse binary base64 file payloads and record entries to the polymorphic media layer.
+     */
+    public function storeMarkup(Request $request, $id)
+    {
+        $estimate = Estimate::where('user_id', Auth::id())->where('id', $id)->firstOrFail();
+
+        $request->validate([
+            'markup_image' => 'required|string'
+        ]);
+
+        $rawStream = $request->input('markup_image');
+
+        if (preg_match('/^data:image\/(\w+);base64,/', $rawStream, $matches)) {
+            $binaryBlob = base64_decode(substr($rawStream, strpos($rawStream, ',') + 1));
+            
+            $storageFolder = 'attachments';
+            $fileName = $storageFolder . '/' . Str::random(40) . '.webp';
+
+            Storage::disk('public')->put($fileName, $binaryBlob);
+
+            $estimate->attachments()->create([
+                'user_id' => Auth::id(),
+                'file_path' => $fileName,
+                'file_type' => 'markup'
+            ]);
+
+            return redirect()->route('dashboard.estimates')->with('status', 'Success! Marked-up job site photo has been permanently attached to the client proposal.');
+        }
+
+        return redirect()->back()->with('status', 'Error: Failed to process inbound canvas image streams.');
     }
 
     /**

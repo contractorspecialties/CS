@@ -110,6 +110,11 @@
                                             ↗
                                         </a>
 
+                                        {{-- Camera Markup Studio Pivot Link --}}
+                                        <a href="{{ route('estimates.markup', $estimate->id) }}" title="Camera Markup Studio" class="bg-slate-900 hover:bg-slate-800 text-[#FFC32D] text-xs font-black uppercase tracking-wider py-2 px-3 rounded-lg transition">
+                                            📸 Markup Photo
+                                        </a>
+
                                         {{-- One-Click Invoice Cloning Option --}}
                                         @if($estimate->status === 'approved')
                                             <form action="{{ route('estimates.convert', $estimate->id) }}" method="POST" class="inline">
@@ -144,7 +149,7 @@
                 </table>
             </div>
 
-            {{-- MOBILE STACKED TOUCH TARGET CARDS (Hidden on Desktop) --}}
+            {{-- MOBILE STACKED TOUCH TARGET CARDS (Hidden on Document Grid resolutions) --}}
             <div class="block md:hidden space-y-4">
                 @foreach($estimates as $estimate)
                     <div class="bg-white border-2 border-slate-200/80 p-5 rounded-2xl text-left space-y-4 shadow-sm">
@@ -185,9 +190,13 @@
                             </div>
 
                             {{-- Clean, non-aggressive touch targets for mobile thumb mechanics --}}
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-1.5">
                                 <a href="{{ route('estimates.public.show', $estimate->secure_token) }}" target="_blank" class="bg-slate-100 border border-slate-200 text-slate-700 text-xs font-black uppercase tracking-wider py-2 px-3 rounded-xl transition">
                                     View
+                                </a>
+
+                                <a href="{{ route('estimates.markup', $estimate->id) }}" class="bg-slate-900 border border-slate-900 text-[#FFC32D] text-xs font-black uppercase tracking-wider py-2 px-3 rounded-xl transition">
+                                    Markup
                                 </a>
 
                                 @if($estimate->status === 'approved')
