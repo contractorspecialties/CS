@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Estimate;
+use App\Models\Invoice;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -26,10 +27,8 @@ class EstimateController extends Controller
             'items.*.unit_price' => 'required|numeric|min:0',
         ]);
 
-        // Retain state reference across isolated execution scopes
         $estimate = null;
 
-        // 1. LEAN DATABASE TRANSACTION (Executes rapidly, releases database locks instantly)
         DB::transaction(function () use ($validated, &$estimate) {
             $subtotalCents = 0;
             $processedItems = [];
@@ -63,14 +62,12 @@ class EstimateController extends Controller
             foreach ($processedItems as $processedItem) {
                 $estimate->items()->create($processedItem);
             }
-        }); // <-- Fixed bracket target mapping structure from ]; to };
+        ]);
 
-        // 2. ISOLATED OUTBOUND COMMUNICATIONS (Runs entirely outside the transaction scope)
         if ($estimate && $estimate->client_email) {
             $contractorName = $estimate->user->business_name ?? $estimate->user->name;
             $publicReviewUrl = route('estimates.public.show', $estimate->secure_token);
             
-            // Build itemized breakdown using single-quoted segments to protect raw symbol outputs
             $itemRowsHtml = '';
             foreach ($estimate->items as $item) {
                 $formattedLineTotal = number_format($item->total_price_cents / 100, 2);
@@ -87,7 +84,6 @@ class EstimateController extends Controller
 
             $formattedGrandTotal = number_format($estimate->total_cents / 100, 2);
 
-            // Assemble master email frame utilizing strict concatenation formatting rules
             $emailHtmlBody = '<div style="font-family: Arial, sans-serif; background-color: #F8FAFC; padding: 30px; text-align: center;">'
                 . '<div style="max-width: 550px; margin: 0 auto; background: #FFFFFF; padding: 32px; border-radius: 20px; border: 1px solid #E2E8F0; text-align: left; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">'
                 . '<span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #718096; display: block; margin-bottom: 4px;">Project Estimate Reference</span>'
@@ -128,6 +124,74 @@ class EstimateController extends Controller
     }
 
     /**
+     * Evolve an authorized estimate directly into a formal tracking invoice with one touch.
+     */
+    public function convertToInvoice($id)
+    {
+        $estimate = Estimate::where('user_id', Auth::id())
+            ->where('id', $id)
+            ->with('items')
+            ->firstOrFail();
+
+        $invoice = null;
+
+        DB::transaction(function () use ($estimate, &$invoice) {
+            // Clone the root proposal details into a fresh layout frame
+            $invoice = Invoice::create([
+                'user_id' => Auth::id(),
+                'estimate_id' => $estimate->id,
+                'client_name' => $estimate->client_name,
+                'client_email' => $estimate->client_email,
+                'project_title' => $estimate->project_title,
+                . 'project_description' => $estimate->project_description,
+                'subtotal_cents' => $estimate->subtotal_cents,
+                'tax_cents' => $estimate->tax_cents,
+                'total_cents' => $estimate->total_cents,
+                'status' => 'draft',
+                'secure_token' => Str::random(40),
+            ]);
+
+            // Duplicate child item logs sequentially
+            foreach ($estimate->items as $item) {
+                $invoice->items()->create([
+                    'description' => $item->description,
+                    'item_type' => $item->item_type,
+                    'quantity' => $item->quantity,
+                    'unit_price_cents' => $item->unit_price_cents,
+                    'total_price_cents' => $item->total_price_cents,
+                ]);
+            }
+
+            // Pivot status configuration flag on original reference
+            $estimate->update(['status' => 'invoiced']);
+        });
+
+        return redirect()->route('dashboard.estimates')->with('status', 'Success! Proposal has been seamlessly converted into an active invoice record.');
+    }
+
+    /**
+     * Push a target log sequence safely to an archived hidden status state.
+     */
+    public function archive($id)
+    {
+        $estimate = Estimate::where('user_id', Auth::id())->where('id', $id)->firstOrFail();
+        $estimate->update(['status' => 'archived']);
+
+        return redirect()->route('dashboard.estimates')->with('status', 'The project proposal record has been successfully moved to your history archives.');
+    }
+
+    /**
+     * Purge a target proposal row sequence entirely from storage.
+     */
+    public function destroy($id)
+    {
+        $estimate = Estimate::where('user_id', Auth::id())->where('id', $id)->firstOrFail();
+        $estimate->delete();
+
+        return redirect()->route('dashboard.estimates')->with('status', 'The specified quote has been permanently deleted from your profile registry.');
+    }
+
+    /**
      * Render the passwordless proposal page for the homeowner.
      */
     public function showPublic($token)
@@ -158,10 +222,6 @@ class EstimateController extends Controller
             'customer_notes' => $validated['customer_notes']
         ]);
 
-        $message = ($newStatus === 'approved') 
-            ? 'Thank you! You have successfully approved this proposal. Your contractor has been notified and will coordinate next steps.' 
-            : 'You have marked this proposal as declined. Your notes and adjustment requests have been logged.';
-
-        return redirect()->back()->with('status', $message);
+        return redirect()->back()->with('status', 'Response registered successfully.');
     }
 }

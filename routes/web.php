@@ -48,6 +48,7 @@ Route::middleware(['auth'])->group(function () {
     // 1. Command Center Home Overview Page (Birds-Eye Telemetry Deck)
     Route::get('/dashboard', function () {
         $recentEstimates = Estimate::where('user_id', auth()->id())
+            ->where('status', '!=', 'archived')
             ->latest()
             ->take(3)
             ->get();
@@ -66,7 +67,9 @@ Route::middleware(['auth'])->group(function () {
 
     // 3. Dedicated Estimates and CPP Tool Suite Page
     Route::get('/dashboard/estimates', function () {
+        // Exclude archived items from active workspace views
         $estimates = Estimate::where('user_id', auth()->id())
+            ->where('status', '!=', 'archived')
             ->latest()
             ->get();
 
@@ -76,8 +79,11 @@ Route::middleware(['auth'])->group(function () {
     // 4. Save Profile Changes Form Submission Action
     Route::post('/profile/update', [MagicLinkController::class, 'updateProfile'])->name('profile.update');
 
-    // 5. Save and Create a New Project Estimate Form Action
+    // 5. Core Proposal Lifecycle Interceptors (CRUDA Suite)
     Route::post('/estimates', [EstimateController::class, 'store'])->name('estimates.store');
+    Route::post('/estimates/{id}/convert', [EstimateController::class, 'convertToInvoice'])->name('estimates.convert');
+    Route::post('/estimates/{id}/archive', [EstimateController::class, 'archive'])->name('estimates.archive');
+    Route::delete('/estimates/{id}', [EstimateController::class, 'destroy'])->name('estimates.destroy');
 
 
     // =========================================================================
