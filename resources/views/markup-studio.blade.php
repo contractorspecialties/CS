@@ -7,6 +7,24 @@
      x-data="canvasStudio()"
      @resize.window.debounce.150ms="handleViewportRotation()">
     
+    {{-- SYSTEM FEEDBACK & ERROR DIAGNOSTIC PANEL --}}
+    @if ($errors->any())
+        <div class="bg-red-900 border-l-8 border-red-500 p-5 rounded-2xl text-left shadow-lg">
+            <h4 class="text-sm font-black text-white uppercase tracking-wider">Server Upload Refusal Diagnostic</h4>
+            <ul class="mt-2 text-xs font-bold text-red-200 list-disc list-inside space-y-1">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    @if (session('status') && str_contains(session('status'), 'Error'))
+        <div class="bg-rose-950 border-l-8 border-rose-500 p-5 rounded-2xl text-left shadow-md">
+            <p class="text-xs font-bold text-rose-200 leading-snug">{{ session('status') }}</p>
+        </div>
+    @endif
+
     {{-- STUDIO SUB-HEADER --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-900 text-white p-6 rounded-2xl border border-slate-800 shadow-xl text-left w-full min-w-0">
         <div>
@@ -22,7 +40,7 @@
                     :disabled="!imageLoaded || isSaving" 
                     :class="(!imageLoaded || isSaving) ? 'opacity-40 cursor-not-allowed bg-slate-700' : 'bg-emerald-600 hover:bg-emerald-500'" 
                     class="w-1/2 sm:w-auto text-white text-xs font-black uppercase tracking-wider px-6 py-3.5 rounded-xl text-center shadow-md transition transform active:scale-95 whitespace-nowrap">
-                <span x-text="isSaving ? 'Uploading...' : 'Save & Attach Asset →'">Save & Attach Asset →</span>
+                <span x-text="isSaving ? 'Uploading Asset...' : 'Save & Attach Asset →'">Save & Attach Asset →</span>
             </button>
         </div>
     </div>
@@ -274,21 +292,21 @@ document.addEventListener('alpine:init', () => {
             this.isSaving = true;
             
             try {
-                const dataUrl = this.canvas.toDataURL('image/webp', 0.85);
+                // Upgraded: Extract payload data universally as a compressed jpeg string to bypass device codec limits
+                const dataUrl = this.canvas.toDataURL('image/jpeg', 0.85);
                 
-                // Fixed: Loosened configuration selector to catch fallback PNG/JPEG base64 device signatures
                 if (dataUrl && dataUrl.startsWith('data:image/')) {
                     document.getElementById('payload_base64').value = dataUrl;
                     
-                    this.$nextTick(() => {
-                        document.getElementById('markupForm').submit();
-                    });
+                    // Fixed: Immediate execution sequence prevents page-reload data drops
+                    document.getElementById('markupForm').submit();
                 } else {
-                    alert('Image compilation encountered an asset memory error. Please try again.');
+                    alert('Image compilation encountered an asset serialization error. Please try again.');
                     this.isSaving = false;
                 }
             } catch(error) {
                 console.error(error);
+                alert('An error occurred while compiling your layout marks: ' + error.message);
                 this.isSaving = false;
             }
         }
