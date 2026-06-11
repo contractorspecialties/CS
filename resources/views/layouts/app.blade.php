@@ -63,11 +63,11 @@
                     <a href="/dashboard/estimates" class="flex items-center gap-4 text-base font-bold text-slate-300 hover:text-white hover:bg-white/5 rounded-2xl py-4 px-5 transition">
                         <span class="text-xl">📝</span> Project Estimates
                     </a>
-                    <a href="#" class="flex items-center gap-4 text-base font-bold text-slate-400 opacity-60 rounded-2xl py-4 px-5 cursor-not-allowed">
-                        <span class="text-xl">💰</span> Invoices (Soon)
+                    <a href="{{ route('dashboard.invoices') }}" class="flex items-center gap-4 text-base font-bold text-slate-300 hover:text-white hover:bg-white/5 rounded-2xl py-4 px-5 transition">
+                        <span class="text-xl">💰</span> Invoices
                     </a>
-                    <a href="#" class="flex items-center gap-4 text-base font-bold text-slate-400 opacity-60 rounded-2xl py-4 px-5 cursor-not-allowed">
-                        <span class="text-xl">📅</span> Crew Scheduler (Soon)
+                    <a href="{{ route('dashboard.scheduler') }}" class="flex items-center gap-4 text-base font-bold text-slate-300 hover:text-white hover:bg-white/5 rounded-2xl py-4 px-5 transition">
+                        <span class="text-xl">📅</span> Crew Scheduler
                     </a>
                     <a href="/dashboard/profile" class="flex items-center gap-4 text-base font-bold text-slate-300 hover:text-white hover:bg-white/5 rounded-2xl py-4 px-5 transition">
                         <span class="text-xl">⚙️</span> Public Listing Setup
@@ -93,11 +93,11 @@
                 <a href="/dashboard/estimates" class="flex items-center gap-4 text-sm font-black uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 rounded-xl py-3.5 px-5 transition">
                     <span class="text-lg">📝</span> Project Estimates
                 </a>
-                <a href="#" class="flex items-center gap-4 text-sm font-black uppercase tracking-wider text-slate-600 cursor-not-allowed py-3.5 px-5">
-                    <span class="text-lg grayscale opacity-50">💰</span> Invoices (Soon)
+                <a href="{{ route('dashboard.invoices') }}" class="flex items-center gap-4 text-sm font-black uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 rounded-xl py-3.5 px-5 transition">
+                    <span class="text-lg">💰</span> Invoices
                 </a>
-                <a href="#" class="flex items-center gap-4 text-sm font-black uppercase tracking-wider text-slate-600 cursor-not-allowed py-3.5 px-5">
-                    <span class="text-lg grayscale opacity-50">📅</span> Crew Scheduler (Soon)
+                <a href="{{ route('dashboard.scheduler') }}" class="flex items-center gap-4 text-sm font-black uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 rounded-xl py-3.5 px-5 transition">
+                    <span class="text-lg">📅</span> Crew Scheduler
                 </a>
                 <a href="/dashboard/profile" class="flex items-center gap-4 text-sm font-black uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 rounded-xl py-3.5 px-5 transition">
                     <span class="text-lg">⚙️</span> Public Listing Setup

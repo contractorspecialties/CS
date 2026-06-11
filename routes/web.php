@@ -5,6 +5,7 @@ use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\MagicLinkController;
 use App\Http\Controllers\EstimateController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\ScheduleController;
 use App\Models\Specialty;
 use App\Models\Estimate;
 
@@ -81,23 +82,30 @@ Route::middleware(['auth'])->group(function () {
         return view('estimates', compact('estimates'));
     })->name('dashboard.estimates');
 
-    // 4. Dedicated Invoices Management Page (New Endpoint)
+    // 4. Dedicated Invoices Management Page
     Route::get('/dashboard/invoices', [InvoiceController::class, 'index'])->name('dashboard.invoices');
 
-    // 5. Save Profile Changes Form Submission Action
+    // 5. Dedicated Crew Dispatch Scheduler Page (New Endpoint)
+    Route::get('/dashboard/scheduler', [ScheduleController::class, 'index'])->name('dashboard.scheduler');
+
+    // 6. Save Profile Changes Form Submission Action
     Route::post('/profile/update', [MagicLinkController::class, 'updateProfile'])->name('profile.update');
 
-    // 6. Estimate Lifecycle Interceptors (CRUDA Suite)
+    // 7. Estimate Lifecycle Interceptors (CRUDA Suite)
     Route::post('/estimates', [EstimateController::class, 'store'])->name('estimates.store');
     Route::post('/estimates/{id}/convert', [EstimateController::class, 'convertToInvoice'])->name('estimates.convert');
     Route::post('/estimates/{id}/archive', [EstimateController::class, 'archive'])->name('estimates.archive');
     Route::delete('/estimates/{id}', [EstimateController::class, 'destroy'])->name('estimates.destroy');
 
-    // 7. Invoice Lifecycle Interceptors (New CRUDA Actions Suite)
+    // 8. Invoice Lifecycle Interceptors (CRUDA Actions Suite)
     Route::patch('/invoices/{id}', [InvoiceController::class, 'update'])->name('invoices.update');
     Route::post('/invoices/{id}/paid', [InvoiceController::class, 'markAsPaid'])->name('invoices.paid');
     Route::post('/invoices/{id}/archive', [InvoiceController::class, 'archive'])->name('invoices.archive');
     Route::delete('/invoices/{id}', [InvoiceController::class, 'destroy'])->name('invoices.destroy');
+
+    // 9. Scheduler Lifecycle Interceptors (New Actions Suite)
+    Route::post('/schedules', [ScheduleController::class, 'store'])->name('schedules.store');
+    Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy'])->name('schedules.destroy');
 
 
     // =========================================================================
