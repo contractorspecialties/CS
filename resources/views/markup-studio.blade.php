@@ -55,7 +55,7 @@
             <div class="space-y-2.5">
                 <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest block">Select or Snap Photo</span>
                 <div class="relative w-full overflow-hidden bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-600 text-slate-300 rounded-xl p-3 text-xs font-black uppercase tracking-wider text-center transition">
-                    📸 Add Job Site Photo
+                    📸 Replace Job Site Photo
                     <input type="file" accept="image/*" @change="loadImageFromFile($event)" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-20">
                 </div>
             </div>
@@ -135,7 +135,7 @@
             <div class="text-center text-slate-500 space-y-2 max-w-sm px-4" x-show="!imageLoaded">
                 <span class="text-4xl block">📷</span>
                 <h4 class="text-sm font-black text-slate-400 uppercase tracking-wider">No Image Loaded Yet</h4>
-                <p class="text-xs font-bold text-slate-600">Tap "Add Job Site Photo" on the sidebar panel to open your device camera or pick an existing field photo.</p>
+                <p class="text-xs font-bold text-slate-600">Tap "Replace Job Site Photo" on the sidebar panel to open your device camera or pick an existing field photo.</p>
             </div>
 
         </div>
@@ -145,7 +145,7 @@
     <form id="markupForm" action="{{ route('estimates.markup.store', $estimate->id) }}" method="POST" class="hidden">
         @csrf
         <input type="hidden" id="payload_base64" name="markup_image">
-        <input type="hidden" id="payload_is_public" name="is_public" :value="isPublic ? 1 : 0">
+        <input type="hidden" id="payload_is_public" name="is_public" :value="isPublic ? '1' : '0'">
     </form>
 
 </div>
@@ -171,6 +171,20 @@ document.addEventListener('alpine:init', () => {
         init() {
             this.canvas = document.getElementById('studioCanvas');
             this.ctx = this.canvas.getContext('2d');
+            
+            // Upgraded Auto-Loader: Programmatically fetches and draws modal-uploaded estimate photos at boot
+            @if($estimate->attachments->count() > 0)
+                const bootstrapImageUrl = '{{ $estimate->attachments->last()->url }}';
+                if (bootstrapImageUrl) {
+                    const img = new Image();
+                    img.crossOrigin = "anonymous"; // Prevents local canvas cross-origin taint blocks
+                    img.onload = () => {
+                        this.activeImageSource = img;
+                        this.processAndRenderImage(img);
+                    };
+                    img.src = bootstrapImageUrl;
+                }
+            @endif
         },
 
         loadImageFromFile(e) {
@@ -292,13 +306,10 @@ document.addEventListener('alpine:init', () => {
             this.isSaving = true;
             
             try {
-                // Upgraded: Extract payload data universally as a compressed jpeg string to bypass device codec limits
                 const dataUrl = this.canvas.toDataURL('image/jpeg', 0.85);
                 
                 if (dataUrl && dataUrl.startsWith('data:image/')) {
                     document.getElementById('payload_base64').value = dataUrl;
-                    
-                    // Fixed: Immediate execution sequence prevents page-reload data drops
                     document.getElementById('markupForm').submit();
                 } else {
                     alert('Image compilation encountered an asset serialization error. Please try again.');

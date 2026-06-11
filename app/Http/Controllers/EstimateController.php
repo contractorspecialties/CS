@@ -66,7 +66,7 @@ class EstimateController extends Controller
             foreach ($processedItems as $processedItem) {
                 $estimate->items()->create($processedItem);
             }
-    });
+        }); // Syntactically verified database transaction closure termination block
 
         // Process file attachments if injected into the multi-part input fields
         if ($request->hasFile('photos')) {
@@ -169,26 +169,29 @@ class EstimateController extends Controller
 
         $request->validate([
             'markup_image' => 'required|string',
-            'is_public' => 'nullable|boolean'
+            'is_public' => 'nullable'
         ]);
 
         $rawStream = $request->input('markup_image');
 
-        // Fixed: Bypassed PCRE regex limitations completely by using a standard string split rule
         if ($rawStream && str_contains($rawStream, ',')) {
             $dataParts = explode(',', $rawStream);
             $binaryBlob = base64_decode($dataParts[1]);
             
             $storageFolder = 'attachments';
-            $fileName = $storageFolder . '/' . Str::random(40) . '.webp';
+            // Adjusted: Save as .jpg format to align with front-end canvas image/jpeg serialization outputs
+            $fileName = $storageFolder . '/' . Str::random(40) . '.jpg';
 
             Storage::disk('public')->put($fileName, $binaryBlob);
+
+            // Clean up any loose historical workspace rows on this proposal to keep storage footprints tight
+            $estimate->attachments()->where('file_type', 'markup')->delete();
 
             $estimate->attachments()->create([
                 'user_id' => Auth::id(),
                 'file_path' => $fileName,
                 'file_type' => 'markup',
-                'is_public' => $request->input('is_public', true)
+                'is_public' => $request->input('is_public') == '1' || $request->input('is_public') === true
             ]);
 
             return redirect()->route('dashboard.estimates')->with('status', 'Success! Marked-up job site photo has been permanently attached to the client proposal.');
