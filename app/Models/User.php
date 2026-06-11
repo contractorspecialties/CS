@@ -50,6 +50,11 @@ class User extends Authenticatable
         // Service Area Footprint Fields
         'service_radius',
         'service_areas',
+
+        // Business Operations Fields (CPP Bridge)
+        'minimum_service_fee',
+        'hourly_rate',
+        'crew_size',
     ];
 
     /**
@@ -78,7 +83,12 @@ class User extends Authenticatable
             'is_gc' => 'boolean',
             'is_restricted' => 'boolean',
             'is_insured' => 'boolean',
-            'service_radius' => 'integer', // Ensures radius is always handled as a pure number
+            'service_radius' => 'integer',
+            
+            // New operational field number conversions
+            'minimum_service_fee' => 'integer',
+            'hourly_rate' => 'integer',
+            'crew_size' => 'integer',
         ];
     }
 
@@ -93,7 +103,7 @@ class User extends Authenticatable
 
     /**
      * RELATIONSHIP: Internal Clients
-     * Tracks consumer roster records assigned to this contractor.
+     * Tracks consumer records assigned to this contractor.
      */
     public function clients(): HasMany
     {

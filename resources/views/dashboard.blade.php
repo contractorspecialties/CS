@@ -307,9 +307,35 @@
                                 </div>
                             </div>
 
-                            {{-- SECTION 4: BIO DIRECTORY COPY --}}
+                            {{-- SECTION 4: BUSINESS OPERATIONS & RATES (CPP BRIDGE) --}}
                             <div class="space-y-4 pt-2">
-                                <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">4. Search Directory Overview</h3>
+                                <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">4. Estimating Rates & Settings</h3>
+                                
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-black text-[#3C3C4B] uppercase tracking-widest mb-2">Minimum Service Fee</label>
+                                        <div class="relative">
+                                            <span class="absolute left-4 top-3.5 font-bold text-slate-400">$</span>
+                                            <input type="number" min="0" name="minimum_service_fee" value="{{ old('minimum_service_fee', auth()->user()->minimum_service_fee) }}" placeholder="85" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] placeholder-slate-400 font-bold py-3.5 pl-8 pr-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-black text-[#3C3C4B] uppercase tracking-widest mb-2">Hourly Shop Rate</label>
+                                        <div class="relative">
+                                            <span class="absolute left-4 top-3.5 font-bold text-slate-400">$</span>
+                                            <input type="number" min="0" name="hourly_rate" value="{{ old('hourly_rate', auth()->user()->hourly_rate) }}" placeholder="95" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] placeholder-slate-400 font-bold py-3.5 pl-8 pr-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-black text-[#3C3C4B] uppercase tracking-widest mb-2">Standard Crew Size</label>
+                                        <input type="number" min="1" max="100" name="crew_size" value="{{ old('crew_size', auth()->user()->crew_size) }}" placeholder="2" class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] placeholder-slate-400 font-bold py-3.5 px-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base">
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- SECTION 5: BIO DIRECTORY COPY --}}
+                            <div class="space-y-4 pt-2">
+                                <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">5. Search Directory Overview</h3>
                                 <div>
                                     <label class="block text-xs font-black text-[#3C3C4B] uppercase tracking-widest mb-2">About Your Business (Bio Descriptions)</label>
                                     <textarea name="bio" rows="4" placeholder="Briefly introduce your company, detail your specialized crew services, warranties, or project size history so customers find you on search engines..." class="w-full bg-[#F0F0F0] border-2 border-slate-200 rounded-xl text-[#3C3C3C] placeholder-slate-400 font-bold py-3.5 px-4 focus:border-[#1E3C5A] focus:bg-[#FFFFFF] focus:ring-0 focus:outline-none transition text-base leading-relaxed">{{ old('bio', auth()->user()->bio) }}</textarea>

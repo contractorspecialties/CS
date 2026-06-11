@@ -94,6 +94,11 @@ class MagicLinkController extends Controller
             // Service Area Fields
             'service_radius' => 'nullable|integer',
             'service_areas' => 'nullable|string',
+
+            // Business Operations Fields
+            'minimum_service_fee' => 'nullable|integer|min:0',
+            'hourly_rate' => 'nullable|integer|min:0',
+            'crew_size' => 'nullable|integer|min:1|max:100',
         ]);
 
         $slug = Str::slug($validated['business_name']);
@@ -123,6 +128,11 @@ class MagicLinkController extends Controller
             // Service Area Fields
             'service_radius' => $validated['service_radius'],
             'service_areas' => $validated['service_areas'],
+
+            // Business Operations Fields
+            'minimum_service_fee' => $validated['minimum_service_fee'],
+            'hourly_rate' => $validated['hourly_rate'],
+            'crew_size' => $validated['crew_size'],
         ]);
 
         return redirect()->back()->with('status', 'Your business profile details have been successfully saved and updated!');
