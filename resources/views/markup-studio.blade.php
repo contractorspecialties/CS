@@ -164,15 +164,18 @@ document.addEventListener('alpine:init', () => {
             this.canvas = document.getElementById('studioCanvas');
             this.ctx = this.canvas.getContext('2d');
             
-            // Auto-Loader: Safely builds public asset access links for pre-uploaded estimate imagery
+            // Fixed Same-Domain Bootloader: Removed anonymous crossOrigin constraint rules
             @if($estimate->attachments->count() > 0)
                 const bootstrapImageUrl = '{{ asset('storage/' . $estimate->attachments->last()->file_path) }}';
                 if (bootstrapImageUrl) {
                     const img = new Image();
-                    img.crossOrigin = "anonymous"; 
                     img.onload = () => {
                         this.activeImageSource = img;
                         this.processAndRenderImage(img);
+                    };
+                    img.onerror = () => {
+                        console.error('Failed to pre-load image from path: ' + bootstrapImageUrl);
+                        alert('System Alert: Unable to reach the file at ' + bootstrapImageUrl + '. If you are in local development, please confirm you have run "php artisan storage:link" to connect your public directory fields.');
                     };
                     img.src = bootstrapImageUrl;
                 }
@@ -298,7 +301,6 @@ document.addEventListener('alpine:init', () => {
             this.isSaving = true;
             
             try {
-                // Upgraded: Converts canvas coordinates to a standard binary file blob for high-performance upload streaming
                 this.canvas.toBlob((blob) => {
                     if (!blob) {
                         alert('Canvas image generation failed.');
@@ -320,7 +322,7 @@ document.addEventListener('alpine:init', () => {
                     })
                     .then(response => {
                         if (!response.ok) {
-                            throw new Error('Server returned error status code.');
+                            throw new Error('Server upload failure status code.');
                         }
                         return response.json();
                     })
