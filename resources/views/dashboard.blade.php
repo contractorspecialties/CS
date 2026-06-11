@@ -15,6 +15,52 @@
         </div>
     </div>
 
+    {{-- REAL-TIME TELEMETRY ALERT FEED CENTER --}}
+    @if($actionAlerts->count() > 0)
+        <div class="space-y-3">
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest pl-1">⚡ Operations Requiring Attention</h3>
+            <div class="grid grid-cols-1 gap-3">
+                @foreach($actionAlerts as $alert)
+                    @if($alert->status === 'approved')
+                        <div class="bg-white border-l-4 border-emerald-500 rounded-xl p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div class="space-y-1">
+                                <span class="bg-emerald-50 text-emerald-700 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded border border-emerald-200">Proposal Approved</span>
+                                <h4 class="text-sm font-black text-slate-900">{{ $alert->client_name }} signed off on <span class="text-[#0F2D5A]">"{{ $alert->project_title }}"</span></h4>
+                                @if($alert->customer_notes)
+                                    <p class="text-xs text-slate-500 font-medium italic mt-1 bg-slate-50 p-2 rounded-lg border border-slate-100">"{{ $alert->customer_notes }}"</p>
+                                @endif
+                            </div>
+                            <div class="flex items-center gap-2 self-end sm:self-center">
+                                <form action="{{ route('estimates.convert', $alert->id) }}" method="POST" class="inline">
+                                    @csrf
+                                    <button type="submit" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black uppercase tracking-wider py-2.5 px-4 rounded-xl transition shadow-sm whitespace-nowrap">
+                                        💵 Bill Job
+                                    </button>
+                                </form>
+                                <a href="{{ route('dashboard.estimates') }}" class="bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-black uppercase tracking-wider py-2.5 px-3.5 rounded-xl transition">
+                                    Manage
+                                </a>
+                            </div>
+                        </div>
+                    @elseif($alert->status === 'declined')
+                        <div class="bg-white border-l-4 border-rose-500 rounded-xl p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div class="space-y-1">
+                                <span class="bg-rose-50 text-rose-700 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded border border-rose-200">Revision Requested</span>
+                                <h4 class="text-sm font-black text-slate-900">{{ $alert->client_name }} declined proposal for <span class="text-slate-600">"{{ $alert->project_title }}"</span></h4>
+                                @if($alert->customer_notes)
+                                    <p class="text-xs text-slate-500 font-medium italic mt-1 bg-slate-50 p-2 rounded-lg border border-slate-100">"{{ $alert->customer_notes }}"</p>
+                                @endif
+                            </div>
+                            <a href="{{ route('dashboard.estimates') }}" class="bg-slate-900 hover:bg-slate-800 text-[#FFC32D] text-xs font-black uppercase tracking-wider py-2.5 px-5 rounded-xl transition self-end sm:self-center whitespace-nowrap">
+                                Adjust Estimate
+                            </a>
+                        </div>
+                    @endif
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     {{-- 2. DYNAMIC WORKSPACE SHORTCUT TILES (Mobile Touch Targets) --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         

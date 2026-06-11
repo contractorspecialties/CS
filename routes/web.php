@@ -53,7 +53,13 @@ Route::middleware(['auth'])->group(function () {
             ->take(3)
             ->get();
 
-        return view('dashboard', compact('recentEstimates'));
+        // Dynamically track homeowner signals needing manual confirmation fields
+        $actionAlerts = Estimate::where('user_id', auth()->id())
+            ->whereIn('status', ['approved', 'declined'])
+            ->latest()
+            ->get();
+
+        return view('dashboard', compact('recentEstimates', 'actionAlerts'));
     })->name('dashboard');
 
     // 2. Dedicated Public Profile Settings Page
@@ -67,7 +73,6 @@ Route::middleware(['auth'])->group(function () {
 
     // 3. Dedicated Estimates and CPP Tool Suite Page
     Route::get('/dashboard/estimates', function () {
-        // Exclude archived items from active workspace views
         $estimates = Estimate::where('user_id', auth()->id())
             ->where('status', '!=', 'archived')
             ->latest()
