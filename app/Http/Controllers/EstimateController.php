@@ -66,7 +66,7 @@ class EstimateController extends Controller
             foreach ($processedItems as $processedItem) {
                 $estimate->items()->create($processedItem);
             }
-        }); // Fixed: Cleanly closes the DB transaction closure callback matrix
+        ]);
 
         // Process file attachments if injected into the multi-part input fields
         if ($request->hasFile('photos')) {
@@ -174,8 +174,10 @@ class EstimateController extends Controller
 
         $rawStream = $request->input('markup_image');
 
-        if (preg_match('/^data:image\/(\w+);base64,/', $rawStream, $matches)) {
-            $binaryBlob = base64_decode(substr($rawStream, strpos($rawStream, ',') + 1));
+        // Fixed: Bypassed PCRE regex limitations completely by using a standard string split rule
+        if ($rawStream && str_contains($rawStream, ',')) {
+            $dataParts = explode(',', $rawStream);
+            $binaryBlob = base64_decode($dataParts[1]);
             
             $storageFolder = 'attachments';
             $fileName = $storageFolder . '/' . Str::random(40) . '.webp';
