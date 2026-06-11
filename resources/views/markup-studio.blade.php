@@ -140,14 +140,6 @@
 
         </div>
     </div>
-
-    {{-- ASSET PAYLOAD SHIPPING FORM --}}
-    <form id="markupForm" action="{{ route('estimates.markup.store', $estimate->id) }}" method="POST" class="hidden">
-        @csrf
-        <input type="hidden" id="payload_base64" name="markup_image">
-        <input type="hidden" id="payload_is_public" name="is_public" :value="isPublic ? '1' : '0'">
-    </form>
-
 </div>
 
 <script>
@@ -172,12 +164,12 @@ document.addEventListener('alpine:init', () => {
             this.canvas = document.getElementById('studioCanvas');
             this.ctx = this.canvas.getContext('2d');
             
-            // Upgraded Auto-Loader: Programmatically fetches and draws modal-uploaded estimate photos at boot
+            // Auto-Loader: Safely builds public asset access links for pre-uploaded estimate imagery
             @if($estimate->attachments->count() > 0)
-                const bootstrapImageUrl = '{{ $estimate->attachments->last()->url }}';
+                const bootstrapImageUrl = '{{ asset('storage/' . $estimate->attachments->last()->file_path) }}';
                 if (bootstrapImageUrl) {
                     const img = new Image();
-                    img.crossOrigin = "anonymous"; // Prevents local canvas cross-origin taint blocks
+                    img.crossOrigin = "anonymous"; 
                     img.onload = () => {
                         this.activeImageSource = img;
                         this.processAndRenderImage(img);
@@ -306,18 +298,48 @@ document.addEventListener('alpine:init', () => {
             this.isSaving = true;
             
             try {
-                const dataUrl = this.canvas.toDataURL('image/jpeg', 0.85);
-                
-                if (dataUrl && dataUrl.startsWith('data:image/')) {
-                    document.getElementById('payload_base64').value = dataUrl;
-                    document.getElementById('markupForm').submit();
-                } else {
-                    alert('Image compilation encountered an asset serialization error. Please try again.');
-                    this.isSaving = false;
-                }
+                // Upgraded: Converts canvas coordinates to a standard binary file blob for high-performance upload streaming
+                this.canvas.toBlob((blob) => {
+                    if (!blob) {
+                        alert('Canvas image generation failed.');
+                        this.isSaving = false;
+                        return;
+                    }
+                    
+                    const formData = new FormData();
+                    formData.append('_token', '{{ csrf_token() }}');
+                    formData.append('markup_image', blob, 'markup.jpg');
+                    formData.append('is_public', this.isPublic ? '1' : '0');
+                    
+                    fetch('{{ route('estimates.markup.store', $estimate->id) }}', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Server returned error status code.');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                        } else {
+                            alert('Upload caught but redirection route missing.');
+                            this.isSaving = false;
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        alert('Upload failed. Ensure server upload limits match and try again.');
+                        this.isSaving = false;
+                    });
+                }, 'image/jpeg', 0.85);
             } catch(error) {
                 console.error(error);
-                alert('An error occurred while compiling your layout marks: ' + error.message);
                 this.isSaving = false;
             }
         }

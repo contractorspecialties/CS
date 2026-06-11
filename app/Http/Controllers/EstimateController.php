@@ -66,7 +66,7 @@ class EstimateController extends Controller
             foreach ($processedItems as $processedItem) {
                 $estimate->items()->create($processedItem);
             }
-        }); // Syntactically verified database transaction closure termination block
+        });
 
         // Process file attachments if injected into the multi-part input fields
         if ($request->hasFile('photos')) {
@@ -167,22 +167,18 @@ class EstimateController extends Controller
     {
         $estimate = Estimate::where('user_id', Auth::id())->where('id', $id)->firstOrFail();
 
+        // Upgraded: Validates as a direct incoming binary image file stream instead of a heavy text string
         $request->validate([
-            'markup_image' => 'required|string',
+            'markup_image' => 'required|image|max:16384',
             'is_public' => 'nullable'
         ]);
 
-        $rawStream = $request->input('markup_image');
-
-        if ($rawStream && str_contains($rawStream, ',')) {
-            $dataParts = explode(',', $rawStream);
-            $binaryBlob = base64_decode($dataParts[1]);
-            
+        if ($request->hasFile('markup_image')) {
+            $file = $request->file('markup_image');
             $storageFolder = 'attachments';
-            // Adjusted: Save as .jpg format to align with front-end canvas image/jpeg serialization outputs
             $fileName = $storageFolder . '/' . Str::random(40) . '.jpg';
 
-            Storage::disk('public')->put($fileName, $binaryBlob);
+            Storage::disk('public')->putFileAs($storageFolder, $file, basename($fileName));
 
             // Clean up any loose historical workspace rows on this proposal to keep storage footprints tight
             $estimate->attachments()->where('file_type', 'markup')->delete();
@@ -191,13 +187,21 @@ class EstimateController extends Controller
                 'user_id' => Auth::id(),
                 'file_path' => $fileName,
                 'file_type' => 'markup',
-                'is_public' => $request->input('is_public') == '1' || $request->input('is_public') === true
+                'is_public' => $request->input('is_public') === '1' || $request->input('is_public') == true
             ]);
 
-            return redirect()->route('dashboard.estimates')->with('status', 'Success! Marked-up job site photo has been permanently attached to the client proposal.');
+            session()->flash('status', 'Success! Marked-up job site photo has been permanently attached to the client proposal.');
+
+            return response()->json([
+                'success' => true,
+                'redirect' => route('dashboard.estimates')
+            ]);
         }
 
-        return redirect()->back()->with('status', 'Error: Failed to process inbound canvas image streams.');
+        return response()->json([
+            'success' => false,
+            'message' => 'Error: Failed to process inbound file streams.'
+        ], 422);
     }
 
     /**
