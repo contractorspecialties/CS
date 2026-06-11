@@ -5,9 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\HasAttachments;
 
 class Estimate extends Model
 {
+    use HasAttachments;
+
     protected $fillable = [
         'user_id',
         'client_name',
@@ -15,7 +18,7 @@ class Estimate extends Model
         'client_phone',
         'project_title',
         'project_description',
-        'customer_notes', // Added to accept customer revisions/feedback strings
+        'customer_notes', // Accepts customer revisions/feedback strings
         'subtotal_cents',
         'tax_cents',
         'total_cents',
