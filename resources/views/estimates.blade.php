@@ -112,7 +112,7 @@
 
                                         {{-- Camera Markup Studio Pivot Link --}}
                                         <a href="{{ route('estimates.markup', $estimate->id) }}" title="Camera Markup Studio" class="bg-slate-900 hover:bg-slate-800 text-[#FFC32D] text-xs font-black uppercase tracking-wider py-2 px-3 rounded-lg transition">
-                                            📸 Markup Photo
+                                            📸 Markup
                                         </a>
 
                                         {{-- One-Click Invoice Cloning Option --}}
@@ -254,7 +254,8 @@
                 <button @click="estimateModalOpen = false" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 font-black text-sm flex items-center justify-center hover:bg-slate-200">×</button>
             </div>
 
-            <form action="{{ route('estimates.store') }}" method="POST" class="space-y-6 text-left" 
+            {{-- Upgraded: Added enctype="multipart/form-data" to capture binary field images --}}
+            <form action="{{ route('estimates.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6 text-left" 
                   x-data="{ 
                       items: [
                           { description: 'Standard Service Call Out Fee', type: 'labor', quantity: 1, unit_price: {{ auth()->user()->minimum_service_fee ?? 85 }} }
@@ -297,9 +298,20 @@
                     </div>
                 </div>
 
+                {{-- Upgraded: Integrated Site Photo Drop-Zone Core --}}
+                <div class="space-y-4">
+                    <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-1">3. Project Photos (Optional)</h4>
+                    <div>
+                        <label class="w-full bg-[#F0F0F0] hover:bg-slate-200/60 border-2 border-dashed border-slate-300 hover:border-slate-400 text-slate-500 rounded-xl p-4 text-xs font-black uppercase tracking-wider block text-center cursor-pointer transition">
+                            📸 Snap or Upload Field Images
+                            <input type="file" name="photos[]" accept="image/*" multiple class="hidden">
+                        </label>
+                    </div>
+                </div>
+
                 <div class="space-y-4">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-1">
-                        <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest">3. Line Items</h4>
+                        <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest">4. Line Items</h4>
                         <button type="button" @click="addItem()" class="text-[10px] font-black text-[#0F2D5A] hover:underline uppercase tracking-wider">+ Add Row Item</button>
                     </div>
 

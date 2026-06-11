@@ -26,6 +26,8 @@ class EstimateController extends Controller
             'items.*.description' => 'required|string|max:255',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.unit_price' => 'required|numeric|min:0',
+            'photos' => 'nullable|array',
+            'photos.*' => 'nullable|image|max:12288', // Supports high-res phone uploads up to 12MB
         ]);
 
         $estimate = null;
@@ -63,7 +65,26 @@ class EstimateController extends Controller
             foreach ($processedItems as $processedItem) {
                 $estimate->items()->create($processedItem);
             }
-        }); // <-- Fixed: Changed from ]); to }); to properly match the closure mapping
+    });
+
+        // Process file attachments if injected into the multi-part input fields
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $file) {
+                $storageFolder = 'attachments';
+                $fileName = $storageFolder . '/' . Str::random(40) . '.' . $file->getClientOriginalExtension();
+                
+                Storage::disk('public')->putFileAs($storageFolder, $file, basename($fileName));
+
+                $estimate->attachments()->create([
+                    'user_id' => Auth::id(),
+                    'file_path' => $fileName,
+                    'file_type' => 'markup'
+                ]);
+            }
+
+            // High-octane pivot redirect: Route them straight to the canvas studio to sketch over the image
+            return redirect()->route('estimates.markup', $estimate->id)->with('status', 'Estimate drafted! Landed directly in Markup Studio to apply precision callouts.');
+        }
 
         if ($estimate && $estimate->client_email) {
             $contractorName = $estimate->user->business_name ?? $estimate->user->name;
