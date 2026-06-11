@@ -196,14 +196,12 @@ document.addEventListener('alpine:init', () => {
         handleViewportRotation() {
             if (!this.imageLoaded || !this.activeImageSource) return;
             
-            // Backup active canvas content layout matrix safely
             const cacheCanvas = document.createElement('canvas');
             cacheCanvas.width = this.canvas.width;
             cacheCanvas.height = this.canvas.height;
             const cacheCtx = cacheCanvas.getContext('2d');
             cacheCtx.drawImage(this.canvas, 0, 0);
             
-            // Re-render baseline coordinates without losing orientation aspect definitions
             this.canvas.style.width = '100%';
             this.ctx.putImageData(cacheCtx.getImageData(0, 0, cacheCanvas.width, cacheCanvas.height), 0, 0);
         },
@@ -275,14 +273,13 @@ document.addEventListener('alpine:init', () => {
             if(!this.imageLoaded || this.isSaving) return;
             this.isSaving = true;
             
-            // Direct client-side synchronous payload assembly sequence 
             try {
                 const dataUrl = this.canvas.toDataURL('image/webp', 0.85);
                 
-                if (dataUrl && dataUrl.startsWith('data:image/webp;base64,')) {
+                // Fixed: Loosened configuration selector to catch fallback PNG/JPEG base64 device signatures
+                if (dataUrl && dataUrl.startsWith('data:image/')) {
                     document.getElementById('payload_base64').value = dataUrl;
                     
-                    // Direct nextTick callback ensures DOM fields are securely hydrated before submit fires
                     this.$nextTick(() => {
                         document.getElementById('markupForm').submit();
                     });
