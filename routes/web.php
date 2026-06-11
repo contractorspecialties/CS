@@ -5,6 +5,7 @@ use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\MagicLinkController;
 use App\Http\Controllers\EstimateController;
 use App\Models\Specialty;
+use App\Models\Estimate;
 
 // =========================================================================
 // PUBLIC ROUTES (Anyone can view)
@@ -40,36 +41,59 @@ Route::get('/login/verify/{token}', [MagicLinkController::class, 'verifyToken'])
 // =========================================================================
 Route::middleware(['auth'])->group(function () {
     
-    // Main Contractor Dashboard
+    // 1. Command Center Home Overview Page (Birds-Eye Telemetry Deck)
     Route::get('/dashboard', function () {
+        // Pull down recent items to summarize performance on the landing view
+        $recentEstimates = Estimate::where('user_id', auth()->id())
+            ->latest()
+            ->take(3)
+            ->get();
+
+        return view('dashboard', compact('recentEstimates'));
+    })->name('dashboard');
+
+    // 2. Dedicated Public Profile Settings Page
+    Route::get('/dashboard/profile', function () {
         $specialties = Specialty::where('is_active', true)
             ->orderBy('sort_order', 'asc')
             ->get();
 
-        return view('dashboard', compact('specialties'));
-    })->name('dashboard');
+        return view('profile', compact('specialties'));
+    })->name('dashboard.profile');
 
-    // Save Contractor Profile Details from Dashboard Form
+    // 3. Dedicated Estimates and CPP Tool Suite Page
+    Route::get('/dashboard/estimates', function () {
+        $estimates = Estimate::where('user_id', auth()->id())
+            ->latest()
+            ->get();
+
+        return view('estimates', compact('estimates'));
+    })->name('dashboard.estimates');
+
+    // 4. Save Profile Changes Form Submission Action
     Route::post('/profile/update', [MagicLinkController::class, 'updateProfile'])->name('profile.update');
 
-    // Save and Create a New Project Estimate (CPP Suite)
+    // 5. Save and Create a New Project Estimate Form Action
     Route::post('/estimates', [EstimateController::class, 'store'])->name('estimates.store');
 
-    // Super Admin Control Panel
+
+    // =========================================================================
+    // SUPER ADMIN CONTROL PANEL OVERLAY
+    // =========================================================================
     Route::prefix('admin/command-center')
         ->name('admin.command-center.')
         ->group(function () {
             
-            // 1. Admin Home Overview Page
+            // Admin Home Overview Page
             Route::get('/', [SuperAdminController::class, 'index'])->name('index');
             
-            // 2. View Individual Contractor Account Details
+            // View Individual Contractor Account Details
             Route::get('/client/{id}', [SuperAdminController::class, 'showClient'])->name('client.show');
             
-            // 3. Suspend or Activate Contractor Account Access
+            // Suspend or Activate Contractor Account Access
             Route::post('/client/{id}/toggle-status', [SuperAdminController::class, 'toggleStatus'])->name('client.toggle');
             
-            // 4. Customize/Override Contractor Dashboard Colors
+            // Customize/Override Contractor Dashboard Colors
             Route::post('/client/{id}/update-theme', [SuperAdminController::class, 'updateTheme'])->name('client.theme');
             
         });
