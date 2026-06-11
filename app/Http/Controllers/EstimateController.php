@@ -29,6 +29,7 @@ class EstimateController extends Controller
 
         $estimate = null;
 
+        // Line 32: The transaction block opens with a curly brace
         DB::transaction(function () use ($validated, &$estimate) {
             $subtotalCents = 0;
             $processedItems = [];
@@ -62,7 +63,7 @@ class EstimateController extends Controller
             foreach ($processedItems as $processedItem) {
                 $estimate->items()->create($processedItem);
             }
-        ]);
+        }); // Line 65: Closed perfectly with a curly brace and parenthesis
 
         if ($estimate && $estimate->client_email) {
             $contractorName = $estimate->user->business_name ?? $estimate->user->name;
@@ -136,14 +137,13 @@ class EstimateController extends Controller
         $invoice = null;
 
         DB::transaction(function () use ($estimate, &$invoice) {
-            // Clone the root proposal details into a fresh layout frame
             $invoice = Invoice::create([
                 'user_id' => Auth::id(),
                 'estimate_id' => $estimate->id,
                 'client_name' => $estimate->client_name,
                 'client_email' => $estimate->client_email,
                 'project_title' => $estimate->project_title,
-                'project_description' => $estimate->project_description, // Fixed: Removed stray leading dot operator
+                'project_description' => $estimate->project_description,
                 'subtotal_cents' => $estimate->subtotal_cents,
                 'tax_cents' => $estimate->tax_cents,
                 'total_cents' => $estimate->total_cents,
@@ -151,7 +151,6 @@ class EstimateController extends Controller
                 'secure_token' => Str::random(40),
             ]);
 
-            // Duplicate child item logs sequentially
             foreach ($estimate->items as $item) {
                 $invoice->items()->create([
                     'description' => $item->description,
@@ -162,7 +161,6 @@ class EstimateController extends Controller
                 ]);
             }
 
-            // Pivot status configuration flag on original reference
             $estimate->update(['status' => 'invoiced']);
         });
 
