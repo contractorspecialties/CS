@@ -73,6 +73,25 @@
                 </div>
             </div>
 
+            {{-- HIGH-OCTANE VISUAL WORKSPACE GALLERY ATTACHMENTS --}}
+            @if($estimate->attachments->where('is_public', true)->count() > 0)
+                <div class="space-y-4 text-left pt-2">
+                    <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Project Specifications & Visual Layouts</h4>
+                    <div class="grid grid-cols-1 gap-6">
+                        @foreach($estimate->attachments->where('is_public', true) as $attachment)
+                            <div class="group relative bg-slate-950 rounded-2xl overflow-hidden border border-slate-200 shadow-md transition-all duration-300">
+                                <div class="absolute top-3 left-3 z-10 bg-slate-900/80 backdrop-blur-md px-3 py-1 rounded-md border border-slate-700">
+                                    <span class="text-[9px] text-[#FFC32D] font-black uppercase tracking-wider">Annotated Field Capture</span>
+                                </div>
+                                <img src="{{ asset('storage/' . $attachment->file_path) }}" 
+                                     alt="Project markup specification asset entry" 
+                                     class="w-full h-auto max-h-[500px] object-contain mx-auto block">
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
             {{-- FINANCIAL RUNNING SUMMARY DECK --}}
             <div class="border-t border-slate-100 pt-6 flex flex-col items-end text-right space-y-2">
                 <div class="flex justify-between w-full max-w-xs text-sm font-bold text-slate-400">
@@ -106,7 +125,7 @@
                         
                         {{-- Unaggressive Input Box Overlay --}}
                         <div class="space-y-1.5">
-                            <label for="customer_notes" class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Optional Notes, Corrections, or Scheduling Requests</label>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Optional Notes, Corrections, or Scheduling Requests</label>
                             <textarea id="customer_notes" name="customer_notes" rows="3" placeholder="Need any dynamic adjustments? Have a specific scheduling preference? Add your notes here before responding..." class="w-full bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold py-3 px-4 focus:outline-none focus:border-slate-400 focus:bg-white transition leading-relaxed placeholder-slate-400"></textarea>
                         </div>
 
@@ -127,7 +146,7 @@
                 @else
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div class="max-w-md">
-                            @if($estimate->status === 'approved')
+                            @if($estimate->status === 'approved' || $estimate->status === 'invoiced')
                                 <span class="bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] uppercase font-black tracking-wider px-3 py-1 rounded-md block w-max">✓ Proposal Authorized</span>
                                 <p class="text-xs text-slate-400 font-bold mt-2">This schedule contract was signed and locked into production scheduling.</p>
                             @elseif($estimate->status === 'declined')
