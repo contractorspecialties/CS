@@ -25,12 +25,10 @@ class EstimateController extends Controller
             'items.*.unit_price' => 'required|numeric|min:0',
         ]);
 
-        // Use a database transaction to ensure either EVERYTHING saves perfectly, or nothing does
         DB::transaction(function () use ($validated) {
             $subtotalCents = 0;
-
-            // 1. Pre-calculate totals and handle decimal-to-cents conversion
             $processedItems = [];
+
             foreach ($validated['items'] as $item) {
                 $unitPriceCents = (int) round($item['unit_price'] * 100);
                 $lineTotalCents = $unitPriceCents * (int) $item['quantity'];
@@ -38,17 +36,13 @@ class EstimateController extends Controller
 
                 $processedItems[] = [
                     'description' => $item['description'],
-                    'item_type' => 'labor', // Defaulting to labor for base engine validation
+                    'item_type' => 'labor',
                     'quantity' => $item['quantity'],
                     'unit_price_cents' => $unitPriceCents,
                     'total_price_cents' => $lineTotalCents,
                 ];
             }
 
-            // For V1, we'll keep tax at 0% unless you want to add a tax multiplier configuration row later
-            $totalCents = $subtotalCents; 
-
-            // 2. Create the parent Estimate record
             $estimate = Estimate::create([
                 'user_id' => Auth::id(),
                 'client_name' => $validated['client_name'],
@@ -56,17 +50,53 @@ class EstimateController extends Controller
                 'project_title' => $validated['project_title'],
                 'subtotal_cents' => $subtotalCents,
                 'tax_cents' => 0,
-                'total_cents' => $totalCents,
+                'total_cents' => $subtotalCents,
                 'status' => 'draft',
                 'secure_token' => Str::random(40),
             ]);
 
-            // 3. Save all child line items bound to this estimate ID
             foreach ($processedItems as $processedItem) {
                 $estimate->items()->create($processedItem);
             }
-        });
+        ]);
 
-        return redirect()->route('dashboard')->with('status', 'Estimate has been successfully generated and saved to your workspace records!');
+        return redirect()->route('dashboard.estimates')->with('status', 'Estimate has been successfully generated and saved to your workspace records!');
+    }
+
+    /**
+     * Render the passwordless proposal page for the homeowner.
+     */
+    public function showPublic($token)
+    {
+        // Fetch estimate alongside its itemized lines and parent company records
+        $estimate = Estimate::with(['items', 'user.specialty'])
+            ->where('secure_token', $token)
+            ->firstOrFail();
+
+        return view('public-estimate', compact('estimate'));
+    }
+
+    /**
+     * Handle incoming homeowner status approvals or change requests.
+     */
+    public function updateStatus(Request $request, $token)
+    {
+        $estimate = Estimate::where('secure_token', $token)->firstOrFail();
+
+        $validated = $request->validate([
+            'action' => 'required|in:approve,decline'
+        ]);
+
+        $newStatus = ($validated['action'] === 'approve') ? 'approved' : 'declined';
+        
+        $estimate->update([
+            'status' => $newStatus
+        ]);
+
+        $message = ($newStatus === 'approved') 
+            ? 'Thank you! You have successfully approved this proposal. Your contractor has been notified and will coordinate next steps.' 
+            : 'You have marked this proposal as declined. If adjustments are needed, please contact your service technician directly.';
+
+        return redirect()->back()->with('status', $message);
     }
 }

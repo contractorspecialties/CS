@@ -19,6 +19,10 @@ Route::get('/', function () {
 // Public Contractor Directory Profiles (SEO Landing Pages)
 Route::get('/pros/{specialty_slug}/{user_slug}', [MagicLinkController::class, 'showPublicProfile'])->name('profile.public');
 
+// Public Homeowner Portal: View and Approve Project Estimates (CPP Suite)
+Route::get('/estimates/{token}', [EstimateController::class, 'showPublic'])->name('estimates.public.show');
+Route::post('/estimates/{token}/status', [EstimateController::class, 'updateStatus'])->name('estimates.public.status');
+
 
 // =========================================================================
 // GUEST ROUTES (Only for logged-out users)
@@ -43,7 +47,6 @@ Route::middleware(['auth'])->group(function () {
     
     // 1. Command Center Home Overview Page (Birds-Eye Telemetry Deck)
     Route::get('/dashboard', function () {
-        // Pull down recent items to summarize performance on the landing view
         $recentEstimates = Estimate::where('user_id', auth()->id())
             ->latest()
             ->take(3)
