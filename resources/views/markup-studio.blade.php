@@ -3,8 +3,8 @@
 @section('title', 'Media Markup Studio')
 
 @section('content')
-{{-- Added window resize and orientation change listeners to cleanly snap the screen scale bounds --}}
-<div class="space-y-6 w-full min-w-0" 
+{{-- Added strict viewport limits to prevent horizontal scroll spill --}}
+<div class="space-y-6 w-full min-w-0 max-w-full overflow-hidden" 
      x-data="canvasStudio()"
      @resize.window.debounce.150ms="handleViewportRotation()">
     
@@ -19,8 +19,11 @@
             <a href="{{ route('dashboard.estimates') }}" class="w-1/2 sm:w-auto bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-black uppercase tracking-wider px-5 py-3.5 rounded-xl text-center transition">
                 Cancel
             </a>
-            <button @click="saveFlattenedImage()" :disabled="!imageLoaded" :class="!imageLoaded ? 'opacity-40 cursor-not-allowed bg-slate-700' : 'bg-emerald-600 hover:bg-emerald-500'" class="w-1/2 sm:w-auto text-white text-xs font-black uppercase tracking-wider px-6 py-3.5 rounded-xl text-center shadow-md transition transform active:scale-95 whitespace-nowrap">
-                Save & Attach Asset →
+            <button @click="saveFlattenedImage()" 
+                    :disabled="!imageLoaded || isSaving" 
+                    :class="(!imageLoaded || isSaving) ? 'opacity-40 cursor-not-allowed bg-slate-700' : 'bg-emerald-600 hover:bg-emerald-500'" 
+                    class="w-1/2 sm:w-auto text-white text-xs font-black uppercase tracking-wider px-6 py-3.5 rounded-xl text-center shadow-md transition transform active:scale-95 whitespace-nowrap">
+                <span x-text="isSaving ? 'Processing Asset...' : 'Save & Attach Asset →'">Save & Attach Asset →</span>
             </button>
         </div>
     </div>
@@ -28,16 +31,16 @@
     {{-- MAIN EDITING ENGINE MATRICES --}}
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full min-w-0">
         
-        {{-- LEFT COLUMN: CONTROL PANEL TOOLBAR (Enforced strict width parameters to prevent expansion) --}}
+        {{-- LEFT COLUMN: CONTROL PANEL TOOLBAR --}}
         <div class="lg:col-span-3 bg-slate-900 border border-slate-800 rounded-[2rem] p-5 text-left text-white space-y-6 shadow-xl w-full min-w-0">
             
-            {{-- 0. Image Source Selector --}}
+            {{-- 0. Image Source Selector (Layered overlay for absolute hardware gesture trust) --}}
             <div class="space-y-2.5">
                 <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest block">Select or Snap Photo</span>
-                <label class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-600 text-slate-300 rounded-xl p-3 text-xs font-black uppercase tracking-wider block text-center cursor-pointer transition">
+                <div class="relative w-full overflow-hidden bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-600 text-slate-300 rounded-xl p-3 text-xs font-black uppercase tracking-wider text-center transition">
                     📸 Snap Site Photo
-                    <input type="file" accept="image/*" capture="environment" @change="loadImageFromFile($event)" class="hidden">
-                </label>
+                    <input type="file" accept="image/*" capture="environment" @change="loadImageFromFile($event)" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10">
+                </div>
             </div>
 
             {{-- 1. Tool Selection Block --}}
@@ -99,15 +102,15 @@
             </div>
         </div>
 
-        {{-- RIGHT COLUMN: VISUAL ENGINE WORKSPACE SHEET (Added w-full min-w-0 layout stabilization guards) --}}
-        <div class="lg:col-span-9 bg-slate-950 border border-slate-800 rounded-[2.5rem] p-4 sm:p-6 shadow-xl flex items-center justify-center overflow-hidden min-h-[400px] sm:min-h-[500px] relative w-full min-w-0">
+        {{-- RIGHT COLUMN: VISUAL ENGINE WORKSPACE SHEET (Forced strict maximum relative viewport lock) --}}
+        <div class="lg:col-span-9 bg-slate-950 border border-slate-800 rounded-[2.5rem] p-3 sm:p-6 shadow-xl flex items-center justify-center overflow-hidden h-[55vh] max-h-[60vh] relative w-full min-w-0">
             
             <canvas id="studioCanvas"
                     @pointerdown="startDrawing($event)"
                     @pointermove="draw($event)"
                     @pointerup="stopDrawing()"
                     @pointerleave="stopDrawing()"
-                    class="shadow-2xl rounded-2xl max-w-full max-h-[70vh] h-auto object-contain cursor-crosshair touch-none"
+                    class="shadow-2xl rounded-2xl max-w-full max-h-full h-auto object-contain cursor-crosshair touch-none select-none block"
                     x-show="imageLoaded">
             </canvas>
 
@@ -115,7 +118,7 @@
             <div class="text-center text-slate-500 space-y-2 max-w-sm px-4" x-show="!imageLoaded">
                 <span class="text-4xl block">📷</span>
                 <h4 class="text-sm font-black text-slate-400 uppercase tracking-wider">No Image Loaded Yet</h4>
-                <p class="text-xs font-bold text-slate-600">Tap "Snap Site Photo" on the sidebar panel to open your device camera or choose a field photo to configure the workspace.</p>
+                <p class="text-xs font-bold text-slate-600">Tap "Snap Site Photo" on the sidebar panel to fire up your device camera or pick a field photo to unpack the canvas studio.</p>
             </div>
 
         </div>
@@ -140,6 +143,7 @@ document.addEventListener('alpine:init', () => {
         strokeSize: 4,
         isDrawing: false,
         isPublic: true,
+        isSaving: false, // Prevents thread collisions and race drops during form submission sequences
         startX: 0,
         startY: 0,
         snapshot: null,
@@ -168,7 +172,6 @@ document.addEventListener('alpine:init', () => {
             reader.readAsDataURL(file);
         },
 
-        // Factored image scaling logic out into a dedicated re-callable processor method
         processAndRenderImage(img) {
             let maxWidth = 1200;
             let maxHeight = 1200;
@@ -191,26 +194,25 @@ document.addEventListener('alpine:init', () => {
             this.imageLoaded = true;
         },
 
-        // Triggered automatically whenever the window viewport bounds are manipulated or rotated
         handleViewportRotation() {
             if (!this.imageLoaded || !this.activeImageSource) return;
             
-            // Back up custom brush modifications in local browser canvas history logs
-            const temporaryLinesSnapshot = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+            // Build an isolated background memory cache canvas context to map the active state perfectly
+            const cacheCanvas = document.createElement('canvas');
+            cacheCanvas.width = this.canvas.width;
+            cacheCanvas.height = this.canvas.height;
+            const cacheCtx = cacheCanvas.getContext('2d');
+            cacheCtx.drawImage(this.canvas, 0, 0);
             
-            // Reset sizing bounds to completely purge lingering browser flex cache heights
-            this.canvas.style.width = '100%';
+            // Force browser layout layers to completely recalculate the display geometry metrics
+            const containerWidth = this.canvas.parentElement.clientWidth;
             
-            // Re-map internal canvas pixels securely to prevent coordinate stretch tracking offsets
-            const rect = this.canvas.getBoundingClientRect();
-            if (rect.width === 0) return;
-            
-            // Restore drawing snapshots smoothly over the corrected coordinate mesh
-            this.ctx.putImageData(temporaryLinesSnapshot, 0, 0);
+            // Re-render and drop artwork back cleanly without coordinate bleed
+            this.ctx.putImageData(cacheCtx.getImageData(0, 0, cacheCanvas.width, cacheCanvas.height), 0, 0);
         },
 
         startDrawing(e) {
-            if(!this.imageLoaded) return;
+            if(!this.imageLoaded || this.isSaving) return;
             this.isDrawing = true;
             
             const rect = this.canvas.getBoundingClientRect();
@@ -231,7 +233,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         draw(e) {
-            if (!this.isDrawing || !this.imageLoaded) return;
+            if (!this.isDrawing || !this.imageLoaded || this.isSaving) return;
             
             const rect = this.canvas.getBoundingClientRect();
             const currentX = (e.clientX - rect.left) * (this.canvas.width / rect.width);
@@ -273,11 +275,28 @@ document.addEventListener('alpine:init', () => {
         },
 
         saveFlattenedImage() {
-            if(!this.imageLoaded) return;
+            if(!this.imageLoaded || this.isSaving) return;
             
-            const dataUrl = this.canvas.toDataURL('image/webp', 0.85);
-            document.getElementById('payload_base64').value = dataUrl;
-            document.getElementById('markupForm').submit();
+            // Flip the saving locks to block ongoing thread modifications
+            this.isSaving = true;
+            
+            // Micro-timeout delay allows mobile Chrome frames to safely process input states before compiling payloads
+            setTimeout(() => {
+                try {
+                    const dataUrl = this.canvas.toDataURL('image/webp', 0.85);
+                    
+                    if (dataUrl && dataUrl.length > 1500) {
+                        document.getElementById('payload_base64').value = dataUrl;
+                        document.getElementById('markupForm').submit();
+                    } else {
+                        alert('Image compilation encountered an asset memory allocation error. Please refresh and try again.');
+                        this.isSaving = false;
+                    }
+                } catch(error) {
+                    console.error('Canvas compilation failure logs:', error);
+                    this.isSaving = false;
+                }
+            }, 100);
         }
     }));
 });
