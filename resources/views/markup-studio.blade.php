@@ -23,7 +23,7 @@
     </div>
 
     {{-- MAIN EDITING ENGINE MATRICES --}}
-    <div class="grid grid-cols-1 log:grid-cols-12 lg:grid-cols-12 gap-6 items-start">
+    <div class="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-6 items-start">
         
         {{-- LEFT COLUMN: CONTROL PANEL TOOLBAR --}}
         <div class="lg:col-span-3 bg-slate-900 border border-slate-800 rounded-[2rem] p-5 text-left text-white space-y-6 shadow-xl">
@@ -32,8 +32,9 @@
             <div class="space-y-2.5">
                 <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest block">Select or Snap Photo</span>
                 <label class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-600 text-slate-300 rounded-xl p-3 text-xs font-black uppercase tracking-wider block text-center cursor-pointer transition">
-                    📸 Choose Site Image
-                    <input type="file" accept="image/*" @change="loadImageFromFile($event)" class="hidden">
+                    📸 Snap Site Photo
+                    {{-- Fixed: Added capture="environment" to directly prompt native smartphone camera hardware --}}
+                    <input type="file" accept="image/*" capture="environment" @change="loadImageFromFile($event)" class="hidden">
                 </label>
             </div>
 
@@ -112,7 +113,7 @@
             <div class="text-center text-slate-500 space-y-2 max-w-sm" x-show="!imageLoaded">
                 <span class="text-4xl block">📷</span>
                 <h4 class="text-sm font-black text-slate-400 uppercase tracking-wider">No Image Loaded Yet</h4>
-                <p class="text-xs font-bold text-slate-600">Tap "Choose Site Image" on the sidebar panel to snap or upload a field photo to configure the workspace.</p>
+                <p class="text-xs font-bold text-slate-600">Tap "Snap Site Photo" on the sidebar panel to open your device camera or choose a field photo to configure the workspace.</p>
             </div>
 
         </div>
@@ -136,7 +137,7 @@ document.addEventListener('alpine:init', () => {
         strokeColor: '#FFC32D',
         strokeSize: 4,
         isDrawing: false,
-        isPublic: true, // Baseline state default maps to public viewing parameters
+        isPublic: true,
         startX: 0,
         startY: 0,
         snapshot: null,
@@ -159,7 +160,6 @@ document.addEventListener('alpine:init', () => {
                 img.onload = () => {
                     this.activeImageSource = img;
                     
-                    // High-performance boundary constraints downscaling equations
                     let maxWidth = 1200;
                     let maxHeight = 1200;
                     let width = img.naturalWidth || 800;
@@ -175,7 +175,6 @@ document.addEventListener('alpine:init', () => {
                         }
                     }
 
-                    // Assign the mathematically downscaled dimension coordinates to the active viewport
                     this.canvas.width = width;
                     this.canvas.height = height;
                     
