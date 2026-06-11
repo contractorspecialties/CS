@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Mail;
 class MagicLinkController extends Controller
 {
     /**
-     * Render the custom, minimal authentication intake desk.
+     * Show the clean, simple login screen.
      */
     public function showLogin()
     {
@@ -20,7 +20,7 @@ class MagicLinkController extends Controller
     }
 
     /**
-     * Handle incoming landing page signups and provision new contractor entities.
+     * Handle new signups from the homepage and create the initial account.
      */
     public function register(Request $request)
     {
@@ -32,6 +32,7 @@ class MagicLinkController extends Controller
             'email.unique' => 'This email address is already connected to an active account.'
         ]);
 
+        // Create the new contractor account record safely
         $user = User::create([
             'name' => $validated['business_name'],
             'email' => $validated['email'],
@@ -42,6 +43,7 @@ class MagicLinkController extends Controller
             'is_restricted' => false,
         ]);
 
+        // Generate a secure, one-time login token that lasts 30 minutes
         $token = Str::random(64);
         $user->update([
             'magic_link_token' => hash('sha256', $token),
@@ -50,6 +52,7 @@ class MagicLinkController extends Controller
 
         $verificationUrl = route('login.verify', ['token' => $token]);
 
+        // Send the account activation email via SendGrid
         Mail::send([], [], function ($message) use ($user, $verificationUrl) {
             $message->to($user->email)
                 ->subject('Activate Your Free Workspace | Contractor Specialties')
@@ -72,7 +75,7 @@ class MagicLinkController extends Controller
     }
 
     /**
-     * Resolve incoming setup parameters and save contractor profiles.
+     * Save or update all the deep business details from the dashboard form.
      */
     public function updateProfile(Request $request)
     {
@@ -101,8 +104,10 @@ class MagicLinkController extends Controller
             'crew_size' => 'nullable|integer|min:1|max:100',
         ]);
 
+        // Generate a clean web link name from their business title
         $slug = Str::slug($validated['business_name']);
 
+        // Check if another business already uses this exact web link name
         $slugCollision = User::where('slug', $slug)
             ->where('id', '!=', $user->id)
             ->exists();
@@ -111,6 +116,7 @@ class MagicLinkController extends Controller
             $slug = $slug . '-' . $user->id;
         }
 
+        // Update the contractor's profile details in the database
         $user->update([
             'business_name' => $validated['business_name'],
             'specialty_id' => $validated['specialty_id'],
@@ -139,7 +145,7 @@ class MagicLinkController extends Controller
     }
 
     /**
-     * Generate secure authentication links and dispatch them.
+     * Create and email a new secure access link when an existing user tries to sign in.
      */
     public function sendLink(Request $request)
     {
@@ -180,7 +186,7 @@ class MagicLinkController extends Controller
     }
 
     /**
-     * Authenticate the incoming request if token signatures match.
+     * Verify the login link token and log the contractor into their dashboard session.
      */
     public function verifyToken($token)
     {
@@ -214,5 +220,23 @@ class MagicLinkController extends Controller
         }
 
         return redirect()->route('dashboard');
+    }
+
+    /**
+     * Display the public directory profile page for homeowners and search engines.
+     */
+    public function showPublicProfile($specialty_slug, $user_slug)
+    {
+        // Find the active contractor using their web link name
+        $contractor = User::where('slug', $user_slug)
+            ->where('is_restricted', false)
+            ->firstOrFail();
+
+        // Safety verification: make sure their trade category matches the web address exactly
+        if (!$contractor->specialty || $contractor->specialty->slug !== $specialty_slug) {
+            abort(404);
+        }
+
+        return view('public-profile', compact('contractor'));
     }
 }
