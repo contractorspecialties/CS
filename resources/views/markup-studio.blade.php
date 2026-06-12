@@ -45,22 +45,27 @@
         {{-- LEFT COLUMN: CONTROL PANEL TOOLBAR --}}
         <div class="lg:col-span-3 bg-slate-900 border border-slate-800 rounded-[2rem] p-5 text-left text-white space-y-6 shadow-xl w-full min-w-0">
             
-            {{-- 0. Capture New Photo Channel --}}
+            {{-- 0. Capture New Photo Channel (Explicit Separated Targets) --}}
             <div class="space-y-2.5">
                 <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest block">0. Capture or Import Photo</span>
                 <div class="grid grid-cols-2 gap-2 text-xs font-black uppercase tracking-wider">
-                    <div class="relative overflow-hidden bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 rounded-xl p-3 text-center transition cursor-pointer shadow-sm">
+                    
+                    {{-- Button 1: Programmatic Hardware Camera Trigger --}}
+                    <button type="button" @click="$refs.cameraInput.click()" class="bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 rounded-xl p-3 text-center transition shadow-sm active:scale-95">
                         📸 Live Lens
-                        <input type="file" accept="image/*" capture="environment" @change="loadImageFromFile($event)" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-20">
-                    </div>
-                    <div class="relative overflow-hidden bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 rounded-xl p-3 text-center transition cursor-pointer shadow-sm">
+                    </button>
+                    
+                    {{-- Button 2: Programmatic Media Gallery Trigger --}}
+                    <button type="button" @click="$refs.galleryInput.click()" class="bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 rounded-xl p-3 text-center transition shadow-sm active:scale-95">
                         📁 Gallery
-                        <input type="file" accept="image/*" @change="loadImageFromFile($event)" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-20">
-                    </div>
+                    </button>
+
+                    <input type="file" x-ref="cameraInput" accept="image/*" capture="environment" @change="loadImageFromFile($event)" class="hidden">
+                    <input type="file" x-ref="galleryInput" accept="image/*" @change="loadImageFromFile($event)" class="hidden">
                 </div>
             </div>
 
-            {{-- 1. Tool Selection Block (Added Text Tool Injection) --}}
+            {{-- 1. Tool Selection Block --}}
             <div class="space-y-2.5">
                 <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest block">1. Selected Tool</span>
                 <div class="grid grid-cols-2 gap-2 text-xs font-black uppercase tracking-wider">
@@ -207,7 +212,7 @@ document.addEventListener('alpine:init', () => {
                 const img = new Image();
                 img.onload = () => {
                     this.activeImageSource = img;
-                    this.activePathSource = ''; // Clears sync highlight for fresh additions
+                    this.activePathSource = ''; 
                     this.processAndRenderImage(img);
                 };
                 img.src = event.target.result;
@@ -263,13 +268,11 @@ document.addEventListener('alpine:init', () => {
             this.ctx.lineCap = 'round';
             this.ctx.lineJoin = 'round';
             
-            // Integrated Canvas Text Tool Intervention Matrix
             if (this.tool === 'text') {
                 const inputContent = prompt('Enter your annotation text:');
                 if (inputContent && inputContent.trim() !== '') {
-                    // Scales typography size bounding rules cleanly matching slider px models
                     const computedFontSize = Math.round(parseInt(this.strokeSize) * 2.5) + 12;
-                    this.ctx.font = 'black ' + computedFontSize + 'px Plus Jakarta Sans, Arial, sans-serif';
+                    this.ctx.font = 'bold ' + computedFontSize + 'px Plus Jakarta Sans, Arial, sans-serif';
                     this.ctx.fillText(inputContent, this.startX, this.startY);
                 }
                 return;
@@ -305,10 +308,6 @@ document.addEventListener('alpine:init', () => {
                 else if (this.tool === 'rect') {
                     this.ctx.strokeRect(this.startX, this.startY, currentX - this.startX, currentY - this.startY);
                 } 
-                else if (this.tool === 'circle') {
-                    let radius = Math.sqrt(Math.pow(this.startX - currentX, 2) + Math.pow(this.startY - currentY, 2));
-                    this.ctx.arc(this.startX, this.startY, radius, 0, 2 * Math.PI);
-                }
                 
                 this.ctx.stroke();
             }
