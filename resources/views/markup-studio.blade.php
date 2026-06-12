@@ -51,12 +51,20 @@
         {{-- LEFT COLUMN: CONTROL PANEL TOOLBAR --}}
         <div class="lg:col-span-3 bg-slate-900 border border-slate-800 rounded-[2rem] p-5 text-left text-white space-y-6 shadow-xl w-full min-w-0">
             
-            {{-- 0. Image Source Selector --}}
+            {{-- 0. Dual Image Source Selector Matrix --}}
             <div class="space-y-2.5">
-                <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest block">Select or Snap Photo</span>
-                <div class="relative w-full overflow-hidden bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-600 text-slate-300 rounded-xl p-3 text-xs font-black uppercase tracking-wider text-center transition">
-                    📸 Replace Job Site Photo
-                    <input type="file" accept="image/*" @change="loadImageFromFile($event)" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-20">
+                <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest block">0. Add or Capture Photo</span>
+                <div class="grid grid-cols-2 gap-2 text-xs font-black uppercase tracking-wider">
+                    {{-- Channel A: Direct Camera Viewfinder Hardware Callout --}}
+                    <div class="relative overflow-hidden bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 rounded-xl p-3 text-center transition cursor-pointer shadow-sm">
+                        📸 Live Lens
+                        <input type="file" accept="image/*" capture="environment" @change="loadImageFromFile($event)" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-20">
+                    </div>
+                    {{-- Channel B: System Photo Library Roll Explorer --}}
+                    <div class="relative overflow-hidden bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 rounded-xl p-3 text-center transition cursor-pointer shadow-sm">
+                        📁 Gallery
+                        <input type="file" accept="image/*" @change="loadImageFromFile($event)" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-20">
+                    </div>
                 </div>
             </div>
 
@@ -135,7 +143,7 @@
             <div class="text-center text-slate-500 space-y-2 max-w-sm px-4" x-show="!imageLoaded">
                 <span class="text-4xl block">📷</span>
                 <h4 class="text-sm font-black text-slate-400 uppercase tracking-wider">No Image Loaded Yet</h4>
-                <p class="text-xs font-bold text-slate-600">Tap "Replace Job Site Photo" on the sidebar panel to open your device camera or pick an existing field photo.</p>
+                <p class="text-xs font-bold text-slate-600">Tap "Live Lens" to capture a raw job site photo directly with your device camera, or tap "Gallery" to pick an existing image file.</p>
             </div>
 
         </div>
@@ -164,7 +172,6 @@ document.addEventListener('alpine:init', () => {
             this.canvas = document.getElementById('studioCanvas');
             this.ctx = this.canvas.getContext('2d');
             
-            // Fixed Same-Domain Bootloader: Removed anonymous crossOrigin constraint rules
             @if($estimate->attachments->count() > 0)
                 const bootstrapImageUrl = '{{ asset('storage/' . $estimate->attachments->last()->file_path) }}';
                 if (bootstrapImageUrl) {

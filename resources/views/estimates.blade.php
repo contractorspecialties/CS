@@ -8,7 +8,7 @@
     
     {{-- SYSTEM FEEDBACK NOTIFICATIONS --}}
     @if (session('status'))
-        <div class="bg-slate-900 border-l-8 border-[#FFC32D] p-5 rounded-2xl text-left shadow-sm">
+        <div class="bg-slate-900 border-l-8 border-l-[#FFC32D] p-5 rounded-2xl text-left shadow-sm">
             <p class="text-sm font-bold text-white leading-snug">{{ session('status') }}</p>
         </div>
     @endif
@@ -81,13 +81,28 @@
                         @foreach($estimates as $estimate)
                             <tr class="hover:bg-slate-50/80 transition">
                                 <td class="py-4 px-4">
-                                    <p class="text-slate-900 font-black">{{ $estimate->client_name }}</p>
-                                    <p class="text-xs text-slate-400">{{ $estimate->client_email ?? 'No email supplied' }}</p>
+                                    <div class="flex items-center gap-3">
+                                        {{-- Row Attachment Thumbnail Display Trigger --}}
+                                        @if($estimate->attachments->count() > 0)
+                                            <div class="w-10 h-10 rounded-lg overflow-hidden bg-slate-950 border border-slate-300 shadow-inner flex-shrink-0 relative group">
+                                                <img src="{{ asset('storage/' . $estimate->attachments->last()->file_path) }}" alt="Estimate mini thumbnail preview" class="w-full h-full object-cover">
+                                                <a href="{{ route('estimates.markup', $estimate->id) }}" class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] text-white transition">✏️</a>
+                                            </div>
+                                        @else
+                                            <div class="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 text-xs flex-shrink-0">
+                                                🖼️
+                                            </div>
+                                        @endif
+                                        <div class="text-left">
+                                            <p class="text-slate-900 font-black">{{ $estimate->client_name }}</p>
+                                            <p class="text-xs text-slate-400">{{ $estimate->client_email ?? 'No email supplied' }}</p>
+                                        </div>
+                                    </div>
                                 </td>
-                                <td class="py-4 px-4 text-slate-600 font-medium">
+                                <td class="py-4 px-4 text-slate-600 font-medium text-left">
                                     {{ $estimate->project_title }}
                                 </td>
-                                <td class="py-4 px-4">
+                                <td class="py-4 px-4 text-left">
                                     @if($estimate->status === 'draft')
                                         <span class="bg-slate-100 border border-slate-200 text-slate-700 text-[9px] uppercase font-black tracking-wider px-2.5 py-1 rounded-md">Draft</span>
                                     @elseif($estimate->status === 'sent')
@@ -100,7 +115,7 @@
                                         <span class="bg-red-50 border border-red-200 text-red-700 text-[9px] uppercase font-black tracking-wider px-2.5 py-1 rounded-md">{{ $estimate->status }}</span>
                                     @endif
                                 </td>
-                                <td class="py-4 px-4 text-base font-black text-[#0F2D5A]">
+                                <td class="py-4 px-4 text-base font-black text-[#0F2D5A] text-left">
                                     ${{ number_format($estimate->total_cents / 100, 2) }}
                                 </td>
                                 <td class="py-4 px-4 text-right">
@@ -128,7 +143,7 @@
                                         {{-- Archive Execution Core --}}
                                         <form action="{{ route('estimates.archive', $estimate->id) }}" method="POST" class="inline">
                                             @csrf
-                                            <button type="submit" title="Archive Record" class="bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 text-xs font-black py-2 px-3 rounded-lg transition">
+                                            <button type="submit" title="Archive Record" class="bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-400 text-xs font-black py-2 px-3 rounded-lg transition">
                                                 📁
                                             </button>
                                         </form>
@@ -153,12 +168,19 @@
             <div class="block md:hidden space-y-4">
                 @foreach($estimates as $estimate)
                     <div class="bg-white border-2 border-slate-200/80 p-5 rounded-2xl text-left space-y-4 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h4 class="text-base font-black text-slate-900 tracking-tight">{{ $estimate->client_name }}</h4>
-                                <p class="text-xs font-bold text-slate-400">{{ $estimate->project_title }}</p>
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                @if($estimate->attachments->count() > 0)
+                                    <div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-950 border border-slate-200 flex-shrink-0 shadow-sm">
+                                        <img src="{{ asset('storage/' . $estimate->attachments->last()->file_path) }}" alt="Mobile view record preview thumbnail" class="w-full h-full object-cover">
+                                    </div>
+                                @endif
+                                <div>
+                                    <h4 class="text-base font-black text-slate-900 tracking-tight">{{ $estimate->client_name }}</h4>
+                                    <p class="text-xs font-bold text-slate-400">{{ $estimate->project_title }}</p>
+                                </div>
                             </div>
-                            <span class="text-base font-black text-[#0F2D5A]">
+                            <span class="text-base font-black text-[#0F2D5A] mt-0.5">
                                 ${{ number_format($estimate->total_cents / 100, 2) }}
                             </span>
                         </div>
@@ -254,12 +276,12 @@
                 <button @click="estimateModalOpen = false" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 font-black text-sm flex items-center justify-center hover:bg-slate-200">×</button>
             </div>
 
-            {{-- Upgraded: Added enctype="multipart/form-data" to capture binary field images --}}
             <form action="{{ route('estimates.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6 text-left" 
                   x-data="{ 
                       items: [
                           { description: 'Standard Service Call Out Fee', type: 'labor', quantity: 1, unit_price: {{ auth()->user()->minimum_service_fee ?? 85 }} }
                       ],
+                      photoPreviews: [],
                       addItem() {
                           this.items.push({ description: 'Additional Labor / Materials Description', type: 'labor', quantity: 1, unit_price: {{ auth()->user()->hourly_rate ?? 95 }} });
                       },
@@ -272,6 +294,17 @@
                               total += (item.quantity * item.unit_price);
                           });
                           return total;
+                      },
+                      {{-- Form Channel Reader: Compiles dynamic field thumbnails asynchronously for contractor verification --}}
+                      photosChanged(e) {
+                          this.photoPreviews = [];
+                          Array.from(e.target.files).forEach(file => {
+                              const reader = new FileReader();
+                              reader.onload = (event) => {
+                                  this.photoPreviews.push(event.target.result);
+                              };
+                              reader.readAsDataURL(file);
+                          });
                       }
                   }">
                 @csrf
@@ -298,14 +331,26 @@
                     </div>
                 </div>
 
-                {{-- Upgraded: Integrated Site Photo Drop-Zone Core --}}
+                {{-- Upgraded: Integrated Site Photo Drop-Zone with Dynamic Thumbnail Deck previews --}}
                 <div class="space-y-4">
                     <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-1">3. Project Photos (Optional)</h4>
-                    <div>
-                        <label class="w-full bg-[#F0F0F0] hover:bg-slate-200/60 border-2 border-dashed border-slate-300 hover:border-slate-400 text-slate-500 rounded-xl p-4 text-xs font-black uppercase tracking-wider block text-center cursor-pointer transition">
+                    <div class="space-y-3">
+                        <label class="w-full bg-[#F0F0F0] hover:bg-slate-200/60 border-2 border-dashed border-slate-300 hover:border-slate-400 text-slate-500 rounded-xl p-4 text-xs font-black uppercase tracking-wider block text-center cursor-pointer transition select-none">
                             📸 Snap or Upload Field Images
-                            <input type="file" name="photos[]" accept="image/*" multiple class="hidden">
+                            <input type="file" name="photos[]" accept="image/*" multiple @change="photosChanged($event)" class="hidden">
                         </label>
+
+                        {{-- Live Interactive Previews Deck sitting underneath photo container zone --}}
+                        <template x-if="photoPreviews.length > 0">
+                            <div class="grid grid-cols-4 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200/60 shadow-inner">
+                                <template x-for="(src, idx) in photoPreviews" :key="idx">
+                                    <div class="aspect-square rounded-lg overflow-hidden bg-slate-900 border border-slate-300 shadow-sm relative group">
+                                        <img :src="src" class="w-full h-full object-cover">
+                                        <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] text-white font-black transition uppercase">Ready</div>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
                     </div>
                 </div>
 
