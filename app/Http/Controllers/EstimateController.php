@@ -66,7 +66,7 @@ class EstimateController extends Controller
             foreach ($processedItems as $processedItem) {
                 $estimate->items()->create($processedItem);
             }
-        });
+    });
 
         // Process file attachments if injected into the multi-part input fields
         if ($request->hasFile('photos')) {
@@ -167,7 +167,6 @@ class EstimateController extends Controller
     {
         $estimate = Estimate::where('user_id', Auth::id())->where('id', $id)->firstOrFail();
 
-        // Upgraded: Validates as a direct incoming binary image file stream instead of a heavy text string
         $request->validate([
             'markup_image' => 'required|image|max:16384',
             'is_public' => 'nullable'
@@ -180,9 +179,7 @@ class EstimateController extends Controller
 
             Storage::disk('public')->putFileAs($storageFolder, $file, basename($fileName));
 
-            // Clean up any loose historical workspace rows on this proposal to keep storage footprints tight
-            $estimate->attachments()->where('file_type', 'markup')->delete();
-
+            // Fixed: Removed the continuous attachment purge command line to enable multi-image saving histories
             $estimate->attachments()->create([
                 'user_id' => Auth::id(),
                 'file_path' => $fileName,
@@ -190,7 +187,7 @@ class EstimateController extends Controller
                 'is_public' => $request->input('is_public') === '1' || $request->input('is_public') == true
             ]);
 
-            session()->flash('status', 'Success! Marked-up job site photo has been permanently attached to the client proposal.');
+            session()->flash('status', 'Success! Marked-up photo has been appended to the client proposal gallery.');
 
             return response()->json([
                 'success' => true,

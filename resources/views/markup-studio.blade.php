@@ -19,12 +19,6 @@
         </div>
     @endif
 
-    @if (session('status') && str_contains(session('status'), 'Error'))
-        <div class="bg-rose-950 border-l-8 border-rose-500 p-5 rounded-2xl text-left shadow-md">
-            <p class="text-xs font-bold text-rose-200 leading-snug">{{ session('status') }}</p>
-        </div>
-    @endif
-
     {{-- STUDIO SUB-HEADER --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-900 text-white p-6 rounded-2xl border border-slate-800 shadow-xl text-left w-full min-w-0">
         <div>
@@ -34,13 +28,13 @@
         </div>
         <div class="flex gap-2 w-full sm:w-auto">
             <a href="{{ route('dashboard.estimates') }}" class="w-1/2 sm:w-auto bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-black uppercase tracking-wider px-5 py-3.5 rounded-xl text-center transition">
-                Cancel
+                Back to Log
             </a>
             <button @click="saveFlattenedImage()" 
                     :disabled="!imageLoaded || isSaving" 
                     :class="(!imageLoaded || isSaving) ? 'opacity-40 cursor-not-allowed bg-slate-700' : 'bg-emerald-600 hover:bg-emerald-500'" 
                     class="w-1/2 sm:w-auto text-white text-xs font-black uppercase tracking-wider px-6 py-3.5 rounded-xl text-center shadow-md transition transform active:scale-95 whitespace-nowrap">
-                <span x-text="isSaving ? 'Uploading Asset...' : 'Save & Attach Asset →'">Save & Attach Asset →</span>
+                <span x-text="isSaving ? 'Uploading...' : 'Save as New Asset →'">Save as New Asset →</span>
             </button>
         </div>
     </div>
@@ -51,16 +45,14 @@
         {{-- LEFT COLUMN: CONTROL PANEL TOOLBAR --}}
         <div class="lg:col-span-3 bg-slate-900 border border-slate-800 rounded-[2rem] p-5 text-left text-white space-y-6 shadow-xl w-full min-w-0">
             
-            {{-- 0. Dual Image Source Selector Matrix --}}
+            {{-- 0. Capture New Photo Channel --}}
             <div class="space-y-2.5">
-                <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest block">0. Add or Capture Photo</span>
+                <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest block">0. Capture or Import Photo</span>
                 <div class="grid grid-cols-2 gap-2 text-xs font-black uppercase tracking-wider">
-                    {{-- Channel A: Direct Camera Viewfinder Hardware Callout --}}
                     <div class="relative overflow-hidden bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 rounded-xl p-3 text-center transition cursor-pointer shadow-sm">
                         📸 Live Lens
                         <input type="file" accept="image/*" capture="environment" @change="loadImageFromFile($event)" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-20">
                     </div>
-                    {{-- Channel B: System Photo Library Roll Explorer --}}
                     <div class="relative overflow-hidden bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 rounded-xl p-3 text-center transition cursor-pointer shadow-sm">
                         📁 Gallery
                         <input type="file" accept="image/*" @change="loadImageFromFile($event)" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-20">
@@ -68,12 +60,15 @@
                 </div>
             </div>
 
-            {{-- 1. Tool Selection Block --}}
+            {{-- 1. Tool Selection Block (Added Text Tool Injection) --}}
             <div class="space-y-2.5">
                 <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest block">1. Selected Tool</span>
                 <div class="grid grid-cols-2 gap-2 text-xs font-black uppercase tracking-wider">
                     <button @click="tool = 'brush'" :class="tool === 'brush' ? 'bg-[#FFC32D] text-slate-950' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'" class="p-3 rounded-xl flex items-center justify-center gap-2 transition">
                         <span>🖌️</span> Brush
+                    </button>
+                    <button @click="tool = 'text'" :class="tool === 'text' ? 'bg-[#FFC32D] text-slate-950' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'" class="p-3 rounded-xl flex items-center justify-center gap-2 transition">
+                        <span>🔤</span> Text
                     </button>
                     <button @click="tool = 'line'" :class="tool === 'line' ? 'bg-[#FFC32D] text-slate-950' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'" class="p-3 rounded-xl flex items-center justify-center gap-2 transition">
                         <span>📏</span> Line
@@ -81,19 +76,16 @@
                     <button @click="tool = 'rect'" :class="tool === 'rect' ? 'bg-[#FFC32D] text-slate-950' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'" class="p-3 rounded-xl flex items-center justify-center gap-2 transition">
                         <span>⬜</span> Box
                     </button>
-                    <button @click="tool = 'circle'" :class="tool === 'circle' ? 'bg-[#FFC32D] text-slate-950' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'" class="p-3 rounded-xl flex items-center justify-center gap-2 transition">
-                        <span>⭕</span> Circle
-                    </button>
                 </div>
             </div>
 
-            {{-- 2. Line Weight Thickness Slider Component --}}
+            {{-- 2. Line Weight & Font Thickness Slider Component --}}
             <div class="space-y-2.5">
                 <div class="flex items-center justify-between">
-                    <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">2. Brush Thickness</span>
+                    <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest" x-text="tool === 'text' ? '2. Font Sizing' : '2. Brush Thickness'">2. Brush Thickness</span>
                     <span class="text-xs font-mono font-bold text-[#FFC32D]" x-text="strokeSize + 'px'">4px</span>
                 </div>
-                <input type="range" min="2" max="20" step="1" x-model="strokeSize" class="w-full accent-[#FFC32D] bg-slate-800 h-2 rounded-lg cursor-pointer">
+                <input type="range" min="2" max="25" step="1" x-model="strokeSize" class="w-full accent-[#FFC32D] bg-slate-800 h-2 rounded-lg cursor-pointer">
             </div>
 
             {{-- 3. Dynamic Color Matrix Swatches --}}
@@ -127,25 +119,42 @@
             </div>
         </div>
 
-        {{-- RIGHT COLUMN: VISUAL ENGINE WORKSPACE SHEET --}}
-        <div class="lg:col-span-9 bg-slate-950 border border-slate-800 rounded-[2.5rem] p-3 sm:p-6 shadow-xl flex items-center justify-center overflow-hidden h-[55vh] max-h-[60vh] relative w-full min-w-0">
+        {{-- RIGHT COLUMN: WORKSPACE CONTAINER SHEET WITH HISTORIC CAROUSEL BAR --}}
+        <div class="lg:col-span-9 space-y-4 w-full min-w-0">
             
-            <canvas id="studioCanvas"
-                    @pointerdown="startDrawing($event)"
-                    @pointermove="draw($event)"
-                    @pointerup="stopDrawing()"
-                    @pointerleave="stopDrawing()"
-                    class="shadow-2xl rounded-2xl max-w-full max-h-full h-auto object-contain cursor-crosshair touch-none select-none block"
-                    x-show="imageLoaded">
-            </canvas>
+            {{-- Interactive Multi-Image Proposal History Navigation Strip --}}
+            @if($estimate->attachments->count() > 0)
+                <div class="bg-slate-900 p-3 rounded-2xl border border-slate-800 text-left space-y-2">
+                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest block px-1">Estimate Proposal Photo Deck (Select Image to Edit)</span>
+                    <div class="flex items-center gap-3 overflow-x-auto pb-1 scrollbar-thin">
+                        @foreach($estimate->attachments as $idx => $attachment)
+                            <button @click="switchActiveImage('{{ asset('storage/' . $attachment->file_path) }}')" 
+                                    class="w-16 h-16 rounded-xl overflow-hidden border-2 bg-slate-950 flex-shrink-0 transition-all duration-200"
+                                    :class="activePathSource === '{{ asset('storage/' . $attachment->file_path) }}' ? 'border-[#FFC32D] scale-105 shadow-md' : 'border-slate-700 hover:border-slate-500 opacity-60 hover:opacity-100'">
+                                <img src="{{ asset('storage/' . $attachment->file_path) }}" alt="Proposal asset preview square" class="w-full h-full object-cover">
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
 
-            {{-- Empty Placeholder Prompt --}}
-            <div class="text-center text-slate-500 space-y-2 max-w-sm px-4" x-show="!imageLoaded">
-                <span class="text-4xl block">📷</span>
-                <h4 class="text-sm font-black text-slate-400 uppercase tracking-wider">No Image Loaded Yet</h4>
-                <p class="text-xs font-bold text-slate-600">Tap "Live Lens" to capture a raw job site photo directly with your device camera, or tap "Gallery" to pick an existing image file.</p>
+            <div class="bg-slate-950 border border-slate-800 rounded-[2.5rem] p-3 sm:p-6 shadow-xl flex items-center justify-center overflow-hidden h-[55vh] max-h-[60vh] relative w-full min-w-0">
+                <canvas id="studioCanvas"
+                        @pointerdown="startDrawing($event)"
+                        @pointermove="draw($event)"
+                        @pointerup="stopDrawing()"
+                        @pointerleave="stopDrawing()"
+                        class="shadow-2xl rounded-2xl max-w-full max-h-full h-auto object-contain cursor-crosshair touch-none select-none block"
+                        x-show="imageLoaded">
+                </canvas>
+
+                {{-- Empty Placeholder Prompt --}}
+                <div class="text-center text-slate-500 space-y-2 max-w-sm px-4" x-show="!imageLoaded">
+                    <span class="text-4xl block">📷</span>
+                    <h4 class="text-sm font-black text-slate-400 uppercase tracking-wider">No Image Selected</h4>
+                    <p class="text-xs font-bold text-slate-600">Select an existing photo from the top deck array, use "Live Lens" to capture a new view, or click "Gallery" to import.</p>
+                </div>
             </div>
-
         </div>
     </div>
 </div>
@@ -166,6 +175,7 @@ document.addEventListener('alpine:init', () => {
         snapshot: null,
         imageLoaded: false,
         activeImageSource: null,
+        activePathSource: '',
         colors: ['#FFC32D', '#FF3B30', '#34C759', '#007AFF', '#AF52DE', '#FFFFFF', '#000000'],
         
         init() {
@@ -173,20 +183,19 @@ document.addEventListener('alpine:init', () => {
             this.ctx = this.canvas.getContext('2d');
             
             @if($estimate->attachments->count() > 0)
-                const bootstrapImageUrl = '{{ asset('storage/' . $estimate->attachments->last()->file_path) }}';
-                if (bootstrapImageUrl) {
-                    const img = new Image();
-                    img.onload = () => {
-                        this.activeImageSource = img;
-                        this.processAndRenderImage(img);
-                    };
-                    img.onerror = () => {
-                        console.error('Failed to pre-load image from path: ' + bootstrapImageUrl);
-                        alert('System Alert: Unable to reach the file at ' + bootstrapImageUrl + '. If you are in local development, please confirm you have run "php artisan storage:link" to connect your public directory fields.');
-                    };
-                    img.src = bootstrapImageUrl;
-                }
+                this.switchActiveImage('{{ asset('storage/' . $estimate->attachments->last()->file_path) }}');
             @endif
+        },
+
+        switchActiveImage(urlPath) {
+            if (!urlPath) return;
+            this.activePathSource = urlPath;
+            const img = new Image();
+            img.onload = () => {
+                this.activeImageSource = img;
+                this.processAndRenderImage(img);
+            };
+            img.src = urlPath;
         },
 
         loadImageFromFile(e) {
@@ -198,6 +207,7 @@ document.addEventListener('alpine:init', () => {
                 const img = new Image();
                 img.onload = () => {
                     this.activeImageSource = img;
+                    this.activePathSource = ''; // Clears sync highlight for fresh additions
                     this.processAndRenderImage(img);
                 };
                 img.src = event.target.result;
@@ -242,17 +252,30 @@ document.addEventListener('alpine:init', () => {
 
         startDrawing(e) {
             if(!this.imageLoaded || this.isSaving) return;
-            this.isDrawing = true;
             
             const rect = this.canvas.getBoundingClientRect();
             this.startX = (e.clientX - rect.left) * (this.canvas.width / rect.width);
             this.startY = (e.clientY - rect.top) * (this.canvas.height / rect.height);
             
             this.ctx.strokeStyle = this.strokeColor;
+            this.ctx.fillStyle = this.strokeColor;
             this.ctx.lineWidth = this.strokeSize;
             this.ctx.lineCap = 'round';
             this.ctx.lineJoin = 'round';
             
+            // Integrated Canvas Text Tool Intervention Matrix
+            if (this.tool === 'text') {
+                const inputContent = prompt('Enter your annotation text:');
+                if (inputContent && inputContent.trim() !== '') {
+                    // Scales typography size bounding rules cleanly matching slider px models
+                    const computedFontSize = Math.round(parseInt(this.strokeSize) * 2.5) + 12;
+                    this.ctx.font = 'black ' + computedFontSize + 'px Plus Jakarta Sans, Arial, sans-serif';
+                    this.ctx.fillText(inputContent, this.startX, this.startY);
+                }
+                return;
+            }
+
+            this.isDrawing = true;
             if (this.tool === 'brush') {
                 this.ctx.beginPath();
                 this.ctx.moveTo(this.startX, this.startY);
@@ -262,7 +285,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         draw(e) {
-            if (!this.isDrawing || !this.imageLoaded || this.isSaving) return;
+            if (!this.isDrawing || !this.imageLoaded || this.isSaving || this.tool === 'text') return;
             
             const rect = this.canvas.getBoundingClientRect();
             const currentX = (e.clientX - rect.left) * (this.canvas.width / rect.width);
