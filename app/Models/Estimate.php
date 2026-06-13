@@ -43,10 +43,18 @@ class Estimate extends Model
     }
 
     /**
-     * Get the multi-crew work orders or service apppointments tracked under this project umbrella.
+     * Get the multi-crew work orders or service appointments tracked under this project umbrella.
      */
     public function appointments(): HasMany
     {
         return $this->hasMany(Appointment::class);
+    }
+
+    /**
+     * Get the repeating schedule rules established under this project canvas.
+     */
+    public function recurrenceTemplates(): HasMany
+    {
+        return $this->hasMany(RecurrenceTemplate::class, 'estimate_id');
     }
 }
