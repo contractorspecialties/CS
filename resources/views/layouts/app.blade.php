@@ -23,13 +23,13 @@
     <div x-show="mobileMenuOpen" class="relative z-50 lg:hidden" style="display: none;" role="dialog" aria-modal="true">
         {{-- Background Blur Overlay --}}
         <div x-show="mobileMenuOpen" 
-             x-transition:enter="transition-opacity ease-linear duration-300" 
-             x-transition:enter-start="opacity-0" 
-             x-transition:enter-end="opacity-100" 
-             x-transition:leave="transition-opacity ease-linear duration-300" 
-             x-transition:leave-start="opacity-100" 
-             x-transition:leave-end="opacity-0" 
-             class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm"></div>
+              x-transition:enter="transition-opacity ease-linear duration-300" 
+              x-transition:enter-start="opacity-0" 
+              x-transition:enter-end="opacity-100" 
+              x-transition:leave="transition-opacity ease-linear duration-300" 
+              x-transition:leave-start="opacity-100" 
+              x-transition:leave-end="opacity-0" 
+              class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm"></div>
 
         <div class="fixed inset-0 flex">
             {{-- Drawer Content Box --}}
@@ -66,8 +66,8 @@
                     <a href="{{ route('dashboard.invoices') }}" class="flex items-center gap-4 text-base font-bold text-slate-300 hover:text-white hover:bg-white/5 rounded-2xl py-4 px-5 transition">
                         <span class="text-xl">💰</span> Invoices
                     </a>
-                    <a href="{{ route('dashboard.scheduler') }}" class="flex items-center gap-4 text-base font-bold text-slate-300 hover:text-white hover:bg-white/5 rounded-2xl py-4 px-5 transition">
-                        <span class="text-xl">📅</span> Crew Scheduler
+                    <a href="{{ route('dashboard.dispatch') }}" class="flex items-center gap-4 text-base font-bold text-slate-300 hover:text-white hover:bg-white/5 rounded-2xl py-4 px-5 transition">
+                        <span class="text-xl">📅</span> Dispatch Matrix
                     </a>
                     <a href="/dashboard/profile" class="flex items-center gap-4 text-base font-bold text-slate-300 hover:text-white hover:bg-white/5 rounded-2xl py-4 px-5 transition">
                         <span class="text-xl">⚙️</span> Public Listing Setup
@@ -96,8 +96,8 @@
                 <a href="{{ route('dashboard.invoices') }}" class="flex items-center gap-4 text-sm font-black uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 rounded-xl py-3.5 px-5 transition">
                     <span class="text-lg">💰</span> Invoices
                 </a>
-                <a href="{{ route('dashboard.scheduler') }}" class="flex items-center gap-4 text-sm font-black uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 rounded-xl py-3.5 px-5 transition">
-                    <span class="text-lg">📅</span> Crew Scheduler
+                <a href="{{ route('dashboard.dispatch') }}" class="flex items-center gap-4 text-sm font-black uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 rounded-xl py-3.5 px-5 transition">
+                    <span class="text-lg">📅</span> Dispatch Matrix
                 </a>
                 <a href="/dashboard/profile" class="flex items-center gap-4 text-sm font-black uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 rounded-xl py-3.5 px-5 transition">
                     <span class="text-lg">⚙️</span> Public Listing Setup
