@@ -9,13 +9,13 @@
          csrf: '{{ csrf_token() }}'
      })">
     
-    {{-- PIPELINE HEADER TRACK --}}
+    {{-- SYSTEM CONTROL & PIPELINE HEADER --}}
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-slate-900 text-white p-6 rounded-2xl border border-slate-800 shadow-xl w-full min-w-0">
         <div>
             <span class="bg-[#FFC32D] text-slate-950 text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md">Live Command Center</span>
             <h1 class="text-xl font-black tracking-tight mt-2">Visual Dispatch Matrix</h1>
             <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-0.5">
-                Week Tracking Profile: <span class="text-[#FFC32D]">{{ $startOfWeek->format('M d, Y') }} — {{ $endOfWeek->format('M d, Y') }}</span>
+                Week View: <span class="text-[#FFC32D]">{{ $startOfWeek->format('M d, Y') }} — {{ $endOfWeek->format('M d, Y') }}</span>
             </p>
         </div>
         <div class="flex items-center gap-2 w-full lg:w-auto">
@@ -31,113 +31,130 @@
         </div>
     </div>
 
-    {{-- INTERACTIVE MATRIX GRID CONTAINER --}}
+    {{-- MAIN INTERACTIVE ENGINE SPLIT --}}
     <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start w-full min-w-0">
         
-        {{-- LEFT COLUMN: THE UNASSIGNED BACKLOG MAGNET BUCKET (3 Cols) --}}
-        <div class="xl:col-span-3 bg-slate-100 border-2 border-slate-200 rounded-[2rem] p-5 space-y-4 shadow-inner w-full min-w-0 min-h-[60vh]">
+        {{-- LEFT COLUMN: UNSCHEDULED BACKLOG PANEL --}}
+        <div class="xl:col-span-3 bg-slate-50 border border-slate-200/80 rounded-[2rem] p-5 space-y-4 shadow-sm w-full min-w-0">
             <div>
-                <h3 class="text-sm font-black text-[#0F2D5A] uppercase tracking-wider">Unscheduled Backlog</h3>
-                <p class="text-[11px] font-bold text-slate-400 mt-0.5">Approved estimates waiting for dispatch placement. Drag any card onto a crew time track.</p>
+                <h3 class="text-xs font-black text-[#0F2D5A] uppercase tracking-wider">Unscheduled Backlog</h3>
+                <p class="text-[11px] font-bold text-slate-400 mt-1 leading-relaxed">Approved estimates awaiting execution. Drag any magnet card onto a crew time track lane.</p>
             </div>
 
-            <div class="space-y-3 max-h-[65vh] overflow-y-auto pr-1">
+            <div class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
                 @forelse($backlogEstimates as $backlog)
-                    <div class="bg-white border-2 border-slate-950 p-4 rounded-xl shadow-sm cursor-grab active:cursor-grabbing hover:scale-[1.02] transition transform duration-150 relative select-none group"
+                    <div class="bg-white border-2 border-slate-900 p-4 rounded-xl shadow-sm cursor-grab active:cursor-grabbing hover:border-[#0F2D5A] hover:scale-[1.01] transition transform duration-150 relative select-none group"
                          draggable="true"
                          @dragstart="handleDragStart($event, {{ $backlog->id }}, '{{ addslashes($backlog->project_title) }}')">
-                        <span class="absolute top-2 right-2 text-slate-300 group-hover:text-slate-500 transition text-xs">⋮⋮</span>
-                        <span class="bg-emerald-50 text-emerald-700 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded">Approved</span>
-                        <h4 class="text-xs font-black text-slate-900 mt-2 tracking-tight line-clamp-1">{{ $backlog->project_title }}</h4>
-                        <p class="text-[10px] font-bold text-slate-500 mt-0.5">👤 {{ $backlog->client_name }}</p>
-                        <p class="text-xs font-black text-[#0F2D5A] mt-2">${{ number_format($backlog->total_cents / 100, 2) }}</p>
+                        <span class="absolute top-2.5 right-3 text-slate-300 group-hover:text-slate-500 transition text-xs font-black">⋮⋮</span>
+                        <span class="bg-emerald-50 border border-emerald-200 text-emerald-700 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md">Approved</span>
+                        <h4 class="text-xs font-black text-slate-900 mt-2.5 tracking-tight line-clamp-1">{{ $backlog->project_title }}</h4>
+                        <p class="text-[10px] font-bold text-slate-400 mt-0.5">👤 {{ $backlog->client_name }}</p>
+                        <div class="border-t border-slate-100 mt-3 pt-2 flex items-center justify-between">
+                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Estimated Valve</span>
+                            <span class="text-xs font-black text-[#0F2D5A]">${{ number_format($backlog->total_cents / 100, 2) }}</span>
+                        </div>
                     </div>
                 @empty
-                    <div class="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center text-slate-400 space-y-1.5">
-                        <span class="text-xl block">🎉</span>
-                        <h5 class="text-xs font-black uppercase">Backlog Clear</h5>
-                        <p class="text-[10px] font-bold text-slate-400">All winning project metrics have been successfully allocated to operational lanes.</p>
+                    <div class="border-2 border-dashed border-slate-200 rounded-xl p-8 text-center text-slate-400 space-y-1.5 bg-white">
+                        <span class="text-2xl block">🎉</span>
+                        <h5 class="text-xs font-black text-slate-700 uppercase tracking-wide">Backlog Clear</h5>
+                        <p class="text-[10px] font-bold text-slate-400 leading-relaxed">All active projects have been allocated to field crews.</p>
                     </div>
                 @endforelse
             </div>
         </div>
 
-        {{-- RIGHT COLUMN: THE CREW TRACK TIMELINE BOARD WITH EXPLICIT TIME AXIS (9 Cols) --}}
-        <div class="xl:col-span-9 bg-white border-4 border-slate-900 rounded-[2.5rem] p-4 sm:p-6 shadow-xl overflow-hidden w-full min-w-0">
-            <div class="overflow-x-auto">
-                <div class="min-w-[850px] flex items-start gap-4">
+        {{-- RIGHT COLUMN: WORKER TIMELINE MATRIX --}}
+        <div class="xl:col-span-9 bg-white border border-slate-200 shadow-xl rounded-[2.5rem] p-5 sm:p-6 overflow-hidden w-full min-w-0">
+            <div class="overflow-x-auto scrollbar-thin">
+                <div class="min-w-[850px] space-y-0">
                     
-                    {{-- FIXED TIMELINE HOUR LABEL STRIP --}}
-                    <div class="w-20 flex-shrink-0 pt-16 space-y-0 text-right pr-2">
-                        @foreach(['08:00 AM' => '8 AM', '10:00 AM' => '10 AM', '12:00 PM' => '12 PM', '02:00 PM' => '2 PM', '04:00 PM' => '4 PM', '06:00 PM' => '6 PM'] as $rawTime => $displayHour)
-                            <div class="h-24 flex items-start justify-end border-t border-dashed border-slate-200 pt-1">
-                                <span class="text-[10px] font-black font-mono text-slate-400 uppercase tracking-wider">{{ $displayHour }}</span>
-                            </div>
-                        @endforeach
+                    {{-- ROW A: UNIFIED HEADER BAR MATRIX (Aligns column heads flush with content tracks) --}}
+                    <div class="flex items-center gap-4 border-b-2 border-slate-900 pb-3 mb-4">
+                        {{-- Dead corner spacing block mirroring the exact width of the hour ticker --}}
+                        <div class="w-16 flex-shrink-0"></div>
+                        
+                        {{-- Crew Labels Horizontal Spreader --}}
+                        <div class="flex-1" style="display: grid; grid-template-columns: repeat({{ max(1, $crews->count()) }}, minmax(0, 1fr)); gap: 1rem;">
+                            @foreach($crews as $crew)
+                                <div class="bg-slate-900 text-white px-4 py-3 rounded-xl flex items-center justify-between shadow-sm border border-slate-800">
+                                    <span class="text-xs font-black uppercase tracking-wider truncate">👷 {{ $crew->name }}</span>
+                                    <span class="text-[8px] bg-[#FFC32D] text-slate-950 font-black px-1.5 py-0.5 rounded-md uppercase tracking-wider">Active</span>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
 
-                    {{-- CREW LANES CONTAINER GRID (Inline CSS styles bypass dynamic Tailwind compilation hazards safely) --}}
-                    <div class="flex-1" style="display: grid; grid-template-columns: repeat({{ max(1, $crews->count()) }}, minmax(0, 1fr)); gap: 1rem;">
-                        @foreach($crews as $crew)
-                            {{-- INDIVIDUAL CREW LANE TRACK TRACKER --}}
-                            <div class="space-y-4">
-                                {{-- COLUMN TOP HEAD --}}
-                                <div class="bg-slate-900 text-white p-3.5 rounded-xl flex items-center justify-between shadow-sm">
-                                    <span class="text-xs font-black uppercase tracking-wider truncate mr-2">Worker: {{ $crew->name }}</span>
-                                    <span class="text-[9px] bg-[#FFC32D] text-slate-950 font-black px-1.5 py-0.5 rounded uppercase">Lane</span>
+                    {{-- ROW B: TIMELINE BOARD MATRIX BODY --}}
+                    <div class="flex items-start gap-4 relative">
+                        
+                        {{-- VERTICAL HOUR TIME MARKERS AXIS --}}
+                        <div class="w-16 flex-shrink-0 space-y-0 text-right select-none">
+                            @foreach(['08:00 AM' => '8 AM', '10:00 AM' => '10 AM', '12:00 PM' => '12 PM', '02:00 PM' => '2 PM', '04:00 PM' => '4 PM', '06:00 PM' => '6 PM'] as $rawTime => $displayHour)
+                                <div class="h-24 flex items-start justify-end pr-2 pt-0.5">
+                                    <span class="text-[10px] font-black font-mono text-slate-400 uppercase tracking-widest">{{ $displayHour }}</span>
                                 </div>
+                            @endforeach
+                        </div>
 
-                                {{-- INTERACTIVE DROP ZONE BLOCK MAP --}}
-                                <div class="bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl p-3 min-h-[58vh] space-y-3 transition-colors duration-200 relative"
-                                     :class="dragOverCrewId == {{ $crew->id }} ? 'bg-amber-50 border-amber-400 border-solid' : ''"
+                        {{-- DYNAMIC FIELD CONTENT CREW TRACK OVERLAY GRID --}}
+                        <div class="flex-1 relative" style="display: grid; grid-template-columns: repeat({{ max(1, $crews->count()) }}, minmax(0, 1fr)); gap: 1rem;">
+                            
+                            {{-- HORIZONTAL GUIDELINES MATRIX RUNNING CONTINUOUSLY UNDER LANE PACKS --}}
+                            <div class="absolute inset-0 space-y-0 pointer-events-none z-0">
+                                @for($i = 0; $i < 6; $i++)
+                                    <div class="h-24 border-t border-dashed border-slate-200/80"></div>
+                                @endfor
+                            </div>
+
+                            @foreach($crews as $crew)
+                                {{-- DRAG & DROP INTERACTIVE LANE TARGET CHANNELS --}}
+                                <div class="min-h-[576px] rounded-2xl transition-all duration-200 z-10 p-1 bg-transparent border-2 border-transparent"
+                                     :class="dragOverCrewId == {{ $crew->id }} ? 'bg-amber-50/40 border-amber-400 border-solid shadow-inner rounded-2xl' : ''"
                                      @dragover.prevent="handleDragOver($event, {{ $crew->id }})"
                                      @dragleave="handleDragLeave()"
                                      @drop="handleDrop($event, {{ $crew->id }})">
                                     
-                                    {{-- BACKGROUND ROW GUIDELINES MATCHING HOUR TRACK SECTIONS --}}
-                                    <div class="absolute inset-0 p-3 space-y-0 pointer-events-none z-0">
-                                        @for($i = 0; $i < 6; $i++)
-                                            <div class="h-24 border-b border-dashed border-slate-200/60"></div>
-                                        @endfor
-                                    </div>
-
-                                    {{-- RENDER EXISTING INTERCEPTED APPOINTMENTS --}}
-                                    <div class="relative z-10 space-y-3">
+                                    {{-- INTERCEPTED APPOINTMENT CONTAINER LAYER --}}
+                                    <div class="space-y-3">
                                         @if(isset($appointments[$crew->id]))
                                             @foreach($appointments[$crew->id] as $appt)
-                                                <div class="bg-white border-2 border-slate-200 p-3.5 rounded-xl shadow-sm text-left relative group hover:border-slate-950 transition">
+                                                <div class="bg-white border-2 border-slate-200/90 p-3.5 rounded-xl shadow-sm text-left relative group hover:border-[#0F2D5A] transition duration-150 bg-white/95">
                                                     <div class="flex items-center justify-between gap-2">
                                                         <span class="text-[8px] bg-slate-900 text-[#FFC32D] font-black uppercase tracking-widest px-1.5 py-0.5 rounded">
                                                             {{ $appt->scheduled_start_at->format('D h:i A') }}
                                                         </span>
-                                                        <span class="text-[9px] font-mono font-bold text-slate-500">
+                                                        <span class="text-[9px] font-mono font-black text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
                                                             {{ $appt->formatted_payout }}
                                                         </span>
                                                     </div>
-                                                    <h4 class="text-xs font-black text-slate-900 mt-2 tracking-tight line-clamp-2">{{ $appt->estimate->project_title }}</h4>
+                                                    <h4 class="text-xs font-black text-slate-900 mt-2.5 tracking-tight line-clamp-2 leading-snug">{{ $appt->estimate->project_title }}</h4>
                                                     <p class="text-[10px] font-bold text-slate-400 mt-0.5 truncate">📍 {{ $appt->estimate->client_name }}</p>
                                                 </div>
                                             @endforeach
                                         @else
-                                            <div class="py-24 text-center text-slate-300 pointer-events-none select-none">
-                                                <span class="text-xl block">📥</span>
-                                                <span class="text-[9px] font-black uppercase tracking-wider block mt-1">Lane Available</span>
+                                            {{-- Invisible placeholder tracking alignment frame when lane is empty --}}
+                                            <div class="py-24 text-center text-slate-300 pointer-events-none select-none opacity-40 group">
+                                                <span class="text-lg block group-hover:scale-110 transition duration-150">📥</span>
+                                                <span class="text-[8px] font-black uppercase tracking-widest block mt-1">Available Track</span>
                                             </div>
                                         @endif
                                     </div>
 
                                 </div>
-                            </div>
-                        @endforeach
-                    </div>
+                            @endforeach
 
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
 
     </div>
 
-    {{-- PROGRAMMATIC ASSIGNMENT MODAL POPUP DIALOG --}}
+    {{-- PROGRAMMATIC ASSIGNMENT PARAMETER MODAL --}}
     <div x-show="modalOpen" 
          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm"
          x-transition
