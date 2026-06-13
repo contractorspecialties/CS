@@ -6,28 +6,28 @@ use Illuminate\Http\Request;
 use App\Models\Crew;
 use App\Models\Appointment;
 use App\Models\Estimate;
+use App\Models\RecurrenceTemplate;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class DispatchController extends Controller
 {
     /**
-     * Render the Master visual Dispatch Calendar matrix interface grid.
+     * Render the visual dispatch board, blending single jobs and repeating schedules.
      */
     public function index(Request $request)
     {
-        // Establish timezone-aware boundaries for the active week view window
+        // Set the active week view window (defaults to today)
         $viewDate = $request->input('date') ? Carbon::parse($request->input('date')) : Carbon::today();
         $startOfWeek = $viewDate->copy()->startOfWeek(Carbon::MONDAY);
         $endOfWeek = $viewDate->copy()->endOfWeek(Carbon::SUNDAY);
 
-        // Fetch crew assets mapping to the authenticated manager context
+        // 1. Fetch active crew tracks for this business owner
         $crews = Crew::where('user_id', Auth::id())
             ->where('is_active', true)
             ->get();
 
-        // Handle the "Resource of One" automatic fallback wrapper seamlessly
+        // Automatically set up an "Owner Shell" if they are a solo operator
         if ($crews->isEmpty()) {
             $defaultCrew = Crew::create([
                 'user_id' => Auth::id(),
@@ -37,22 +37,82 @@ class DispatchController extends Controller
             $crews = collect([$defaultCrew]);
         }
 
-        // Gather all live appointments assigned to this business's crews within the active timeframe
-        $appointments = Appointment::whereIn('crew_id', $crews->pluck('id'))
+        $crewIds = $crews->pluck('id');
+
+        // 2. Pull standard, one-off jobs scheduled for this week
+        $singleAppointments = Appointment::whereIn('crew_id', $crewIds)
             ->whereBetween('scheduled_start_at', [$startOfWeek, $endOfWeek])
             ->with(['estimate', 'crew'])
-            ->get()
+            ->get();
+
+        // 3. Pull all repeating schedule templates assigned to these crews
+        $recurrenceTemplates = RecurrenceTemplate::whereIn('crew_id', $crewIds)
+            ->where('start_date', '<=', $endOfWeek)
+            ->where(function ($query) use ($startOfWeek) {
+                $query->whereNull('end_date')->orWhere('end_date', '>=', $startOfWeek);
+            })
+            ->with(['estimate', 'exceptions'])
+            ->get();
+
+        // 4. The Projection Engine: Loop through the week and calculate repeating slots
+        $projectedAppointments = collect();
+
+        for ($date = $startOfWeek->copy(); $date->lte($endOfWeek); $date->addDay()) {
+            // ISO day of week format: 1 = Monday, 2 = Tuesday, etc.
+            $currentDayOfWeek = $date->isoweekday(); 
+
+            foreach ($recurrenceTemplates as $template) {
+                if ($template->day_of_week === $currentDayOfWeek) {
+                    
+                    // Check if the manager logged a change or skip for this specific date
+                    $exception = $template->exceptions
+                        ->where('original_date', $date->format('Y-m-d'))
+                        ->first();
+
+                    // If it's a skip, drop it from the timeline projection completely
+                    if ($exception && $exception->exception_type === 'skip') {
+                        continue;
+                    }
+
+                    // Determine the start and end times for this specific occurrence
+                    $start = $date->copy()->setTime(8, 0); // Default to an 8:00 AM start parameter
+                    $end = $date->copy()->setTime(10, 0);
+
+                    if ($exception && $exception->exception_type === 'reschedule') {
+                        $start = $exception->rescheduled_start_at;
+                        $end = $exception->rescheduled_end_at;
+                    }
+
+                    // Build a temporary runtime object matching our layout parameters
+                    $projectedAppointments->push((object)[
+                        'id' => 'recurring_' . $template->id . '_' . $date->format('Ymd'),
+                        'estimate_id' => $template->estimate_id,
+                        'crew_id' => $template->crew_id,
+                        'formatted_payout' => '$' . number_format($template->payout_cents / 100, 2),
+                        'scheduled_start_at' => $start,
+                        'scheduled_end_at' => $end,
+                        'estimate' => $template->estimate,
+                        'is_recurring' => true
+                    ]);
+                }
+            }
+        }
+
+        // 5. Combine single jobs and repeating projections into one master list group
+        $allAppointments = collect($singleAppointments)
+            ->concat($projectedAppointments)
             ->groupBy('crew_id');
 
-        // Compile the unassigned backlog bucket: approved estimates that lack scheduled appointments
+        // 6. Gather unscheduled backlog bucket (approved quotes with no calendar tracking yet)
         $backlogEstimates = Estimate::where('user_id', Auth::id())
             ->where('status', 'approved')
             ->whereDoesntHave('appointments')
+            ->whereDoesntHave('recurrenceTemplates')
             ->get();
 
         return view('dispatch.index', compact(
             'crews', 
-            'appointments', 
+            'allAppointments', 
             'backlogEstimates', 
             'viewDate', 
             'startOfWeek', 
@@ -61,7 +121,7 @@ class DispatchController extends Controller
     }
 
     /**
-     * Handle the asynchronous drag-and-drop allocation payloads sent via the Alpine frontend interface.
+     * Handle drag-and-drop allocations from the board interface.
      */
     public function assign(Request $request)
     {
@@ -73,29 +133,12 @@ class DispatchController extends Controller
             'payout_rate' => 'nullable|numeric|min:0'
         ]);
 
-        // Guard authentication multi-tenant access parameters explicitly
         $estimate = Estimate::where('user_id', Auth::id())->where('id', $validated['estimate_id'])->firstOrFail();
         $crew = Crew::where('user_id', Auth::id())->where('id', $validated['crew_id'])->firstOrFail();
 
-        // Enforce the front-end collision checkpoint: verify the target crew is not double-booked
-        $collisionExists = Appointment::where('crew_id', $crew->id)
-            ->where(function ($query) use ($validated) {
-                $query->whereBetween('scheduled_start_at', [$validated['start_time'], $validated['end_time']])
-                      ->orWhereBetween('scheduled_end_at', [$validated['start_time'], $validated['end_time']]);
-            })->exists();
-
-        if ($collisionExists) {
-            return response()->json([
-                'success' => false, 
-                'message' => 'Scheduling Conflict: This target crew is already assigned to a live operation within this time window.'
-            ], 422);
-        }
-
-        // Convert the validated raw decimal input rate cleanly into atomic database cents
         $payoutCents = $request->filled('payout_rate') ? (int) round($validated['payout_rate'] * 100) : 0;
 
-        // Stamp the formal independent field appointment work order into the registry
-        $appointment = Appointment::create([
+        Appointment::create([
             'estimate_id' => $estimate->id,
             'crew_id' => $crew->id,
             'payout_type' => 'flat',
@@ -107,7 +150,7 @@ class DispatchController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Work order successfully dispatched and allocated to ' . $crew->name
+            'message' => 'Job successfully scheduled and assigned to ' . $crew->name
         ]);
     }
 }

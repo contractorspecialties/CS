@@ -7,6 +7,7 @@ use App\Http\Controllers\EstimateController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\DispatchController;
+use App\Http\Controllers\WorkerController;
 use App\Models\Specialty;
 use App\Models\Estimate;
 
@@ -92,6 +93,11 @@ Route::middleware(['auth'])->group(function () {
     // 5b. Unified Visual Dispatch Matrix Engine (Sprint 2 Interface Hooks)
     Route::get('/dashboard/dispatch', [DispatchController::class, 'index'])->name('dashboard.dispatch');
     Route::post('/dashboard/dispatch/assign', [DispatchController::class, 'assign'])->name('dashboard.dispatch.assign');
+
+    // 5c. Field Worker Mobile Cockpit Portal (Sprint 4 Infrastructure Hooks)
+    Route::get('/worker/dashboard', [WorkerController::class, 'index'])->name('worker.dashboard');
+    Route::post('/worker/checkpoint/{id}/toggle', [WorkerController::class, 'toggleCheckpoint'])->name('worker.checkpoint.toggle');
+    Route::post('/worker/appointment/{id}/upload', [WorkerController::class, 'uploadPhoto'])->name('worker.upload-photo');
 
     // 6. Media Markup Studio Workspace Endpoints
     Route::get('/dashboard/estimates/{id}/markup', [EstimateController::class, 'showMarkup'])->name('estimates.markup');
