@@ -237,7 +237,7 @@
                                     </button>
                                 </form>
 
-                                <form action="{{ route('estimates.destroy', $estimate->id) }}" method="POST" onsubmit="return confirm('Permanently delete this estimate record?');" class="inline">
+                                <form action="{{ route('estimates.destroy', $estimate->id) }}" method="POST" onsubmit="return confirm('Permanently delete this estimate?');" class="inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="bg-red-50 border border-red-100 text-red-500 py-2 px-2.5 rounded-xl transition">
@@ -282,6 +282,10 @@
                           { description: 'Standard Service Call Out Fee', type: 'labor', quantity: 1, unit_price: {{ auth()->user()->minimum_service_fee ?? 85 }} }
                       ],
                       photoPreviews: [],
+                      isRecurring: false,
+                      frequency: 'weekly',
+                      occurrences: 12,
+
                       addItem() {
                           this.items.push({ description: 'Additional Labor / Materials Description', type: 'labor', quantity: 1, unit_price: {{ auth()->user()->hourly_rate ?? 95 }} });
                       },
@@ -295,7 +299,6 @@
                           });
                           return total;
                       },
-                      {{-- Form Channel Reader: Compiles dynamic field thumbnails asynchronously for contractor verification --}}
                       photosChanged(e) {
                           this.photoPreviews = [];
                           Array.from(e.target.files).forEach(file => {
@@ -331,7 +334,51 @@
                     </div>
                 </div>
 
-                {{-- Upgraded: Integrated Site Photo Drop-Zone with Dynamic Thumbnail Deck previews --}}
+                {{-- RECURRENCE EXTENSION COMPONENT DECK --}}
+                <div class="space-y-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                    <h4 class="text-xs font-black text-[#0F2D5A] uppercase tracking-widest border-b border-slate-200 pb-1 flex items-center gap-1.5">
+                        🔄 Scheduling Frequency Model
+                    </h4>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="border-2 rounded-xl p-3.5 flex items-center gap-2.5 cursor-pointer bg-white transition shadow-sm select-none"
+                               :class="!isRecurring ? 'border-slate-900 ring-1 ring-slate-900' : 'border-slate-200 hover:border-slate-300'">
+                            <input type="radio" name="is_recurring" value="0" @change="isRecurring = false" checked class="h-4 w-4 text-[#0F2D5A] focus:ring-0 accent-[#0F2D5A]">
+                            <div>
+                                <span class="text-xs font-black text-slate-900 block leading-tight">One-Time Project</span>
+                                <span class="text-[10px] font-bold text-slate-400 block mt-0.5">Single delivery stop card</span>
+                            </div>
+                        </label>
+
+                        <label class="border-2 rounded-xl p-3.5 flex items-center gap-2.5 cursor-pointer bg-white transition shadow-sm select-none"
+                               :class="isRecurring ? 'border-slate-900 ring-1 ring-slate-900' : 'border-slate-200 hover:border-slate-300'">
+                            <input type="radio" name="is_recurring" value="1" @change="isRecurring = true" class="h-4 w-4 text-[#0F2D5A] focus:ring-0 accent-[#0F2D5A]">
+                            <div>
+                                <span class="text-xs font-black text-slate-900 block leading-tight">Recurring Contract</span>
+                                <span class="text-[10px] font-bold text-slate-400 block mt-0.5">Repeating service loops</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    {{-- HIDDEN PARAMETERS DRAWER MAT: SLIDES ACTIVE IF TRUE --}}
+                    <div x-show="isRecurring" x-collapse x-cloak class="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-slate-200/60 mt-2">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Interval Pattern</label>
+                            <select name="frequency" x-model="frequency" class="w-full bg-white border-2 border-slate-200 rounded-xl text-xs font-bold p-3 focus:border-[#0F2D5A] focus:outline-none">
+                                <option value="weekly">Every Week (Weekly)</option>
+                                <option value="bi-weekly">Every 2 Weeks (Bi-Weekly)</option>
+                                <option value="monthly">Once Per Month (Monthly)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Total Projected Visits</label>
+                            <input type="number" name="occurrences" x-model.number="occurrences" min="2" max="100" class="w-full bg-white border-2 border-slate-200 rounded-xl text-xs font-mono font-black p-2.5 focus:border-[#0F2D5A] focus:outline-none">
+                            <span class="text-[9px] font-bold text-slate-400 mt-1 block">Engine will auto-project <span x-text="occurrences">12</span> calendar visit slots.</span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- PROJECT PHOTOS COMPONENT --}}
                 <div class="space-y-4">
                     <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-1">3. Project Photos (Optional)</h4>
                     <div class="space-y-3">
@@ -340,7 +387,7 @@
                             <input type="file" name="photos[]" accept="image/*" multiple @change="photosChanged($event)" class="hidden">
                         </label>
 
-                        {{-- Live Interactive Previews Deck sitting underneath photo container zone --}}
+                        {{-- Live Interactive Previews Deck --}}
                         <template x-if="photoPreviews.length > 0">
                             <div class="grid grid-cols-4 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200/60 shadow-inner">
                                 <template x-for="(src, idx) in photoPreviews" :key="idx">

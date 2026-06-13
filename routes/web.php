@@ -9,6 +9,7 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\DispatchController;
 use App\Http\Controllers\WorkerController;
 use App\Http\Controllers\HomeownerPortalController;
+use App\Http\Controllers\CRMController;
 use App\Models\Specialty;
 use App\Models\Estimate;
 
@@ -99,6 +100,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/worker/dashboard', [WorkerController::class, 'index'])->name('worker.dashboard');
     Route::post('/worker/checkpoint/{id}/toggle', [WorkerController::class, 'toggleCheckpoint'])->name('worker.checkpoint.toggle');
     Route::post('/worker/appointment/{id}/upload', [WorkerController::class, 'uploadPhoto'])->name('worker.upload-photo');
+
+    // 5d. CPP Standalone Job Costing & Margin Calculator (Sprint 6 Sandboxing)
+    Route::get('/dashboard/calculator', function () {
+        return view('calculator');
+    })->name('dashboard.calculator');
+
+    // 5e. CPP Centralized Client CRM Directory Hub (Sprint 7 Customer Accounts)
+    Route::get('/dashboard/crm', [CRMController::class, 'index'])->name('dashboard.crm');
 
     // 6. Media Markup Studio Workspace Endpoints
     Route::get('/dashboard/estimates/{id}/markup', [EstimateController::class, 'showMarkup'])->name('estimates.markup');

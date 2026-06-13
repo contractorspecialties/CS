@@ -15,6 +15,7 @@ class InvoiceController extends Controller
      */
     public function index()
     {
+        // Pull active bills matching the manager context to feed the ledger metrics array
         $invoices = Invoice::where('user_id', Auth::id())
             ->where('status', '!=', 'archived')
             ->latest()
@@ -51,12 +52,13 @@ class InvoiceController extends Controller
     {
         $invoice = Invoice::where('user_id', Auth::id())->where('id', $id)->firstOrFail();
         
+        // Convert the outstanding balance to a settled payment event record instantly
         $invoice->update([
             'status' => 'paid',
             'amount_paid_cents' => $invoice->total_cents
         ]);
 
-        return redirect()->route('dashboard.invoices')->with('status', 'Invoice log marked successfully as Paid.');
+        return redirect()->route('dashboard.invoices')->with('status', 'Payment recorded! Account ledger successfully updated.');
     }
 
     /**

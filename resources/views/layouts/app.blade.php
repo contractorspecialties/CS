@@ -60,6 +60,9 @@
                     <a href="/dashboard" class="flex items-center gap-4 text-base font-bold text-white bg-white/10 rounded-2xl py-4 px-5 transition">
                         <span class="text-xl">📊</span> Command Center
                     </a>
+                    <a href="{{ route('dashboard.crm') }}" class="flex items-center gap-4 text-base font-bold text-slate-300 hover:text-white hover:bg-white/5 rounded-2xl py-4 px-5 transition">
+                        <span class="text-xl">👥</span> Client CRM
+                    </a>
                     <a href="/dashboard/estimates" class="flex items-center gap-4 text-base font-bold text-slate-300 hover:text-white hover:bg-white/5 rounded-2xl py-4 px-5 transition">
                         <span class="text-xl">📝</span> Project Estimates
                     </a>
@@ -68,6 +71,9 @@
                     </a>
                     <a href="{{ route('dashboard.dispatch') }}" class="flex items-center gap-4 text-base font-bold text-slate-300 hover:text-white hover:bg-white/5 rounded-2xl py-4 px-5 transition">
                         <span class="text-xl">📅</span> Dispatch Matrix
+                    </a>
+                    <a href="{{ route('dashboard.calculator') }}" class="flex items-center gap-4 text-base font-bold text-slate-300 hover:text-white hover:bg-white/5 rounded-2xl py-4 px-5 transition">
+                        <span class="text-xl">🧮</span> Profit Calculator
                     </a>
                     <a href="/dashboard/profile" class="flex items-center gap-4 text-base font-bold text-slate-300 hover:text-white hover:bg-white/5 rounded-2xl py-4 px-5 transition">
                         <span class="text-xl">⚙️</span> Public Listing Setup
@@ -90,6 +96,9 @@
                 <a href="/dashboard" class="flex items-center gap-4 text-sm font-black uppercase tracking-wider text-white bg-white/10 rounded-xl py-3.5 px-5 transition">
                     <span class="text-lg">📊</span> Command Center
                 </a>
+                <a href="{{ route('dashboard.crm') }}" class="flex items-center gap-4 text-sm font-black uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 rounded-xl py-3.5 px-5 transition">
+                    <span class="text-lg">👥</span> Client CRM
+                </a>
                 <a href="/dashboard/estimates" class="flex items-center gap-4 text-sm font-black uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 rounded-xl py-3.5 px-5 transition">
                     <span class="text-lg">📝</span> Project Estimates
                 </a>
@@ -98,6 +107,9 @@
                 </a>
                 <a href="{{ route('dashboard.dispatch') }}" class="flex items-center gap-4 text-sm font-black uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 rounded-xl py-3.5 px-5 transition">
                     <span class="text-lg">📅</span> Dispatch Matrix
+                </a>
+                <a href="{{ route('dashboard.calculator') }}" class="flex items-center gap-4 text-sm font-black uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 rounded-xl py-3.5 px-5 transition">
+                    <span class="text-lg">🧮</span> Profit Calculator
                 </a>
                 <a href="/dashboard/profile" class="flex items-center gap-4 text-sm font-black uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 rounded-xl py-3.5 px-5 transition">
                     <span class="text-lg">⚙️</span> Public Listing Setup
