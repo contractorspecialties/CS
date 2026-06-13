@@ -8,6 +8,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\DispatchController;
 use App\Http\Controllers\WorkerController;
+use App\Http\Controllers\HomeownerPortalController;
 use App\Models\Specialty;
 use App\Models\Estimate;
 
@@ -23,9 +24,9 @@ Route::get('/', function () {
 // Public Contractor Directory Profiles (SEO Landing Pages)
 Route::get('/pros/{specialty_slug}/{user_slug}', [MagicLinkController::class, 'showPublicProfile'])->name('profile.public');
 
-// Public Homeowner Portal: View and Approve Project Estimates (CPP Suite)
-Route::get('/estimates/{token}', [EstimateController::class, 'showPublic'])->name('estimates.public.show');
-Route::post('/estimates/{token}/status', [EstimateController::class, 'updateStatus'])->name('estimates.public.status');
+// Public Homeowner Portal: View and Approve Project Estimates (Frictionless Touch Sign Canopy)
+Route::get('/estimates/{token}', [HomeownerPortalController::class, 'show'])->name('estimates.public.show');
+Route::post('/estimates/{token}/status', [HomeownerPortalController::class, 'approve'])->name('estimates.public.status');
 
 
 // =========================================================================
