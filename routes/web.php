@@ -6,6 +6,7 @@ use App\Http\Controllers\MagicLinkController;
 use App\Http\Controllers\EstimateController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\DispatchController;
 use App\Models\Specialty;
 use App\Models\Estimate;
 
@@ -85,8 +86,12 @@ Route::middleware(['auth'])->group(function () {
     // 4. Dedicated Invoices Management Page
     Route::get('/dashboard/invoices', [InvoiceController::class, 'index'])->name('dashboard.invoices');
 
-    // 5. Dedicated Crew Dispatch Scheduler Page
+    // 5. Dedicated Crew Dispatch Scheduler Page (Legacy Layout Support)
     Route::get('/dashboard/scheduler', [ScheduleController::class, 'index'])->name('dashboard.scheduler');
+
+    // 5b. Unified Visual Dispatch Matrix Engine (Sprint 2 Interface Hooks)
+    Route::get('/dashboard/dispatch', [DispatchController::class, 'index'])->name('dashboard.dispatch');
+    Route::post('/dashboard/dispatch/assign', [DispatchController::class, 'assign'])->name('dashboard.dispatch.assign');
 
     // 6. Media Markup Studio Workspace Endpoints
     Route::get('/dashboard/estimates/{id}/markup', [EstimateController::class, 'showMarkup'])->name('estimates.markup');
@@ -103,6 +108,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/estimates/{id}', [EstimateController::class, 'destroy'])->name('estimates.destroy');
 
     // 9. Invoice Lifecycle Interceptors (CRUDA Actions Suite)
+    Route::post('/invoices/{id}', [InvoiceController::class, 'store'])->name('invoices.store');
     Route::patch('/invoices/{id}', [InvoiceController::class, 'update'])->name('invoices.update');
     Route::post('/invoices/{id}/paid', [InvoiceController::class, 'markAsPaid'])->name('invoices.paid');
     Route::post('/invoices/{id}/archive', [InvoiceController::class, 'archive'])->name('invoices.archive');

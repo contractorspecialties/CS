@@ -18,7 +18,7 @@ class Estimate extends Model
         'client_phone',
         'project_title',
         'project_description',
-        'customer_notes', // Accepts customer revisions/feedback strings
+        'customer_notes', 
         'subtotal_cents',
         'tax_cents',
         'total_cents',
@@ -35,10 +35,18 @@ class Estimate extends Model
     }
 
     /**
-     * Get the itemized line rows attached to this estimate.
+     * Get the itemized retail line rows attached to this estimate.
      */
     public function items(): HasMany
     {
         return $this->hasMany(EstimateItem::class);
+    }
+
+    /**
+     * Get the multi-crew work orders or service apppointments tracked under this project umbrella.
+     */
+    public function appointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class);
     }
 }
