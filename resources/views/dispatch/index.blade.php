@@ -62,55 +62,74 @@
             </div>
         </div>
 
-        {{-- RIGHT COLUMN: THE CREW TRACK TIMELINE BOARD (9 Cols) --}}
+        {{-- RIGHT COLUMN: THE CREW TRACK TIMELINE BOARD WITH EXPLICIT TIME AXIS (9 Cols) --}}
         <div class="xl:col-span-9 bg-white border-4 border-slate-900 rounded-[2.5rem] p-4 sm:p-6 shadow-xl overflow-hidden w-full min-w-0">
             <div class="overflow-x-auto">
-                <div class="min-w-[800px] grid grid-cols-{{ max(1, $crews->count()) }} gap-4 border-b border-slate-100 pb-4">
+                <div class="min-w-[850px] flex items-start gap-4">
                     
-                    @foreach($crews as $crew)
-                        {{-- CREW RESOURCE LANE TRACK --}}
-                        <div class="space-y-4">
-                            {{-- COLUMN TOP HEAD --}}
-                            <div class="bg-slate-900 text-white p-3.5 rounded-xl flex items-center justify-between shadow-sm">
-                                <span class="text-xs font-black uppercase tracking-wider truncate mr-2">👷 {{ $crew->name }}</span>
-                                <span class="text-[9px] bg-[#FFC32D] text-slate-950 font-black px-1.5 py-0.5 rounded uppercase">Lane</span>
+                    {{-- FIXED TIMELINE HOUR LABEL STRIP --}}
+                    <div class="w-20 flex-shrink-0 pt-16 space-y-0 text-right pr-2">
+                        @foreach(['08:00 AM' => '8 AM', '10:00 AM' => '10 AM', '12:00 PM' => '12 PM', '02:00 PM' => '2 PM', '04:00 PM' => '4 PM', '06:00 PM' => '6 PM'] as $rawTime => $displayHour)
+                            <div class="h-24 flex items-start justify-end border-t border-dashed border-slate-200 pt-1">
+                                <span class="text-[10px] font-black font-mono text-slate-400 uppercase tracking-wider">{{ $displayHour }}</span>
                             </div>
+                        @endforeach
+                    </div>
 
-                            {{-- INTERACTIVE DROP ZONE BLOCK MAP --}}
-                            <div class="bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl p-3 min-h-[50vh] space-y-3 transition-colors duration-200"
-                                 :class="dragOverCrewId == {{ $crew->id }} ? 'bg-amber-50 border-amber-400 border-solid' : ''"
-                                 @dragover.prevent="handleDragOver($event, {{ $crew->id }})"
-                                 @dragleave="handleDragLeave()"
-                                 @drop="handleDrop($event, {{ $crew->id }})">
-                                
-                                {{-- RENDER EXISTING INTERCEPTED APPOINTMENTS --}}
-                                @if(isset($appointments[$crew->id]))
-                                    @foreach($appointments[$crew->id] as $appt)
-                                        <div class="bg-white border border-slate-300 p-3.5 rounded-xl shadow-sm text-left relative group hover:border-slate-900 transition">
-                                            <div class="flex items-center justify-between gap-2">
-                                                <span class="text-[8px] bg-slate-900 text-[#FFC32D] font-black uppercase tracking-widest px-1.5 py-0.5 rounded">
-                                                    {{ $appt->scheduled_start_at->format('D h:i A') }}
-                                                </span>
-                                                <span class="text-[9px] font-mono font-bold text-slate-400">
-                                                    {{ $appt->formatted_payout }}
-                                                </span>
-                                            </div>
-                                            <h4 class="text-xs font-black text-slate-900 mt-2 tracking-tight">{{ $appt->estimate->project_title }}</h4>
-                                            <p class="text-[10px] font-bold text-slate-500 mt-0.5">📍 {{ $appt->estimate->client_name }}</p>
-                                        </div>
-                                    @endforeach
-                                @else
-                                    <div class="h-full flex items-center justify-center py-20 text-center text-slate-300 pointer-events-none select-none">
-                                        <div class="space-y-1">
-                                            <span class="text-2xl block">📥</span>
-                                            <span class="text-[10px] font-black uppercase tracking-wider block">Zone Empty</span>
-                                        </div>
+                    {{-- CREW LANES CONTAINER GRID (Inline CSS styles bypass dynamic Tailwind compilation hazards safely) --}}
+                    <div class="flex-1" style="display: grid; grid-template-columns: repeat({{ max(1, $crews->count()) }}, minmax(0, 1fr)); gap: 1rem;">
+                        @foreach($crews as $crew)
+                            {{-- INDIVIDUAL CREW LANE TRACK TRACKER --}}
+                            <div class="space-y-4">
+                                {{-- COLUMN TOP HEAD --}}
+                                <div class="bg-slate-900 text-white p-3.5 rounded-xl flex items-center justify-between shadow-sm">
+                                    <span class="text-xs font-black uppercase tracking-wider truncate mr-2">Worker: {{ $crew->name }}</span>
+                                    <span class="text-[9px] bg-[#FFC32D] text-slate-950 font-black px-1.5 py-0.5 rounded uppercase">Lane</span>
+                                </div>
+
+                                {{-- INTERACTIVE DROP ZONE BLOCK MAP --}}
+                                <div class="bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl p-3 min-h-[58vh] space-y-3 transition-colors duration-200 relative"
+                                     :class="dragOverCrewId == {{ $crew->id }} ? 'bg-amber-50 border-amber-400 border-solid' : ''"
+                                     @dragover.prevent="handleDragOver($event, {{ $crew->id }})"
+                                     @dragleave="handleDragLeave()"
+                                     @drop="handleDrop($event, {{ $crew->id }})">
+                                    
+                                    {{-- BACKGROUND ROW GUIDELINES MATCHING HOUR TRACK SECTIONS --}}
+                                    <div class="absolute inset-0 p-3 space-y-0 pointer-events-none z-0">
+                                        @for($i = 0; $i < 6; $i++)
+                                            <div class="h-24 border-b border-dashed border-slate-200/60"></div>
+                                        @endfor
                                     </div>
-                                @endif
 
+                                    {{-- RENDER EXISTING INTERCEPTED APPOINTMENTS --}}
+                                    <div class="relative z-10 space-y-3">
+                                        @if(isset($appointments[$crew->id]))
+                                            @foreach($appointments[$crew->id] as $appt)
+                                                <div class="bg-white border-2 border-slate-200 p-3.5 rounded-xl shadow-sm text-left relative group hover:border-slate-950 transition">
+                                                    <div class="flex items-center justify-between gap-2">
+                                                        <span class="text-[8px] bg-slate-900 text-[#FFC32D] font-black uppercase tracking-widest px-1.5 py-0.5 rounded">
+                                                            {{ $appt->scheduled_start_at->format('D h:i A') }}
+                                                        </span>
+                                                        <span class="text-[9px] font-mono font-bold text-slate-500">
+                                                            {{ $appt->formatted_payout }}
+                                                        </span>
+                                                    </div>
+                                                    <h4 class="text-xs font-black text-slate-900 mt-2 tracking-tight line-clamp-2">{{ $appt->estimate->project_title }}</h4>
+                                                    <p class="text-[10px] font-bold text-slate-400 mt-0.5 truncate">📍 {{ $appt->estimate->client_name }}</p>
+                                                </div>
+                                            @endforeach
+                                        @else
+                                            <div class="py-24 text-center text-slate-300 pointer-events-none select-none">
+                                                <span class="text-xl block">📥</span>
+                                                <span class="text-[9px] font-black uppercase tracking-wider block mt-1">Lane Available</span>
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                </div>
                             </div>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
 
                 </div>
             </div>
@@ -198,11 +217,9 @@ document.addEventListener('alpine:init', () => {
             this.dragOverCrewId = null;
             if (!this.draggedEstimateId) return;
 
-            // Pre-populate parameter defaults based on current slot selection
             this.formData.estimate_id = this.draggedEstimateId;
             this.formData.crew_id = crewId;
             
-            // Set dynamic default timeline targets: Starts right now, lengths 2 hours out
             const now = new Date();
             const twoHoursOut = new Date(now.getTime() + (2 * 60 * 60 * 1000));
             
@@ -230,7 +247,7 @@ document.addEventListener('alpine:init', () => {
             .then(data => {
                 this.modalOpen = false;
                 alert(data.message);
-                window.location.reload(); // Reloads layout grid arrays cleanly post-update
+                window.location.reload();
             })
             .catch(error => {
                 console.error(error);
