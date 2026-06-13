@@ -10,12 +10,13 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class EstimateController extends Controller
 {
     /**
-     * Store a newly created estimate, compile its line items, and email it to the client.
+     * Store a newly created estimate and compile its line items.
      */
     public function store(Request $request)
     {
@@ -28,7 +29,7 @@ class EstimateController extends Controller
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.unit_price' => 'required|numeric|min:0',
             'photos' => 'nullable|array',
-            'photos.*' => 'nullable|image|max:12288', // Supports high-res phone uploads up to 12MB
+            'photos.*' => 'nullable|image|max:12288', // High-res phone cameras up to 12MB
         ]);
 
         $estimate = null;
@@ -66,9 +67,9 @@ class EstimateController extends Controller
             foreach ($processedItems as $processedItem) {
                 $estimate->items()->create($processedItem);
             }
-    });
+        });
 
-        // Process file attachments if injected into the multi-part input fields
+        // Track file attachments if uploaded during the core creation step
         if ($request->hasFile('photos')) {
             foreach ($request->file('photos') as $file) {
                 $storageFolder = 'attachments';
@@ -80,68 +81,17 @@ class EstimateController extends Controller
                     'user_id' => Auth::id(),
                     'file_path' => $fileName,
                     'file_type' => 'markup',
-                    'is_public' => true
+                    'is_visible_to_client' => true
                 ]);
             }
 
-            // High-octane pivot redirect: Route them straight to the canvas studio to sketch over the image
-            return redirect()->route('estimates.markup', $estimate->id)->with('status', 'Estimate drafted! Landed directly in Markup Studio to apply precision callouts.');
+            // Route cleanly to the canvas studio to apply precision markup lines over the images
+            return redirect()->route('estimates.markup', $estimate->id)->with('status', 'Estimate drafted! Opening Markup Studio to apply project layout notes.');
         }
 
+        // If there are no initial photos to draw on, refresh model keys and email the client instantly
         if ($estimate && $estimate->client_email) {
-            $contractorName = $estimate->user->business_name ?? $estimate->user->name;
-            $publicReviewUrl = route('estimates.public.show', $estimate->secure_token);
-            
-            $itemRowsHtml = '';
-            foreach ($estimate->items as $item) {
-                $formattedLineTotal = number_format($item->total_price_cents / 100, 2);
-                $itemRowsHtml .= '<tr>'
-                    . '<td style="padding: 12px; border-bottom: 1px solid #E2E8F0; font-size: 14px; color: #2D3748;">'
-                    . '<strong>' . e($item->description) . '</strong><br>'
-                    . '<span style="font-size: 12px; color: #718096;">Qty ' . e($item->quantity) . '</span>'
-                    . '</td>'
-                    . '<td style="padding: 12px; border-bottom: 1px solid #E2E8F0; font-size: 14px; text-align: right; color: #1A202C; font-weight: bold;">'
-                    . '$' . $formattedLineTotal
-                    . '</td>'
-                    . '</tr>';
-            }
-
-            $formattedGrandTotal = number_format($estimate->total_cents / 100, 2);
-
-            $emailHtmlBody = '<div style="font-family: Arial, sans-serif; background-color: #F8FAFC; padding: 30px; text-align: center;">'
-                . '<div style="max-width: 550px; margin: 0 auto; background: #FFFFFF; padding: 32px; border-radius: 20px; border: 1px solid #E2E8F0; text-align: left; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">'
-                . '<span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #718096; display: block; margin-bottom: 4px;">Project Estimate Reference</span>'
-                . '<h3 style="color: #0F2D5A; font-size: 20px; font-weight: 800; margin: 0 0 16px 0;">New Proposal from ' . e($contractorName) . '</h3>'
-                . '<p style="color: #4A5568; font-size: 14px; line-height: 1.5; margin-bottom: 20px;">'
-                . 'Hello ' . e($estimate->client_name) . ', a digital project estimate has been prepared for your review regarding: <strong>' . e($estimate->project_title) . '</strong>.'
-                . '</p>'
-                . '<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">'
-                . '<thead>'
-                . '<tr style="background-color: #F8FAFC;">'
-                . '<th style="text-align: left; padding: 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: #718096; border-bottom: 2px solid #E2E8F0;">Service Description</th>'
-                . '<th style="text-align: right; padding: 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: #718096; border-bottom: 2px solid #E2E8F0;">Total</th>'
-                . '</tr>'
-                . '</thead>'
-                . '<tbody>'
-                . $itemRowsHtml
-                . '<tr>'
-                . '<td style="padding: 16px 12px; font-size: 14px; font-weight: bold; color: #0F2D5A;">Grand Total</td>'
-                . '<td style="padding: 16px 12px; font-size: 18px; font-weight: 900; color: #0F2D5A; text-align: right;">$' . $formattedGrandTotal . '</td>'
-                . '</tr>'
-                . '</tbody>'
-                . '</table>'
-                . '<div style="margin-top: 28px; text-align: center;">'
-                . '<a href="' . e($publicReviewUrl) . '" style="display: inline-block; background-color: #0F2D5A; color: #FFFFFF; font-weight: bold; text-decoration: none; padding: 14px 28px; border-radius: 10px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Review & Accept Proposal</a>'
-                . '</div>'
-                . '</div>'
-                . '</div>';
-
-            Mail::send([], [], function ($message) use ($estimate, $contractorName, $emailHtmlBody) {
-                $message->to($estimate->client_email)
-                    ->subject("Project Proposal from {$contractorName} | #EST-00{$estimate->id}")
-                    ->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'))
-                    ->html($emailHtmlBody);
-            });
+            $this->sendEstimateNotification($estimate);
         }
 
         return redirect()->route('dashboard.estimates')->with('status', 'Estimate has been successfully generated, logged, and emailed to your client!');
@@ -161,7 +111,7 @@ class EstimateController extends Controller
     }
 
     /**
-     * Parse binary base64 file payloads and record entries to the polymorphic media layer.
+     * Parse binary sketch configurations and append the marked-up file to the client proposal gallery.
      */
     public function storeMarkup(Request $request, $id)
     {
@@ -179,15 +129,19 @@ class EstimateController extends Controller
 
             Storage::disk('public')->putFileAs($storageFolder, $file, basename($fileName));
 
-            // Fixed: Removed the continuous attachment purge command line to enable multi-image saving histories
             $estimate->attachments()->create([
                 'user_id' => Auth::id(),
                 'file_path' => $fileName,
                 'file_type' => 'markup',
-                'is_public' => $request->input('is_public') === '1' || $request->input('is_public') == true
+                'is_visible_to_client' => true
             ]);
 
-            session()->flash('status', 'Success! Marked-up photo has been appended to the client proposal gallery.');
+            // Fire the notification email now that the contractor has finished applying their visual notes
+            if ($estimate->client_email) {
+                $this->sendEstimateNotification($estimate);
+            }
+
+            session()->flash('status', 'Success! Marked-up photo added and proposal emailed to client.');
 
             return response()->json([
                 'success' => true,
@@ -197,7 +151,7 @@ class EstimateController extends Controller
 
         return response()->json([
             'success' => false,
-            'message' => 'Error: Failed to process inbound file streams.'
+            'message' => 'Error: Failed to process inbound drawing streams.'
         ], 422);
     }
 
@@ -208,10 +162,10 @@ class EstimateController extends Controller
     {
         $attachment = Attachment::where('user_id', Auth::id())->where('id', $id)->firstOrFail();
         $attachment->update([
-            'is_public' => !$attachment->is_public
+            'is_visible_to_client' => !$attachment->is_visible_to_client
         ]);
 
-        return redirect()->back()->with('status', 'Photo visibility configuration altered successfully.');
+        return redirect()->back()->with('status', 'Photo visibility configuration updated successfully.');
     }
 
     /**
@@ -256,8 +210,8 @@ class EstimateController extends Controller
                     'user_id' => $attachment->user_id,
                     'file_path' => $attachment->file_path,
                     'file_type' => $attachment->file_type,
-                    'is_public' => $attachment->is_public,
-                    'canvas_metadata' => $attachment->canvas_metadata,
+                    'is_visible_to_client' => $attachment->is_visible_to_client,
+                    'note' => $attachment->note,
                 ]);
             }
 
@@ -321,5 +275,71 @@ class EstimateController extends Controller
         ]);
 
         return redirect()->back()->with('status', 'Response registered successfully.');
+    }
+
+    /**
+     * Unified clean notification dispatcher engine. Fires emails safely without locking UI transitions.
+     */
+    protected function sendEstimateNotification(Estimate $estimate)
+    {
+        // Explicitly load relations fresh to bypass active Eloquent cached memory strings
+        $estimate->load('items', 'user');
+
+        try {
+            $contractorName = $estimate->user->business_name ?? $estimate->user->name;
+            $publicReviewUrl = route('estimates.public.show', $estimate->secure_token);
+            
+            $itemRowsHtml = '';
+            foreach ($estimate->items as $item) {
+                $formattedLineTotal = number_format($item->total_price_cents / 100, 2);
+                $itemRowsHtml .= '<tr>'
+                    . '<td style="padding: 12px; border-bottom: 1px solid #E2E8F0; font-size: 14px; color: #2D3748;">'
+                    . '<strong>' . e($item->description) . '</strong><br>'
+                    . '<span style="font-size: 12px; color: #718096;">Qty ' . e($item->quantity) . '</span>'
+                    . '</td>'
+                    . '<td style="padding: 12px; border-bottom: 1px solid #E2E8F0; font-size: 14px; text-align: right; color: #1A202C; font-weight: bold;">'
+                    . '$' . $formattedLineTotal
+                    . '</td>'
+                    . '</tr>';
+            }
+
+            $formattedGrandTotal = number_format($estimate->total_cents / 100, 2);
+
+            $emailHtmlBody = '<div style="font-family: Arial, sans-serif; background-color: #F8FAFC; padding: 30px; text-align: center;">'
+                . '<div style="max-width: 550px; margin: 0 auto; background: #FFFFFF; padding: 32px; border-radius: 20px; border: 1px solid #E2E8F0; text-align: left; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">'
+                . '<span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #718096; display: block; margin-bottom: 4px;">Project Estimate Reference</span>'
+                . '<h3 style="color: #0F2D5A; font-size: 20px; font-weight: 800; margin: 0 0 16px 0;">New Proposal from ' . e($contractorName) . '</h3>'
+                . '<p style="color: #4A5568; font-size: 14px; line-height: 1.5; margin-bottom: 20px;">'
+                . 'Hello ' . e($estimate->client_name) . ', a digital project estimate has been prepared for your review regarding: <strong>' . e($estimate->project_title) . '</strong>.'
+                . '</p>'
+                . '<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">'
+                . '<thead>'
+                . '<tr style="background-color: #F8FAFC;">'
+                . '<th style="text-align: left; padding: 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: #718096; border-bottom: 2px solid #E2E8F0;">Service Description</th>'
+                . '<th style="text-align: right; padding: 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: #718096; border-bottom: 2px solid #E2E8F0;">Total</th>'
+                . '</tr>'
+                . '</thead>'
+                . '<tbody>'
+                . $itemRowsHtml
+                . '<tr>'
+                . '<td style="padding: 16px 12px; font-size: 14px; font-weight: bold; color: #0F2D5A;">Grand Total</td>'
+                . '<td style="padding: 16px 12px; font-size: 18px; font-weight: 900; color: #0F2D5A; text-align: right;">$' . $formattedGrandTotal . '</td>'
+                . '</tr>'
+                . '</tbody>'
+                . '</table>'
+                . '<div style="margin-top: 28px; text-align: center;">'
+                . '<a href="' . e($publicReviewUrl) . '" style="display: inline-block; background-color: #0F2D5A; color: #FFFFFF; font-weight: bold; text-decoration: none; padding: 14px 28px; border-radius: 10px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Review & Accept Proposal</a>'
+                . '</div>'
+                . '</div>'
+                . '</div>';
+
+            Mail::send([], [], function ($message) use ($estimate, $contractorName, $emailHtmlBody) {
+                $message->to($estimate->client_email)
+                    ->subject("Project Proposal from {$contractorName} | #EST-00{$estimate->id}")
+                    ->html($emailHtmlBody);
+            });
+        } catch (\Exception $e) {
+            Log::error('Frictionless estimate notification mailing exception caught: ' . $e->getMessage());
+        }
     }
 }
